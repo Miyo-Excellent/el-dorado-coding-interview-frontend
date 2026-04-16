@@ -28,8 +28,12 @@ class WalletScreen extends StatelessWidget {
               // ── ATOM: Ambient Glow (consistent across all screens) ──
               const AmbientGlowBackground(),
 
-              CustomScrollView(
-                slivers: [
+              RefreshIndicator(
+                onRefresh: () => context.read<WalletCubit>().refresh(),
+                color: Theme.of(context).colorScheme.primary,
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: CustomScrollView(
+                  slivers: [
                   // ── ORGANISM: Wallet App Bar ──────────────────────────
                   const ElDoradoSliverAppBar(
                     variant: ElDoradoAppBarVariant.wallet,
@@ -125,15 +129,16 @@ class WalletScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: AppSpacing.lg),
-                      ]),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
+                      ]), // SliverChildListDelegate
+                    ), // SliverList
+                  ), // SliverPadding
+                ], // slivers
+              ), // CustomScrollView
+            ), // RefreshIndicator
+          ], // Stack children
+        ); // return Stack
+      }, // BlocBuilder builder
+    ), // BlocBuilder
+    ); // Scaffold
+  } // build
+} // class

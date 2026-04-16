@@ -1,4 +1,5 @@
-﻿import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/usecases/get_wallet_data.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/wallet/wallet_state.dart';
 
 /// Cubit managing wallet screen state.
@@ -6,38 +7,37 @@ import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/w
 /// Currently provides static demo data. In production, this would
 /// connect to a wallet repository for real balance data.
 class WalletCubit extends Cubit<WalletState> {
-  WalletCubit() : super(const WalletState()) {
+  final GetWalletData getWalletData;
+
+  WalletCubit({required this.getWalletData}) : super(const WalletState()) {
     _loadInitialData();
   }
 
-  void _loadInitialData() {
-    emit(
-      state.copyWith(
-        totalBalanceUsd: 1240.50,
-        trendText: '+2.4% Today',
-        isPositiveTrend: true,
-        assets: const [
-          WalletAsset(
-            name: 'USDT',
-            subtitle: 'Tether',
-            amount: '840.50',
-            usdValue: '≈ \$840.50',
-            iconColor: 0xFF26A17B,
-          ),
-          WalletAsset(
-            name: 'COP',
-            subtitle: 'Peso Colombiano',
-            amount: '1,440,000',
-            usdValue: '≈ \$400.00',
-            iconColor: 0xFFFFD100,
-          ),
-        ],
-      ),
-    );
+  Future<void> _loadInitialData() async {
+    try {
+      final json = await getWalletData();
+      final assetsJson = json['assets'] as List<dynamic>? ?? [];
+      final assets = assetsJson.map((e) => WalletAsset(
+        name: e['name'] as String,
+        subtitle: e['subtitle'] as String,
+        amount: e['amount'] as String,
+        usdValue: e['usdValue'] as String,
+        iconColor: e['iconColor'] as int,
+      )).toList();
+
+      emit(state.copyWith(
+        totalBalanceUsd: json['totalBalanceUsd'] as double? ?? 0.0,
+        trendText: json['trendText'] as String? ?? '',
+        isPositiveTrend: json['isPositiveTrend'] as bool? ?? true,
+        assets: assets,
+      ));
+    } catch (_) {
+      // Intentionally ignoring error state for this simple implementation
+    }
   }
 
   /// Refresh wallet balances.
-  void refresh() {
-    _loadInitialData();
+  Future<void> refresh() async {
+    await _loadInitialData();
   }
 }

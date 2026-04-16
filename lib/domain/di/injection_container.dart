@@ -5,7 +5,18 @@ import 'package:el_dorado_coding_interview_frontend/infrastructure/network/datas
 import 'package:el_dorado_coding_interview_frontend/infrastructure/repositories_impl/recommendation_repository_impl.dart';
 import 'package:el_dorado_coding_interview_frontend/domain/repositories/recommendation_repository.dart';
 import 'package:el_dorado_coding_interview_frontend/domain/usecases/get_recommendations.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/usecases/calculate_conversion.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/usecases/validate_offer_limits.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/usecases/get_wallet_data.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/usecases/get_activity_data.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/repositories/wallet_repository.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/repositories/activity_repository.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/repositories_impl/wallet_repository_impl.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/repositories_impl/activity_repository_impl.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/network/datasources/wallet_mock_remote_datasource.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/network/datasources/activity_mock_remote_datasource.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/blocs/exchange/exchange_bloc.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/home/home_cubit.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/wallet/wallet_cubit.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/activity/activity_cubit.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/theme/theme_cubit.dart';
@@ -22,21 +33,40 @@ void configureDependencies() {
 
   // ── Data Sources ──────────────────────────────────────────────────────────
   sl.registerLazySingleton(() => RecommendationRemoteDataSource(dio: sl()));
+  sl.registerLazySingleton(() => const WalletMockRemoteDataSource());
+  sl.registerLazySingleton(() => const ActivityMockRemoteDataSource());
 
   // ── Repositories ──────────────────────────────────────────────────────────
   sl.registerLazySingleton<RecommendationRepository>(
     () => RecommendationRepositoryImpl(remoteDataSource: sl()),
   );
+  sl.registerLazySingleton<WalletRepository>(
+    () => WalletRepositoryImpl(sl()),
+  );
+  sl.registerLazySingleton<ActivityRepository>(
+    () => ActivityRepositoryImpl(sl()),
+  );
 
   // ── Use Cases ─────────────────────────────────────────────────────────────
   sl.registerLazySingleton(() => GetRecommendations(repository: sl()));
+  sl.registerLazySingleton(() => const CalculateConversion());
+  sl.registerLazySingleton(() => const ValidateOfferLimits());
+  sl.registerLazySingleton(() => GetWalletData(sl()));
+  sl.registerLazySingleton(() => GetActivityData(sl()));
 
   // ── BLoCs / Cubits ────────────────────────────────────────────────────────
-  // Factory = new instance per screen / per widget that needs it.
-  sl.registerFactory(() => ExchangeBloc(getRecommendations: sl()));
+  // ExchangeBloc is a singleton that constantly queries API every 10s.
+  sl.registerLazySingleton(() => ExchangeBloc(getRecommendations: sl()));
 
-  sl.registerFactory(() => WalletCubit());
-  sl.registerFactory(() => ActivityCubit());
+  // HomeCubit acts as the ViewModel consuming ExchangeBloc.
+  sl.registerFactory(() => HomeCubit(
+        exchangeBloc: sl(),
+        calculateConversion: sl(),
+        validateOfferLimits: sl(),
+      ));
+
+  sl.registerFactory(() => WalletCubit(getWalletData: sl()));
+  sl.registerFactory(() => ActivityCubit(getActivityData: sl()));
 
   // ThemeCubit is a singleton — shared across the entire app.
   sl.registerLazySingleton(() => ThemeCubit());

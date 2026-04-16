@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'score_model.dart';
 
 /// Seller statistics and score data from the P2P marketplace.
 class OfferMakerStatsModel extends Equatable {
@@ -15,8 +16,8 @@ class OfferMakerStatsModel extends Equatable {
   final int uniqueTradersCount;
   final double marketMakerOrderTime;
   final double marketMakerSuccessRatio;
-  final String tierNameCode; // 'NO_TIER' | 'SILVER' | 'GOLD'
-  final double mmScoreValue;
+  final ScoreModel? mmScore;
+  final ScoreModel? mtScore;
   final String userStatus;
 
   const OfferMakerStatsModel({
@@ -33,14 +34,15 @@ class OfferMakerStatsModel extends Equatable {
     required this.uniqueTradersCount,
     required this.marketMakerOrderTime,
     required this.marketMakerSuccessRatio,
-    required this.tierNameCode,
-    required this.mmScoreValue,
+    this.mmScore,
+    this.mtScore,
     required this.userStatus,
   });
 
   /// Human-readable tier label.
   String get tierLabel {
-    switch (tierNameCode) {
+    final code = mmScore?.tier.nameCode ?? 'NO_TIER';
+    switch (code) {
       case 'GOLD':
         return 'Gold Tier';
       case 'SILVER':
@@ -58,9 +60,6 @@ class OfferMakerStatsModel extends Equatable {
   String get orderTimeDisplay => '~${marketMakerOrderTime.round()} min';
 
   factory OfferMakerStatsModel.fromJson(Map<String, dynamic> json) {
-    final mmScore = json['mmScore'] as Map<String, dynamic>? ?? {};
-    final tier = mmScore['tier'] as Map<String, dynamic>? ?? {};
-
     return OfferMakerStatsModel(
       userId: json['userId'] as String? ?? '',
       rating: (json['rating'] as num?)?.toDouble() ?? 0,
@@ -79,8 +78,12 @@ class OfferMakerStatsModel extends Equatable {
           (json['marketMakerOrderTime'] as num?)?.toDouble() ?? 0,
       marketMakerSuccessRatio:
           (json['marketMakerSuccessRatio'] as num?)?.toDouble() ?? 0,
-      tierNameCode: tier['nameCode'] as String? ?? 'NO_TIER',
-      mmScoreValue: (mmScore['score'] as num?)?.toDouble() ?? 0,
+      mmScore: json['mmScore'] != null
+          ? ScoreModel.fromJson(json['mmScore'] as Map<String, dynamic>)
+          : null,
+      mtScore: json['mtScore'] != null
+          ? ScoreModel.fromJson(json['mtScore'] as Map<String, dynamic>)
+          : null,
       userStatus: json['user_status'] as String? ?? 'OFFLINE',
     );
   }
@@ -91,7 +94,7 @@ class OfferMakerStatsModel extends Equatable {
         rating,
         totalTransactionCount,
         marketMakerSuccessRatio,
-        tierNameCode,
-        mmScoreValue,
+        mmScore,
+        mtScore,
       ];
 }

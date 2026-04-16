@@ -3,15 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_theme.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/widgets.dart';
-import 'package:el_dorado_coding_interview_frontend/infrastructure/data/blocs/exchange/exchange_bloc.dart';
-import 'package:el_dorado_coding_interview_frontend/infrastructure/data/blocs/exchange/exchange_event.dart';
-import 'package:el_dorado_coding_interview_frontend/infrastructure/data/blocs/exchange/exchange_state.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/home/home_cubit.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/home/home_state.dart';
 
 /// Home / Exchange screen.
 ///
 /// **MVVM pattern:**
 /// - **Model** → [OfferModel] + [RecommendationResponse]
-/// - **ViewModel** → [ExchangeBloc] (BLoC/events/states)
+/// - **ViewModel** → [HomeCubit] (Cubit/states)
 /// - **View** → this widget
 ///
 /// Uses [BlocBuilder] for reactive UI updates and [StatefulWidget] for
@@ -24,18 +23,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _amountController = TextEditingController(text: '50');
+  final _tengoController = TextEditingController(text: '50');
+  final _quieroController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     // Trigger initial API fetch
-    context.read<ExchangeBloc>().add(const FetchRecommendations());
+    context.read<HomeCubit>().fetchRecommendations();
   }
 
   @override
   void dispose() {
-    _amountController.dispose();
+    _tengoController.dispose();
+    _quieroController.dispose();
     super.dispose();
   }
 
@@ -62,15 +63,28 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: BlocBuilder<ExchangeBloc, ExchangeState>(
+      body: BlocConsumer<HomeCubit, HomeState>(
+        listener: (context, state) {
+          // Sync controllers with state without triggering onChanged loops
+          if (_tengoController.text != state.amount) {
+            _tengoController.text = state.amount;
+          }
+          if (_quieroController.text != state.formattedConvertedAmount) {
+            _quieroController.text = state.formattedConvertedAmount;
+          }
+        },
         builder: (context, state) {
           return Stack(
             children: [
               // ── ATOM: Ambient Glow (consistent across all screens) ──
               const AmbientGlowBackground(),
 
-              CustomScrollView(
-                slivers: [
+              RefreshIndicator(
+                onRefresh: () => context.read<HomeCubit>().fetchRecommendations(),
+                color: Theme.of(context).colorScheme.primary,
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: CustomScrollView(
+                  slivers: [
                   // ── ORGANISM: Branded App Bar ─────────────────────────
                   const ElDoradoSliverAppBar(
                     variant: ElDoradoAppBarVariant.branded,
@@ -83,7 +97,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
-                        // ── ORGANISM: Exchange Card ─────────────────────
                         ExchangeCard(
                           fromAmount: state.type == 0
                               ? state.amount
@@ -97,8 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     const Color(0xFFFFD100),
                           fromSymbol: state.type == 0
                               ? '₮'
-                              : (_currencySymbols[state.fiatCurrencyId] ??
-                                    '\$'),
+                              : (_currencySymbols[state.fiatCurrencyId] ?? '\$'),
                           toAmount: state.type == 0
                               ? state.formattedConvertedAmount
                               : state.amount,
@@ -113,22 +125,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               ? (_currencySymbols[state.fiatCurrencyId] ?? '\$')
                               : '₮',
                           limitsText: state.limitsText,
-                          onSwap: () {
-                            context.read<ExchangeBloc>().add(
-                              const DirectionToggled(),
-                            );
+                          fromAmountController: _tengoController,
+                          toAmountController: _quieroController,
+                          onFromAmountChanged: (val) {
+                            if (val.isNotEmpty) {
+                              context.read<HomeCubit>().changeAmount(val);
+                            }
                           },
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
-
-                        // ── Currency Selector (StatefulWidget local state)
-                        _CurrencySelector(
-                          currencies: _fiatCurrencies,
-                          selectedCurrency: state.fiatCurrencyId,
-                          onChanged: (currency) {
-                            context.read<ExchangeBloc>().add(
-                              FiatCurrencyChanged(currency),
-                            );
+                          onToAmountChanged: (val) {
+                            // Optionally handle reverse calculation here
+                          },
+                          onFromCurrencyTap: () => _showCurrencyPicker(context, state.type == 0),
+                          onToCurrencyTap: () => _showCurrencyPicker(context, state.type == 1),
+                          onSwap: () {
+                            context.read<HomeCubit>().toggleDirection();
                           },
                         ),
                         const SizedBox(height: AppSpacing.xxl),
@@ -144,9 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         OfferTabBar(
                           tabs: const ['💸 Mejor Precio', '⭐ Mejor Reputación'],
                           onTabChanged: (idx) {
-                            context.read<ExchangeBloc>().add(
-                              OfferTabChanged(idx),
-                            );
+                            context.read<HomeCubit>().changeOfferTab(idx);
                           },
                         ),
                         const SizedBox(height: AppSpacing.md),
@@ -158,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         // ── ATOM: Primary CTA ───────────────────────────
                         PrimaryButton(
                           label: 'Cambiar a ${state.fiatCurrencyId}',
-                          onPressed: state.status == ExchangeStatus.loaded
+                          onPressed: state.status == HomeStatus.loaded
                               ? () {}
                               : null,
                         ),
@@ -168,17 +176,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-            ],
-          );
-        },
+            ),
+          ],
+        );
+      },
       ),
     );
   }
 
-  Widget _buildOfferContent(BuildContext context, ExchangeState state) {
+  Widget _buildOfferContent(BuildContext context, HomeState state) {
     switch (state.status) {
-      case ExchangeStatus.initial:
-      case ExchangeStatus.loading:
+      case HomeStatus.initial:
+      case HomeStatus.loading:
         return const Center(
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: AppSpacing.xxl),
@@ -186,13 +195,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
 
-      case ExchangeStatus.error:
+      case HomeStatus.error:
         return _ErrorCard(message: state.errorMessage);
 
-      case ExchangeStatus.empty:
+      case HomeStatus.empty:
         return const _EmptyCard();
 
-      case ExchangeStatus.loaded:
+      case HomeStatus.loaded:
         final offer = state.activeOffer;
         if (offer == null) return const _EmptyCard();
 
@@ -213,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
           time: stats?.orderTimeDisplay ?? '~? min',
           successRate: stats?.successRatePercent ?? 'N/A',
           isSellerOnline: offer.isOnline,
-          isSellerVerified: (stats?.tierNameCode ?? 'NO_TIER') != 'NO_TIER',
+          isSellerVerified: (stats?.mmScore?.tier.nameCode ?? 'NO_TIER') != 'NO_TIER',
           onTap: () {},
         );
     }
@@ -230,38 +239,59 @@ class _HomeScreenState extends State<HomeScreen> {
         )
         .join(' ');
   }
-}
 
-/// Local stateful widget for selecting fiat currency.
-/// Uses StatefulWidget for local UI state (expansion, animation).
-class _CurrencySelector extends StatelessWidget {
-  final List<String> currencies;
-  final String selectedCurrency;
-  final ValueChanged<String> onChanged;
+  void _showCurrencyPicker(BuildContext context, bool isCryptoSelected) {
+    if (isCryptoSelected) {
+      // For Crypto, only USDT is supported correctly, just show a tooltip or ignore.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Actualmente solo USDT está soportado.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
 
-  const _CurrencySelector({
-    required this.currencies,
-    required this.selectedCurrency,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: AppSpacing.sm,
-      children: currencies.map((currency) {
-        final isSelected = currency == selectedCurrency;
-        return ChoiceChip(
-          label: Text(currency),
-          selected: isSelected,
-          onSelected: (selected) {
-            if (selected) onChanged(currency);
-          },
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainerHigh,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Seleccionar Moneda',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              ..._fiatCurrencies.map((currency) {
+                return ListTile(
+                  leading: const Icon(Icons.monetization_on),
+                  title: Text(currency),
+                  onTap: () {
+                    context.read<HomeCubit>().changeFiatCurrency(currency);
+                    Navigator.pop(ctx);
+                  },
+                );
+              }),
+              const SizedBox(height: AppSpacing.xl),
+            ],
+          ),
         );
-      }).toList(),
+      },
     );
   }
 }
+
 
 /// Error state card.
 class _ErrorCard extends StatelessWidget {

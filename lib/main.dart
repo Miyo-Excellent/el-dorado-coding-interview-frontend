@@ -7,7 +7,7 @@ import 'infrastructure/router/app_router.dart';
 import 'infrastructure/storage/hive_storage.dart';
 import 'infrastructure/ui/theme/registry.dart';
 import 'infrastructure/data/cubits/theme/theme_cubit.dart';
-import 'infrastructure/data/blocs/exchange/exchange_bloc.dart';
+import 'infrastructure/data/cubits/home/home_cubit.dart';
 import 'infrastructure/data/cubits/wallet/wallet_cubit.dart';
 import 'infrastructure/data/cubits/activity/activity_cubit.dart';
 
@@ -55,7 +55,7 @@ class ElDoradoApp extends StatelessWidget {
         BlocProvider<ThemeCubit>(create: (_) => sl<ThemeCubit>()),
 
         // ── Feature BLoCs / Cubits ────────────────────────────────────────
-        BlocProvider<ExchangeBloc>(create: (_) => sl<ExchangeBloc>()),
+        BlocProvider<HomeCubit>(create: (_) => sl<HomeCubit>()),
         BlocProvider<WalletCubit>(create: (_) => sl<WalletCubit>()),
         BlocProvider<ActivityCubit>(create: (_) => sl<ActivityCubit>()),
       ],

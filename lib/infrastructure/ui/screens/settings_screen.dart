@@ -112,8 +112,14 @@ class SettingsScreen extends StatelessWidget {
               // ── ATOM: Ambient Glow ───────────────────────────────────────
               const AmbientGlowBackground(),
 
-              CustomScrollView(
-                slivers: [
+              RefreshIndicator(
+                onRefresh: () async {
+                  await Future.delayed(const Duration(milliseconds: 600));
+                },
+                color: Theme.of(context).colorScheme.primary,
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: CustomScrollView(
+                  slivers: [
                   // ── ORGANISM: Settings App Bar ────────────────────────────
                   const ElDoradoSliverAppBar(
                     variant: ElDoradoAppBarVariant.page,
@@ -150,15 +156,16 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
+                ], // slivers
+              ), // CustomScrollView
+            ), // RefreshIndicator
+          ], // children stack
+        ), // Stack
+      ); // return Scaffold
+    }, // builder function
+  ); // return BlocBuilder
+} // build method
+} // class
 
 // =============================================================================
 // LOCAL ATOM — _ActiveThemeChip

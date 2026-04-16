@@ -1,46 +1,50 @@
 import 'package:equatable/equatable.dart';
 
-/// Events for [ExchangeBloc].
-sealed class ExchangeEvent extends Equatable {
+abstract class ExchangeEvent extends Equatable {
   const ExchangeEvent();
 
   @override
   List<Object?> get props => [];
 }
 
-/// Fetch recommendations for the current pair + amount.
-final class FetchRecommendations extends ExchangeEvent {
-  const FetchRecommendations();
-}
-
-/// User changed the fiat currency selection.
-final class FiatCurrencyChanged extends ExchangeEvent {
+/// Dispatched to manually fetch immediately.
+class FetchRecommendations extends ExchangeEvent {
+  final int type;
   final String fiatCurrencyId;
-  const FiatCurrencyChanged(this.fiatCurrencyId);
-
-  @override
-  List<Object?> get props => [fiatCurrencyId];
-}
-
-/// User changed the input amount.
-final class AmountChanged extends ExchangeEvent {
   final String amount;
-  const AmountChanged(this.amount);
+
+  const FetchRecommendations({
+    required this.type,
+    required this.fiatCurrencyId,
+    required this.amount,
+  });
 
   @override
-  List<Object?> get props => [amount];
+  List<Object?> get props => [type, fiatCurrencyId, amount];
 }
 
-/// User toggled the conversion direction (CRYPTO→FIAT ↔ FIAT→CRYPTO).
-final class DirectionToggled extends ExchangeEvent {
-  const DirectionToggled();
+/// Dispatched by the Bloc's periodic timer.
+class TimerTick extends ExchangeEvent {
+  const TimerTick();
 }
 
-/// User selected a different offer tab (byPrice / byReputation).
-final class OfferTabChanged extends ExchangeEvent {
-  final int tabIndex;
-  const OfferTabChanged(this.tabIndex);
+/// Starts the periodic 10-second polling.
+class StartPolling extends ExchangeEvent {
+  final int type;
+  final String fiatCurrencyId;
+  final String amount;
+
+  const StartPolling({
+    required this.type,
+    required this.fiatCurrencyId,
+    required this.amount,
+  });
 
   @override
-  List<Object?> get props => [tabIndex];
+  List<Object?> get props => [type, fiatCurrencyId, amount];
+}
+
+/// Stops the periodic polling.
+class StopPolling extends ExchangeEvent {
+  const StopPolling();
 }

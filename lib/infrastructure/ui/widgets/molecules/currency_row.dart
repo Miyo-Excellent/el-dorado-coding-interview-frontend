@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_theme.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/atoms/currency_pill.dart';
 
@@ -26,6 +26,9 @@ class CurrencyRow extends StatelessWidget {
     required this.currencyCode,
     required this.currencyColor,
     required this.currencySymbol,
+    this.isInput = false,
+    this.amountController,
+    this.onAmountChanged,
     this.onCurrencyTap,
   });
 
@@ -34,6 +37,9 @@ class CurrencyRow extends StatelessWidget {
   final String currencyCode;
   final Color currencyColor;
   final String currencySymbol;
+  final bool isInput;
+  final TextEditingController? amountController;
+  final ValueChanged<String>? onAmountChanged;
   final VoidCallback? onCurrencyTap;
 
   @override
@@ -57,13 +63,28 @@ class CurrencyRow extends StatelessWidget {
           children: [
             // Amount display
             Expanded(
-              child: Text(
-                amount,
-                style: tt.displaySmall?.copyWith(
-                  fontSize: 32,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
+              child: isInput 
+                ? TextField(
+                    controller: amountController,
+                    onChanged: onAmountChanged,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    style: tt.displaySmall?.copyWith(
+                      fontSize: 32,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  )
+                : Text(
+                    amount,
+                    style: tt.displaySmall?.copyWith(
+                      fontSize: 32,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
             ),
             // ATOM: currency pill selector
             CurrencyPill(

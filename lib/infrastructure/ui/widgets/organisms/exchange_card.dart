@@ -32,6 +32,10 @@ class ExchangeCard extends StatelessWidget {
     required this.toColor,
     required this.toSymbol,
     this.limitsText,
+    this.fromAmountController,
+    this.onFromAmountChanged,
+    this.toAmountController,
+    this.onToAmountChanged,
     this.onSwap,
     this.onFromCurrencyTap,
     this.onToCurrencyTap,
@@ -46,6 +50,10 @@ class ExchangeCard extends StatelessWidget {
   final Color toColor;
   final String toSymbol;
   final String? limitsText;
+  final TextEditingController? fromAmountController;
+  final ValueChanged<String>? onFromAmountChanged;
+  final TextEditingController? toAmountController;
+  final ValueChanged<String>? onToAmountChanged;
   final VoidCallback? onSwap;
   final VoidCallback? onFromCurrencyTap;
   final VoidCallback? onToCurrencyTap;
@@ -91,6 +99,9 @@ class ExchangeCard extends StatelessWidget {
                   currencyCode: fromCurrency,
                   currencyColor: fromColor,
                   currencySymbol: fromSymbol,
+                  isInput: true,
+                  amountController: fromAmountController,
+                  onAmountChanged: onFromAmountChanged,
                   onCurrencyTap: onFromCurrencyTap,
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -104,6 +115,9 @@ class ExchangeCard extends StatelessWidget {
                   currencyCode: toCurrency,
                   currencyColor: toColor,
                   currencySymbol: toSymbol,
+                  isInput: true,
+                  amountController: toAmountController,
+                  onAmountChanged: onToAmountChanged,
                   onCurrencyTap: onToCurrencyTap,
                 ),
                 if (limitsText != null) ...[

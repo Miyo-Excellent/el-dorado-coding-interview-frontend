@@ -20,8 +20,12 @@ class OfferModel extends Equatable {
   // Limits — parsed from String
   final double cryptoMaxLimit;
   final double cryptoMinLimit;
+  final double cryptoMarketSize;
+  final double cryptoAvailableSize;
   final double fiatMaxLimit;
   final double fiatMinLimit;
+  final double fiatMarketSize;
+  final double fiatAvailableSize;
 
   final bool isDepleted;
 
@@ -37,6 +41,10 @@ class OfferModel extends Equatable {
   final String userStatus; // 'ONLINE' | 'OFFLINE' | 'AWAY'
   final int userLastSeen;
   final bool allowsThirdPartyPayments;
+  final String visibility;
+  final bool orderRequestEnabled;
+  final bool offerTransactionsEnabled;
+  final String escrow;
 
   const OfferModel({
     required this.offerId,
@@ -51,8 +59,12 @@ class OfferModel extends Equatable {
     required this.fiatCurrencyId,
     required this.cryptoMaxLimit,
     required this.cryptoMinLimit,
+    required this.cryptoMarketSize,
+    required this.cryptoAvailableSize,
     required this.fiatMaxLimit,
     required this.fiatMinLimit,
+    required this.fiatMarketSize,
+    required this.fiatAvailableSize,
     required this.isDepleted,
     required this.fiatToCryptoExchangeRate,
     required this.fiatToCryptoExchangeRateRaw,
@@ -62,6 +74,10 @@ class OfferModel extends Equatable {
     required this.userStatus,
     required this.userLastSeen,
     required this.allowsThirdPartyPayments,
+    required this.visibility,
+    required this.orderRequestEnabled,
+    required this.offerTransactionsEnabled,
+    required this.escrow,
   });
 
   /// Whether the seller is currently online.
@@ -99,8 +115,12 @@ class OfferModel extends Equatable {
       fiatCurrencyId: json['fiatCurrencyId'] as String? ?? '',
       cryptoMaxLimit: double.tryParse(crypto['maxLimit'] as String? ?? '0') ?? 0,
       cryptoMinLimit: double.tryParse(crypto['minLimit'] as String? ?? '0') ?? 0,
+      cryptoMarketSize: double.tryParse(crypto['marketSize'] as String? ?? '0') ?? 0,
+      cryptoAvailableSize: double.tryParse(crypto['availableSize'] as String? ?? '0') ?? 0,
       fiatMaxLimit: double.tryParse(fiat['maxLimit'] as String? ?? '0') ?? 0,
       fiatMinLimit: double.tryParse(fiat['minLimit'] as String? ?? '0') ?? 0,
+      fiatMarketSize: double.tryParse(fiat['marketSize'] as String? ?? '0') ?? 0,
+      fiatAvailableSize: double.tryParse(fiat['availableSize'] as String? ?? '0') ?? 0,
       isDepleted: json['isDepleted'] as bool? ?? false,
       fiatToCryptoExchangeRate: double.tryParse(rateRaw) ?? 0,
       fiatToCryptoExchangeRateRaw: rateRaw,
@@ -118,6 +138,10 @@ class OfferModel extends Equatable {
           int.tryParse(json['user_lastSeen'] as String? ?? '999') ?? 999,
       allowsThirdPartyPayments:
           json['allowsThirdPartyPayments'] as bool? ?? false,
+      visibility: json['visibility'] as String? ?? 'PUBLIC',
+      orderRequestEnabled: json['orderRequestEnabled'] as bool? ?? false,
+      offerTransactionsEnabled: json['offerTransactionsEnabled'] as bool? ?? false,
+      escrow: json['escrow'] as String? ?? 'INTERNAL_V2',
     );
   }
 
@@ -131,5 +155,7 @@ class OfferModel extends Equatable {
         fiatToCryptoExchangeRate,
         paymentMethods,
         userStatus,
+        visibility,
+        escrow,
       ];
 }

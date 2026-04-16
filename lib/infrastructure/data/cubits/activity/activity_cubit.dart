@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/usecases/get_activity_data.dart';
 
 import 'activity_state.dart';
 
@@ -8,65 +8,45 @@ import 'activity_state.dart';
 /// Currently provides static demo data. In production, this would
 /// connect to a transaction history repository.
 class ActivityCubit extends Cubit<ActivityState> {
-  ActivityCubit() : super(const ActivityState()) {
+  final GetActivityData getActivityData;
+
+  ActivityCubit({required this.getActivityData}) : super(const ActivityState()) {
     _loadInitialData();
   }
 
-  void _loadInitialData() {
-    emit(
-      state.copyWith(
-        groups: [
-          ActivityGroupState(
-            dateLabel: 'Hoy',
-            items: [
-              ActivityItemState(
-                iconCode: Icons.swap_horiz.codePoint,
-                title: 'Cambio USDT a COP',
-                time: '14:30',
-                status: 'Completado',
-                statusColor: 0, // resolved from theme
-                amount: '-50.00 USDT',
-                amountColor: 0, // resolved from theme
-                secondaryAmount: '+195,000 COP',
-              ),
-              ActivityItemState(
-                iconCode: Icons.arrow_downward.codePoint,
-                title: 'Recarga USDT',
-                time: '10:15',
-                status: 'Pendiente',
-                statusColor: 1,
-                amount: '+100.00 USDT',
-                amountColor: 0, // resolved from theme
-              ),
-            ],
-          ),
-          ActivityGroupState(
-            dateLabel: 'Ayer',
-            items: [
-              ActivityItemState(
-                iconCode: Icons.arrow_upward.codePoint,
-                title: 'Retiro a Banco',
-                time: '18:45',
-                status: 'Completado',
-                statusColor: 0, // resolved from theme
-                amount: '-500,000 COP',
-                amountColor: 0, // resolved from theme (secondary style)
-              ),
-              ActivityItemState(
-                iconCode: Icons.swap_horiz.codePoint,
-                title: 'Cambio USDC a VES',
-                time: '09:20',
-                status: 'Cancelado',
-                statusColor: 2,
-                amount: '-20.00 USDC',
-                amountColor: 0, // resolved from theme
-                strikethrough: true,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+  Future<void> _loadInitialData() async {
+    try {
+      final json = await getActivityData();
+      final groupsJson = json['groups'] as List<dynamic>? ?? [];
+      
+      final parsedGroups = groupsJson.map((gMap) {
+        final g = gMap as Map<String, dynamic>;
+        final itemsJson = g['items'] as List<dynamic>? ?? [];
+        final items = itemsJson.map((iMap) {
+          final i = iMap as Map<String, dynamic>;
+          return ActivityItemState(
+            iconCode: i['iconCode'] as int,
+            title: i['title'] as String,
+            time: i['time'] as String,
+            status: i['status'] as String,
+            statusColor: i['statusColor'] as int,
+            amount: i['amount'] as String,
+            amountColor: i['amountColor'] as int,
+            secondaryAmount: i['secondaryAmount'] as String?,
+            strikethrough: i['strikethrough'] as bool? ?? false,
+          );
+        }).toList();
+
+        return ActivityGroupState(
+          dateLabel: g['dateLabel'] as String,
+          items: items,
+        );
+      }).toList();
+
+      emit(state.copyWith(groups: parsedGroups));
+    } catch (_) {
+      // Ignored for demo
+    }
   }
 
   /// Change the selected filter.
@@ -75,7 +55,7 @@ class ActivityCubit extends Cubit<ActivityState> {
   }
 
   /// Refresh activity data.
-  void refresh() {
-    _loadInitialData();
+  Future<void> refresh() async {
+    await _loadInitialData();
   }
 }

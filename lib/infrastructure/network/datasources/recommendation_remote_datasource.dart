@@ -1,4 +1,4 @@
-﻿import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 import 'package:el_dorado_coding_interview_frontend/domain/models/recommendation_response.dart';
 
 /// Remote data source for the El Dorado public recommendations API.
@@ -20,11 +20,12 @@ class RecommendationRemoteDataSource {
   Future<RecommendationResponse> getRecommendations({
     required int type,
     required String fiatCurrencyId,
-    required String amount,
+    String? amount,
+    String? amountCurrencyId,
     String cryptoCurrencyId = 'TATUM-TRON-USDT',
   }) async {
-    // Determine amountCurrencyId based on type
-    final amountCurrencyId = type == 0 ? cryptoCurrencyId : fiatCurrencyId;
+    // Determine amountCurrencyId based on type if not explicitly provided
+    final resolvedAmountCurrencyId = amountCurrencyId ?? (type == 0 ? cryptoCurrencyId : fiatCurrencyId);
 
     try {
       final response = await dio.get(
@@ -33,8 +34,8 @@ class RecommendationRemoteDataSource {
           'type': type,
           'cryptoCurrencyId': cryptoCurrencyId,
           'fiatCurrencyId': fiatCurrencyId,
-          'amount': amount,
-          'amountCurrencyId': amountCurrencyId,
+          ?amount: amount,
+          'amountCurrencyId': resolvedAmountCurrencyId,
         },
       );
 

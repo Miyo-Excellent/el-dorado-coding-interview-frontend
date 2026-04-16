@@ -1,4 +1,4 @@
-﻿import 'package:el_dorado_coding_interview_frontend/domain/models/recommendation_response.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/models/recommendation_response.dart';
 
 /// Abstract repository contract for recommendations.
 ///
@@ -8,6 +8,7 @@ abstract class RecommendationRepository {
   Future<RecommendationResponse> getRecommendations({
     required int type,
     required String fiatCurrencyId,
-    required String amount,
+    String? amount,
+    String? amountCurrencyId,
   });
 }

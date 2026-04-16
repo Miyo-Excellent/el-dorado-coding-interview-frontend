@@ -68,8 +68,12 @@ class ActivityScreen extends StatelessWidget {
               // ── ATOM: Ambient Glow ───────────────────────────────────
               const AmbientGlowBackground(),
 
-              CustomScrollView(
-                slivers: [
+              RefreshIndicator(
+                onRefresh: () => context.read<ActivityCubit>().refresh(),
+                color: colorScheme.primary,
+                backgroundColor: colorScheme.surfaceContainerHighest,
+                child: CustomScrollView(
+                  slivers: [
                   // ── ORGANISM: Activity App Bar ────────────────────────
                   const ElDoradoSliverAppBar(
                     variant: ElDoradoAppBarVariant.page,
@@ -102,14 +106,15 @@ class ActivityScreen extends StatelessWidget {
                       child: state.isLoading
                           ? const Center(child: CircularProgressIndicator())
                           : ActivityFeed(groups: feed),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
+                    ), // SliverToBoxAdapter
+                  ), // SliverPadding
+                ], // slivers
+              ), // CustomScrollView
+            ), // RefreshIndicator
+          ], // Stack children
+        ); // return Stack
+      }, // BlocBuilder builder
+    ), // BlocBuilder
+    ); // Scaffold
+  } // build
+} // class
