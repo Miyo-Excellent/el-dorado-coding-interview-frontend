@@ -107,6 +107,28 @@ class HomeCubit extends Cubit<HomeState> {
     fetchRecommendations();
   }
 
+  /// Advanced picker logic: allows selecting any currency (FIAT or USDT) on either TENGO or QUIERO.
+  /// Automatically flips the direction if needed.
+  void selectCurrency(String currency, {required bool isTengo}) {
+    int newType = state.type;
+    String newFiat = state.fiatCurrencyId;
+
+    if (currency == 'USDT') {
+      // If user wants USDT in TENGO, type is 0. If in QUIERO, type is 1.
+      newType = isTengo ? 0 : 1;
+    } else {
+      // User selected a FIAT currency.
+      // If user wants FIAT in TENGO, type is 1. If in QUIERO, type is 0.
+      newType = isTengo ? 1 : 0;
+      newFiat = currency;
+    }
+
+    if (newType != state.type || newFiat != state.fiatCurrencyId) {
+      emit(state.copyWith(type: newType, fiatCurrencyId: newFiat));
+      fetchRecommendations();
+    }
+  }
+
   /// Updates the input amount.
   void changeAmount(String amount) {
     emit(state.copyWith(amount: amount));

@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// Available fiat currencies for the exchange.
-  static const _fiatCurrencies = ['COP', 'BRL', 'PEN', 'USD'];
+  static const _fiatCurrencies = ['COP', 'BRL', 'PEN', 'USD', 'VES'];
 
   /// Map currency code → display symbol
   static const _currencySymbols = {
@@ -53,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'BRL': 'R\$',
     'PEN': 'S/',
     'USD': '\$',
+    'VES': 'Bs.',
   };
 
   /// Map currency code → color
@@ -61,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'BRL': Color(0xFF009739),
     'PEN': Color(0xFFD91023),
     'USD': Color(0xFF85BB65),
+    'VES': Color(0xFFF1C40F),
   };
 
   @override
@@ -144,8 +146,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               context.read<HomeCubit>().changeConvertedAmount(val);
                             }
                           },
-                          onFromCurrencyTap: () => _showCurrencyPicker(context, state.type == 0),
-                          onToCurrencyTap: () => _showCurrencyPicker(context, state.type == 1),
+                          onFromCurrencyTap: () => _showCurrencyPicker(context, isTengo: true),
+                          onToCurrencyTap: () => _showCurrencyPicker(context, isTengo: false),
                           onSwap: () {
                             context.read<HomeCubit>().toggleDirection();
                           },
@@ -249,17 +251,8 @@ class _HomeScreenState extends State<HomeScreen> {
         .join(' ');
   }
 
-  void _showCurrencyPicker(BuildContext context, bool isCryptoSelected) {
-    if (isCryptoSelected) {
-      // For Crypto, only USDT is supported correctly, just show a tooltip or ignore.
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Actualmente solo USDT está soportado.'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-      return;
-    }
+  void _showCurrencyPicker(BuildContext context, {required bool isTengo}) {
+    final allCurrencies = ['USDT', ..._fiatCurrencies];
 
     showModalBottomSheet(
       context: context,
@@ -282,12 +275,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
-              ..._fiatCurrencies.map((currency) {
+              ...allCurrencies.map((currency) {
+                final isCrypto = currency == 'USDT';
                 return ListTile(
-                  leading: const Icon(Icons.monetization_on),
-                  title: Text(currency),
+                  leading: CircleAvatar(
+                    backgroundColor: isCrypto ? const Color(0xFF26A17B) : (_currencyColors[currency] ?? const Color(0xFFFFD100)),
+                    radius: 12,
+                    child: Text(
+                      isCrypto ? '₮' : (_currencySymbols[currency] ?? '\$'),
+                      style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  title: Text(currency, style: const TextStyle(fontWeight: FontWeight.w600)),
                   onTap: () {
-                    context.read<HomeCubit>().changeFiatCurrency(currency);
+                    context.read<HomeCubit>().selectCurrency(currency, isTengo: isTengo);
                     Navigator.pop(ctx);
                   },
                 );
