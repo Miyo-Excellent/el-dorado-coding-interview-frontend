@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 
 /// **ATOM — GoldenIconButton**
@@ -32,13 +32,13 @@ class GoldenIconButton extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: AppColors.primaryContainer,
+          color: Theme.of(context).colorScheme.primaryContainer,
           shape: BoxShape.circle,
           boxShadow: AppShadows.goldenGlow(opacity: 0.20),
         ),
         child: Icon(
           icon,
-          color: AppColors.onPrimary,
+          color: Theme.of(context).colorScheme.onPrimary,
           size: iconSize,
         ),
       ),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../organisms/asset_card.dart';
 import '../molecules/section_header.dart';
@@ -76,7 +76,7 @@ class AssetList extends StatelessWidget {
                   child: Text(
                     'Ver todos',
                     style: tt.labelMedium
-                        ?.copyWith(color: AppColors.primaryContainer),
+                        ?.copyWith(color: Theme.of(context).colorScheme.primaryContainer),
                   ),
                 )
               : null,

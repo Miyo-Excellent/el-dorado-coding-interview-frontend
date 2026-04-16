@@ -42,7 +42,7 @@ class WealthCard extends StatelessWidget {
         horizontal: AppSpacing.xxl,
         vertical: AppSpacing.xxxl,
       ),
-      decoration: AppDecorations.wealthCard,
+      decoration: AppDecorations.wealthCardOf(context),
       child: Stack(
         children: [
           // ATOM: radial golden glow texture
@@ -56,7 +56,7 @@ class WealthCard extends StatelessWidget {
                 balanceLabel,
                 style: tt.labelSmall?.copyWith(
                   letterSpacing: 2,
-                  color: AppColors.onSurfaceVariant,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: AppSpacing.md),

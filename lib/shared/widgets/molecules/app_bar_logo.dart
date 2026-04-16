@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 
 /// **MOLECULE — AppBarLogo**
@@ -32,7 +32,7 @@ class AppBarLogo extends StatelessWidget {
 
     final style = size == AppBarLogoSize.headline
         ? tt.headlineSmall?.copyWith(
-            color: AppColors.primaryContainer,
+            color: Theme.of(context).colorScheme.primaryContainer,
             fontFamily: AppFonts.spaceGrotesk,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.5,
@@ -40,7 +40,7 @@ class AppBarLogo extends StatelessWidget {
         : tt.titleLarge?.copyWith(
             fontFamily: AppFonts.spaceGrotesk,
             fontWeight: FontWeight.w700,
-            color: AppColors.primary,
+            color: Theme.of(context).colorScheme.primary,
           );
 
     return Text(label, style: style);

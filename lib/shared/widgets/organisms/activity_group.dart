@@ -14,22 +14,22 @@ class ActivityItem {
     required this.status,
     required this.statusColor,
     required this.amount,
-    required this.amountColor,
+    this.amountColor,
     this.secondaryAmount,
     this.iconBgColor,
-    this.iconColor = AppColors.primary,
+    this.iconColor,
     this.strikethrough = false,
   });
 
   final IconData icon;
   final Color? iconBgColor;
-  final Color iconColor;
+  final Color? iconColor;
   final String title;
   final String time;
   final String status;
   final Color statusColor;
   final String amount;
-  final Color amountColor;
+  final Color? amountColor;
   final String? secondaryAmount;
   final bool strikethrough;
 }
@@ -64,7 +64,7 @@ class ActivityGroup extends StatelessWidget {
         // ATOM: date label
         Padding(
           padding: const EdgeInsets.only(left: 8, bottom: 12),
-          child: AppLabel(dateLabel, size: AppLabelSize.sm, color: AppColors.onSurfaceVariant),
+          child: AppLabel(dateLabel, size: AppLabelSize.sm, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         Column(
           children: [
@@ -90,7 +90,7 @@ class _ActivityItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLow,
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

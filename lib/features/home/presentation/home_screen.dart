@@ -1,77 +1,290 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/widgets.dart';
+import 'bloc/exchange_bloc.dart';
+import 'bloc/exchange_event.dart';
+import 'bloc/exchange_state.dart';
 
 /// Home / Exchange screen.
 ///
-/// All layout is delegated to the shared atomic widget library.
-/// The screen body is a single `CustomScrollView` with three slivers.
-class HomeScreen extends StatelessWidget {
+/// **MVVM pattern:**
+/// - **Model** → [OfferModel] + [RecommendationResponse]
+/// - **ViewModel** → [ExchangeBloc] (BLoC/events/states)
+/// - **View** → this widget
+///
+/// Uses [BlocBuilder] for reactive UI updates and [StatefulWidget] for
+/// local UI state (text controllers, input focus).
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _amountController = TextEditingController(text: '50');
+
+  @override
+  void initState() {
+    super.initState();
+    // Trigger initial API fetch
+    context.read<ExchangeBloc>().add(const FetchRecommendations());
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  /// Available fiat currencies for the exchange.
+  static const _fiatCurrencies = ['COP', 'BRL', 'PEN', 'USD'];
+
+  /// Map currency code → display symbol
+  static const _currencySymbols = {
+    'COP': '\$',
+    'BRL': 'R\$',
+    'PEN': 'S/',
+    'USD': '\$',
+  };
+
+  /// Map currency code → color
+  static const _currencyColors = {
+    'COP': Color(0xFFFFD100),
+    'BRL': Color(0xFF009739),
+    'PEN': Color(0xFFD91023),
+    'USD': Color(0xFF85BB65),
+  };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.surface,
-      body: CustomScrollView(
-        slivers: [
-          // ── ORGANISM: Branded App Bar ──────────────────────────────────
-          const ElDoradoSliverAppBar(variant: ElDoradoAppBarVariant.branded),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: BlocBuilder<ExchangeBloc, ExchangeState>(
+        builder: (context, state) {
+          return CustomScrollView(
+            slivers: [
+              // ── ORGANISM: Branded App Bar ──────────────────────────────
+              const ElDoradoSliverAppBar(variant: ElDoradoAppBarVariant.branded),
 
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.lg,
-              vertical: AppSpacing.xl,
-            ),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                // ── ORGANISM: Exchange Card ──────────────────────────────
-                ExchangeCard(
-                  fromAmount: '50.00',
-                  fromCurrency: 'USDT',
-                  fromColor: const Color(0xFF26A17B),
-                  fromSymbol: '₮',
-                  toAmount: '180,400.00',
-                  toCurrency: 'COP',
-                  toColor: const Color(0xFFFFD100),
-                  toSymbol: '\$',
-                  limitsText: 'Límites: 1.50 – 495.00 USDT',
-                  onSwap: () {},
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.xl,
                 ),
-                const SizedBox(height: AppSpacing.xxl),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    // ── ORGANISM: Exchange Card ──────────────────────────
+                    ExchangeCard(
+                      fromAmount: state.type == 0 ? state.amount : state.formattedConvertedAmount,
+                      fromCurrency: state.type == 0 ? 'USDT' : state.fiatCurrencyId,
+                      fromColor: state.type == 0
+                          ? const Color(0xFF26A17B)
+                          : _currencyColors[state.fiatCurrencyId] ?? const Color(0xFFFFD100),
+                      fromSymbol: state.type == 0 ? '₮' : (_currencySymbols[state.fiatCurrencyId] ?? '\$'),
+                      toAmount: state.type == 0
+                          ? state.formattedConvertedAmount
+                          : state.amount,
+                      toCurrency: state.type == 0 ? state.fiatCurrencyId : 'USDT',
+                      toColor: state.type == 0
+                          ? _currencyColors[state.fiatCurrencyId] ?? const Color(0xFFFFD100)
+                          : const Color(0xFF26A17B),
+                      toSymbol: state.type == 0 ? (_currencySymbols[state.fiatCurrencyId] ?? '\$') : '₮',
+                      limitsText: state.limitsText,
+                      onSwap: () {
+                        context.read<ExchangeBloc>().add(const DirectionToggled());
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
 
-                // ── MOLECULE: Section Header ─────────────────────────────
-                const SectionHeader(label: 'MERCADO', title: 'Mejores Ofertas'),
-                const SizedBox(height: AppSpacing.lg),
+                    // ── Currency Selector (StatefulWidget local state) ───
+                    _CurrencySelector(
+                      currencies: _fiatCurrencies,
+                      selectedCurrency: state.fiatCurrencyId,
+                      onChanged: (currency) {
+                        context.read<ExchangeBloc>().add(FiatCurrencyChanged(currency));
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.xxl),
 
-                // ── MOLECULE: Offer Tab Bar ──────────────────────────────
-                OfferTabBar(
-                  tabs: const ['💸 Mejor Precio', '⭐ Mejor Reputación'],
-                  onTabChanged: (_) {},
+                    // ── MOLECULE: Section Header ─────────────────────────
+                    const SectionHeader(label: 'MERCADO', title: 'Mejores Ofertas'),
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // ── MOLECULE: Offer Tab Bar ──────────────────────────
+                    OfferTabBar(
+                      tabs: const ['💸 Mejor Precio', '⭐ Mejor Reputación'],
+                      onTabChanged: (idx) {
+                        context.read<ExchangeBloc>().add(OfferTabChanged(idx));
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+
+                    // ── Content based on status ──────────────────────────
+                    _buildOfferContent(context, state),
+                    const SizedBox(height: AppSpacing.xxl),
+
+                    // ── ATOM: Primary CTA ────────────────────────────────
+                    PrimaryButton(
+                      label: 'Cambiar a ${state.fiatCurrencyId}',
+                      onPressed: state.status == ExchangeStatus.loaded
+                          ? () {}
+                          : null,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                  ]),
                 ),
-                const SizedBox(height: AppSpacing.md),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 
-                // ── ORGANISM: Offer Card ─────────────────────────────────
-                OfferCard(
-                  sellerInitials: 'G',
-                  sellerUsername: 'glo_cop_usdt',
-                  sellerRating: '5.0',
-                  sellerTier: 'Silver Tier',
-                  paymentMethods: const ['Nequi', 'Bancolombia', 'Plin'],
-                  rate: '3,608 COP',
-                  time: '~4 min',
-                  successRate: '98%',
-                  isSellerOnline: true,
-                  isSellerVerified: true,
-                  onTap: () {},
-                ),
-                const SizedBox(height: AppSpacing.xxl),
+  Widget _buildOfferContent(BuildContext context, ExchangeState state) {
+    switch (state.status) {
+      case ExchangeStatus.initial:
+      case ExchangeStatus.loading:
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.xxl),
+            child: CircularProgressIndicator(),
+          ),
+        );
 
-                // ── ATOM: Primary CTA ────────────────────────────────────
-                PrimaryButton(label: 'Cambiar a COP', onPressed: () {}),
-                const SizedBox(height: AppSpacing.lg),
-              ]),
-            ),
+      case ExchangeStatus.error:
+        return _ErrorCard(message: state.errorMessage);
+
+      case ExchangeStatus.empty:
+        return const _EmptyCard();
+
+      case ExchangeStatus.loaded:
+        final offer = state.activeOffer;
+        if (offer == null) return const _EmptyCard();
+
+        final stats = offer.offerMakerStats;
+        final paymentNames = offer.paymentMethods.map(_formatPaymentMethod).toList();
+
+        return OfferCard(
+          sellerInitials: offer.username.isNotEmpty ? offer.username[0].toUpperCase() : '?',
+          sellerUsername: offer.username,
+          sellerRating: stats?.rating.toString() ?? 'N/A',
+          sellerTier: stats?.tierLabel ?? 'Base Tier',
+          paymentMethods: paymentNames,
+          rate: '${offer.formattedRate} ${offer.fiatCurrencyId}',
+          time: stats?.orderTimeDisplay ?? '~? min',
+          successRate: stats?.successRatePercent ?? 'N/A',
+          isSellerOnline: offer.isOnline,
+          isSellerVerified: (stats?.tierNameCode ?? 'NO_TIER') != 'NO_TIER',
+          onTap: () {},
+        );
+    }
+  }
+
+  /// Format raw payment method IDs to readable names.
+  String _formatPaymentMethod(String raw) {
+    return raw
+        .replaceFirst('app_', '')
+        .replaceFirst('bank_', '')
+        .split('_')
+        .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : '')
+        .join(' ');
+  }
+}
+
+/// Local stateful widget for selecting fiat currency.
+/// Uses StatefulWidget for local UI state (expansion, animation).
+class _CurrencySelector extends StatelessWidget {
+  final List<String> currencies;
+  final String selectedCurrency;
+  final ValueChanged<String> onChanged;
+
+  const _CurrencySelector({
+    required this.currencies,
+    required this.selectedCurrency,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: AppSpacing.sm,
+      children: currencies.map((currency) {
+        final isSelected = currency == selectedCurrency;
+        return ChoiceChip(
+          label: Text(currency),
+          selected: isSelected,
+          onSelected: (selected) {
+            if (selected) onChanged(currency);
+          },
+        );
+      }).toList(),
+    );
+  }
+}
+
+/// Error state card.
+class _ErrorCard extends StatelessWidget {
+  final String message;
+  const _ErrorCard({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.errorContainer.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error, size: 48),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'Error al obtener ofertas',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            message,
+            style: Theme.of(context).textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Empty state card — no offers available.
+class _EmptyCard extends StatelessWidget {
+  const _EmptyCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.inbox_outlined,
+              color: Theme.of(context).colorScheme.onSurfaceVariant, size: 48),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'Sin ofertas disponibles',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            'No hay liquidez para este par de moneda. Prueba con otro monto o divisa.',
+            style: Theme.of(context).textTheme.bodySmall,
+            textAlign: TextAlign.center,
           ),
         ],
       ),

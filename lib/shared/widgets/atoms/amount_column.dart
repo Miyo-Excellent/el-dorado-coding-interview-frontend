@@ -17,19 +17,20 @@ class AmountColumn extends StatelessWidget {
   const AmountColumn({
     super.key,
     required this.amount,
-    this.amountColor = AppColors.primary,
+    this.amountColor,
     this.secondaryAmount,
     this.strikethrough = false,
   });
 
   final String amount;
-  final Color amountColor;
+  final Color? amountColor;
   final String? secondaryAmount;
   final bool strikethrough;
 
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
+    final resolvedColor = amountColor ?? Theme.of(context).colorScheme.onSurface;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -39,16 +40,16 @@ class AmountColumn extends StatelessWidget {
           style: tt.titleSmall?.copyWith(
             fontFamily: AppFonts.spaceGrotesk,
             fontWeight: FontWeight.w700,
-            color: amountColor,
+            color: resolvedColor,
             decoration: strikethrough ? TextDecoration.lineThrough : null,
-            decorationColor: amountColor,
+            decorationColor: resolvedColor,
           ),
         ),
         if (secondaryAmount != null) ...[
           const SizedBox(height: 2),
           Text(
             secondaryAmount!,
-            style: tt.bodySmall?.copyWith(color: AppColors.secondary),
+            style: tt.bodySmall?.copyWith(color: Theme.of(context).colorScheme.secondary),
           ),
         ],
       ],

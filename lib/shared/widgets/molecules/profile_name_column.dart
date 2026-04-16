@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 
 /// **MOLECULE — ProfileNameColumn**
@@ -39,7 +39,7 @@ class ProfileNameColumn extends StatelessWidget {
           Text(
             'VERIFIED',
             style: tt.labelSmall?.copyWith(
-              color: AppColors.primaryContainer,
+              color: Theme.of(context).colorScheme.primaryContainer,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.5,
             ),

@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 /// **ATOM — AppLabel**
 ///
@@ -24,7 +23,7 @@ class AppLabel extends StatelessWidget {
   final String text;
   final AppLabelSize size;
 
-  /// Defaults to [AppColors.onSurfaceVariant] for sm, [AppColors.onSurface] for md.
+  /// Defaults to [Theme.of(context).colorScheme.onSurfaceVariant] for sm, [Theme.of(context).colorScheme.onSurface] for md.
   final Color? color;
 
   @override
@@ -32,8 +31,8 @@ class AppLabel extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     final style = size == AppLabelSize.sm ? tt.labelSmall : tt.labelMedium;
     final defaultColor = size == AppLabelSize.sm
-        ? AppColors.onSurfaceVariant
-        : AppColors.onSurface;
+        ? Theme.of(context).colorScheme.onSurfaceVariant
+        : Theme.of(context).colorScheme.onSurface;
 
     return Text(
       text.toUpperCase(),

@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 /// **ATOM — BalanceDisplay**
 ///
@@ -35,7 +34,7 @@ class BalanceDisplay extends StatelessWidget {
           TextSpan(
             text: currency,
             style: tt.titleLarge?.copyWith(
-              color: AppColors.onSurfaceVariant,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontSize: 20,
             ),
           ),

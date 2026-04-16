@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 
 /// **ATOM — UnderlineTab**
@@ -43,8 +43,8 @@ class UnderlineTab extends StatelessWidget {
             style: tt.labelLarge?.copyWith(
               fontFamily: AppFonts.spaceGrotesk,
               color: isActive
-                  ? AppColors.primaryContainer
-                  : AppColors.onSurfaceVariant,
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 4),
@@ -55,7 +55,7 @@ class UnderlineTab extends StatelessWidget {
             height: 2,
             width: isActive ? indicatorWidth : 0,
             decoration: BoxDecoration(
-              color: AppColors.primaryContainer,
+              color: Theme.of(context).colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(AppRadius.full),
             ),
           ),

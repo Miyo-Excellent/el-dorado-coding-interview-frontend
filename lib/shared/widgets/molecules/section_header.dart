@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 /// **MOLECULE — SectionHeader**
 ///
@@ -32,7 +31,7 @@ class SectionHeader extends StatelessWidget {
     final labelWidget = Text(
       label.toUpperCase(),
       style: tt.labelSmall?.copyWith(
-        color: AppColors.onSurfaceVariant,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
         letterSpacing: 1.5,
       ),
     );

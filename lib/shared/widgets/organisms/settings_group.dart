@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../atoms/app_label.dart';
 import '../molecules/setting_item.dart';
@@ -38,14 +38,14 @@ class SettingsGroup extends StatelessWidget {
           child: AppLabel(
             headline,
             size: AppLabelSize.sm,
-            color: AppColors.onSurfaceVariant,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         // Items container — tonal elevation via background shift
         Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainerLow,
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
             borderRadius: BorderRadius.circular(AppRadius.lg),
             boxShadow: AppShadows.medium,
           ),

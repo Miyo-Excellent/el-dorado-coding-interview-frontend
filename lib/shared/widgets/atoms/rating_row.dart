@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 /// **ATOM — RatingRow**
 ///
@@ -22,7 +21,7 @@ class RatingRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-    final mutedColor = AppColors.onSurfaceVariant;
+    final mutedColor = Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Row(
       children: [

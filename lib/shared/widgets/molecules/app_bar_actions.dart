@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../atoms/user_avatar_button.dart';
 
@@ -28,7 +28,7 @@ class AppBarActions extends StatelessWidget {
         IconButton(
           icon: Icon(
             Icons.notifications_outlined,
-            color: AppColors.primary.withValues(alpha: 0.6),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
           ),
           onPressed: onNotificationTap,
         ),

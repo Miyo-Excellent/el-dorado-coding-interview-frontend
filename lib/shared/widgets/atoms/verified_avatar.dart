@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 /// **ATOM — VerifiedAvatar**
 ///
@@ -38,7 +37,7 @@ class VerifiedAvatar extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: radius,
-            backgroundColor: AppColors.surfaceContainerHigh,
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
             child: Text(
               initials,
               style: tt.headlineSmall?.copyWith(fontSize: radius * 0.8125),
@@ -51,14 +50,14 @@ class VerifiedAvatar extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryContainer,
+                  color: Theme.of(context).colorScheme.primaryContainer,
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.surface, width: 2),
+                  border: Border.all(color: Theme.of(context).colorScheme.surface, width: 2),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.check,
                   size: 10,
-                  color: AppColors.onPrimary,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
             ),

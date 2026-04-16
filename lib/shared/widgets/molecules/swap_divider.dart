@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../atoms/golden_icon_button.dart';
 
@@ -20,7 +20,7 @@ class SwapDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dividerColor = AppColors.outlineVariant.withValues(alpha: 0.4);
+    final dividerColor = Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4);
 
     return Row(
       children: [

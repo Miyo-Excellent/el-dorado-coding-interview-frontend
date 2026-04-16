@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 /// **ATOM — AmbientGlowBackground**
 ///
@@ -40,7 +39,7 @@ class AmbientGlowBackground extends StatelessWidget {
               center: alignment,
               radius: radius,
               colors: [
-                AppColors.primaryContainer.withValues(alpha: opacity),
+                Theme.of(context).colorScheme.primaryContainer.withValues(alpha: opacity),
                 Colors.transparent,
               ],
             ),

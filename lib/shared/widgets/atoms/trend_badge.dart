@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 
 /// **ATOM — TrendBadge**
@@ -24,7 +24,7 @@ class TrendBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = isPositive
         ? AppColors.primaryFixedDim // #C3D000 — golden dim
-        : AppColors.error;
+        : Theme.of(context).colorScheme.error;
     final icon = isPositive ? Icons.trending_up : Icons.trending_down;
 
     return Row(

@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 import '../atoms/title_subtitle_column.dart';
 import '../atoms/time_status_row.dart';
 
@@ -41,7 +40,7 @@ class ActivityTitleMeta extends StatelessWidget {
         Text(
           title,
           style: tt.bodyLarge?.copyWith(
-            color: AppColors.primary,
+            color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.w500,
           ),
         ),

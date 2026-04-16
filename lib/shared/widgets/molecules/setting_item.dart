@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../atoms/setting_item_trailing.dart';
 
@@ -35,15 +35,15 @@ class SettingItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-    final iconColor = isDestructive ? AppColors.error : AppColors.primaryContainer;
-    final labelColor = isDestructive ? AppColors.error : AppColors.primary;
+    final iconColor = isDestructive ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primaryContainer;
+    final labelColor = isDestructive ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        splashColor: AppColors.surfaceContainerHigh,
+        splashColor: Theme.of(context).colorScheme.surfaceContainerHigh,
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg,

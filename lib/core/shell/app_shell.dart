@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/app_theme.dart';
 import '../router/app_router.dart';
 import '../../shared/widgets/widgets.dart';
 
@@ -57,7 +56,7 @@ class AppShell extends StatelessWidget {
     final currentIndex = _locationToIndex(location);
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: child,
       // ── ORGANISM: Electric Alchemist Navigation Bar ───────────────────
       bottomNavigationBar: ElDoradoNavBar(

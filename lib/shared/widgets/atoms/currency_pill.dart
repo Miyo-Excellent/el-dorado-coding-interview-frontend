@@ -41,7 +41,7 @@ class CurrencyPill extends StatelessWidget {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: AppColors.surfaceContainerHighest,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(AppRadius.full),
         ),
         child: Row(
@@ -51,13 +51,13 @@ class CurrencyPill extends StatelessWidget {
             const SizedBox(width: 6),
             Text(
               code,
-              style: tt.titleSmall?.copyWith(color: AppColors.primary),
+              style: tt.titleSmall?.copyWith(color: Theme.of(context).colorScheme.primary),
             ),
             const SizedBox(width: 4),
-            const Icon(
+            Icon(
               Icons.expand_more,
               size: 16,
-              color: AppColors.onSurfaceVariant,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ],
         ),

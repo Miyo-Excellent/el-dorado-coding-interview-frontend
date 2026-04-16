@@ -34,12 +34,12 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         child: isLoading
-            ? const SizedBox(
+            ? SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: AppColors.onPrimary,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               )
             : Text(
@@ -47,7 +47,7 @@ class PrimaryButton extends StatelessWidget {
                 style: tt.titleMedium?.copyWith(
                   fontFamily: AppFonts.spaceGrotesk,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.onPrimary,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 17,
                 ),
               ),

@@ -24,7 +24,7 @@ import '../molecules/app_bar_actions.dart';
 /// ElDoradoSliverAppBar(
 ///   variant: ElDoradoAppBarVariant.page,
 ///   title: 'Ajustes',
-///   titleColor: AppColors.primaryContainer,
+///   titleColor: Theme.of(context).colorScheme.primaryContainer,
 ///   leadingIcon: Icons.arrow_back,
 /// )
 /// ```
@@ -64,7 +64,7 @@ class ElDoradoSliverAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-    final bg = AppColors.surface.withValues(alpha: backgroundOpacity);
+    final bg = Theme.of(context).colorScheme.surface.withValues(alpha: backgroundOpacity);
 
     switch (variant) {
       // ── BRANDED (Home) ──────────────────────────────────────────────────
@@ -94,10 +94,10 @@ class ElDoradoSliverAppBar extends StatelessWidget {
             child: GestureDetector(
               onTap: onAvatarTap,
               child: CircleAvatar(
-                backgroundColor: AppColors.surfaceContainerHigh,
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
                 child: Icon(
                   Icons.person_outline,
-                  color: AppColors.primary.withValues(alpha: 0.8),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
                 ),
               ),
             ),
@@ -151,13 +151,13 @@ class _WalletNotificationAction extends StatelessWidget {
         margin: const EdgeInsets.only(right: AppSpacing.lg),
         width: 40,
         height: 40,
-        decoration: const BoxDecoration(
-          color: AppColors.surfaceContainerHigh,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
           shape: BoxShape.circle,
         ),
-        child: const Icon(
+        child: Icon(
           Icons.notifications_outlined,
-          color: AppColors.primaryContainer,
+          color: Theme.of(context).colorScheme.primaryContainer,
         ),
       ),
     );

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../atoms/currency_pill.dart';
 
@@ -47,7 +47,7 @@ class CurrencyRow extends StatelessWidget {
         Text(
           label,
           style: tt.labelSmall?.copyWith(
-            color: AppColors.onSurfaceVariant,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             letterSpacing: 1.5,
           ),
         ),
@@ -61,7 +61,7 @@ class CurrencyRow extends StatelessWidget {
                 amount,
                 style: tt.displaySmall?.copyWith(
                   fontSize: 32,
-                  color: AppColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),

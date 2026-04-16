@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 
 /// **MOLECULE — FilterPill**
@@ -38,8 +38,8 @@ class FilterPill extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: isActive
-              ? AppColors.primaryContainer.withValues(alpha: 0.10)
-              : AppColors.surfaceContainerLow,
+              ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.10)
+              : Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(AppRadius.full),
           boxShadow: isActive ? AppShadows.goldenGlow(opacity: 0.10) : null,
         ),
@@ -48,8 +48,8 @@ class FilterPill extends StatelessWidget {
           style: tt.labelSmall?.copyWith(
             fontFamily: AppFonts.spaceGrotesk,
             color: isActive
-                ? AppColors.primaryContainer
-                : AppColors.onSurfaceVariant,
+                ? Theme.of(context).colorScheme.primaryContainer
+                : Theme.of(context).colorScheme.onSurfaceVariant,
             letterSpacing: 1.2,
           ),
         ),

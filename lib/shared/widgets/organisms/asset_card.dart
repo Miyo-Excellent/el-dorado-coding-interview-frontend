@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../atoms/circle_icon_container.dart';
 import '../atoms/title_subtitle_column.dart';
@@ -48,7 +48,7 @@ class AssetCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.lg + 4),
         decoration: BoxDecoration(
-          color: AppColors.surfaceContainerHigh,
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
         child: Row(

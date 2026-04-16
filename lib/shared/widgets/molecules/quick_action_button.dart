@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../atoms/golden_icon_button.dart';
 
@@ -38,7 +38,7 @@ class QuickActionButton extends StatelessWidget {
         const SizedBox(height: AppSpacing.md - 2),
         Text(
           label,
-          style: tt.labelMedium?.copyWith(color: AppColors.primary),
+          style: tt.labelMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
         ),
       ],
     );

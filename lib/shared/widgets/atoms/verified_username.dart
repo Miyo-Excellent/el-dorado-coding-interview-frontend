@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 /// **ATOM — VerifiedUsername**
 ///
@@ -29,14 +28,14 @@ class VerifiedUsername extends StatelessWidget {
       children: [
         Text(
           username,
-          style: tt.titleSmall?.copyWith(color: AppColors.primary),
+          style: tt.titleSmall?.copyWith(color: Theme.of(context).colorScheme.primary),
         ),
         if (isVerified) ...[
           const SizedBox(width: 4),
-          const Icon(
+          Icon(
             Icons.verified,
             size: 14,
-            color: AppColors.primaryContainer,
+            color: Theme.of(context).colorScheme.primaryContainer,
           ),
         ],
       ],

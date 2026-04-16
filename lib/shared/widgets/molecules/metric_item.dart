@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 /// **MOLECULE — MetricItem**
 ///
@@ -9,7 +8,7 @@ import '../../../core/theme/app_theme.dart';
 ///
 /// ```dart
 /// MetricItem(label: 'Tasa',   value: '3,608 COP')
-/// MetricItem(label: 'Éxito',  value: '98%', valueColor: AppColors.primaryContainer)
+/// MetricItem(label: 'Éxito',  value: '98%', valueColor: Theme.of(context).colorScheme.primaryContainer)
 /// MetricItem(label: 'Tiempo', value: '~4 min', align: CrossAxisAlignment.center)
 /// ```
 class MetricItem extends StatelessWidget {
@@ -17,13 +16,13 @@ class MetricItem extends StatelessWidget {
     super.key,
     required this.label,
     required this.value,
-    this.valueColor = AppColors.primary,
+    this.valueColor,
     this.align = CrossAxisAlignment.start,
   });
 
   final String label;
   final String value;
-  final Color valueColor;
+  final Color? valueColor;
   final CrossAxisAlignment align;
 
   @override
@@ -36,7 +35,7 @@ class MetricItem extends StatelessWidget {
         Text(
           label,
           style: tt.bodySmall?.copyWith(
-            color: AppColors.onSurfaceVariant.withValues(alpha: 0.7),
+            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
           ),
         ),
         const SizedBox(height: 2),
@@ -44,7 +43,7 @@ class MetricItem extends StatelessWidget {
           value,
           style: tt.labelMedium?.copyWith(
             fontWeight: FontWeight.w600,
-            color: valueColor,
+            color: valueColor ?? Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],

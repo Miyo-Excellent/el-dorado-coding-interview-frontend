@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 /// **ATOM — UserAvatarButton**
 ///
@@ -22,11 +21,11 @@ class UserAvatarButton extends StatelessWidget {
       onTap: onTap,
       child: CircleAvatar(
         radius: radius,
-        backgroundColor: AppColors.surfaceContainerHigh,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
         child: Icon(
           Icons.person_outline,
           size: radius * 1.125,
-          color: AppColors.primary.withValues(alpha: 0.6),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
         ),
       ),
     );

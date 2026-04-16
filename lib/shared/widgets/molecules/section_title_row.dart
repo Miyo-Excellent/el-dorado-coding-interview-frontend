@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 /// **MOLECULE — SectionTitleRow**
 ///
@@ -38,7 +37,7 @@ class SectionTitleRow extends StatelessWidget {
             child: Text(
               linkLabel,
               style: tt.labelMedium?.copyWith(
-                color: AppColors.primaryContainer,
+                color: Theme.of(context).colorScheme.primaryContainer,
               ),
             ),
           ),

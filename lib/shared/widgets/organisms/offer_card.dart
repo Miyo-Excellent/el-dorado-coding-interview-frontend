@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../atoms/payment_method_chip.dart';
 import '../molecules/metric_item.dart';
@@ -59,7 +59,7 @@ class OfferCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.lg + 4),
         decoration: BoxDecoration(
-          color: AppColors.surfaceContainerLow,
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
         child: Column(
@@ -88,7 +88,7 @@ class OfferCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: AppColors.surfaceContainer,
+                color: Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(AppRadius.md),
               ),
               child: Row(
@@ -103,7 +103,7 @@ class OfferCard extends StatelessWidget {
                   MetricItem(
                     label: 'Éxito',
                     value: successRate,
-                    valueColor: AppColors.primaryContainer,
+                    valueColor: Theme.of(context).colorScheme.primaryContainer,
                     align: CrossAxisAlignment.end,
                   ),
                 ],

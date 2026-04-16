@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 /// **ATOM — SettingItemTrailing**
 ///
@@ -31,14 +30,14 @@ class SettingItemTrailing extends StatelessWidget {
         if (label != null) ...[
           Text(
             label!,
-            style: tt.bodySmall?.copyWith(color: AppColors.onSurfaceVariant),
+            style: tt.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
           const SizedBox(width: 4),
         ],
         if (showChevron)
-          const Icon(
+          Icon(
             Icons.chevron_right,
-            color: AppColors.onSurfaceVariant,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             size: 20,
           ),
       ],

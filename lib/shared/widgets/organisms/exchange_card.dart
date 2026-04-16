@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import '../molecules/currency_row.dart';
 import '../molecules/swap_divider.dart';
@@ -56,7 +56,7 @@ class ExchangeCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerHigh,
+        color: Theme.of(context).colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(AppRadius.xl),
       ),
       child: Stack(
@@ -70,7 +70,7 @@ class ExchangeCard extends StatelessWidget {
                   center: Alignment.topLeft,
                   radius: 1.2,
                   colors: [
-                    AppColors.primaryContainer.withValues(alpha: 0.05),
+                    Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.05),
                     Colors.transparent,
                   ],
                 ),
@@ -108,7 +108,7 @@ class ExchangeCard extends StatelessWidget {
                   const SizedBox(height: AppSpacing.lg),
                   Text(
                     limitsText!,
-                    style: tt.bodySmall?.copyWith(color: AppColors.onSurfaceVariant),
+                    style: tt.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 ],
               ],

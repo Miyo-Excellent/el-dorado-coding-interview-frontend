@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 /// **ATOM — TitleSubtitleColumn**
 ///
@@ -29,7 +28,7 @@ class TitleSubtitleColumn extends StatelessWidget {
         Text(
           title,
           style: tt.bodyLarge?.copyWith(
-            color: AppColors.primary,
+            color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.w500,
           ),
         ),

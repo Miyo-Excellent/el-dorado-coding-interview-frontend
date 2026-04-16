@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+﻿import 'package:flutter/material.dart';
 
 /// **ATOM — CircleIconContainer**
 ///
@@ -17,14 +16,14 @@ class CircleIconContainer extends StatelessWidget {
     this.size = 40,
     this.iconSize = 18,
     this.bgColor,
-    this.iconColor = AppColors.primary,
+    this.iconColor,
   });
 
   final IconData icon;
   final double size;
   final double iconSize;
   final Color? bgColor;
-  final Color iconColor;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +31,10 @@ class CircleIconContainer extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: bgColor ?? AppColors.surfaceContainerHighest,
+        color: bgColor ?? Theme.of(context).colorScheme.surfaceContainerHighest,
         shape: BoxShape.circle,
       ),
-      child: Icon(icon, color: iconColor, size: iconSize),
+      child: Icon(icon, color: iconColor ?? Theme.of(context).colorScheme.onSurface, size: iconSize),
     );
   }
 }

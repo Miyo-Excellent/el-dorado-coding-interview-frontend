@@ -23,13 +23,13 @@ class NotificationIconButton extends StatelessWidget {
         margin: const EdgeInsets.only(right: AppSpacing.lg),
         width: 40,
         height: 40,
-        decoration: const BoxDecoration(
-          color: AppColors.surfaceContainerHigh,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
           shape: BoxShape.circle,
         ),
-        child: const Icon(
+        child: Icon(
           Icons.notifications_outlined,
-          color: AppColors.primaryContainer,
+          color: Theme.of(context).colorScheme.primaryContainer,
         ),
       ),
     );

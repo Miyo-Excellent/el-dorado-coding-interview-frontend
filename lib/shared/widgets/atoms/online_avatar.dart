@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import 'status_dot.dart';
 
@@ -37,10 +37,10 @@ class OnlineAvatar extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: radius,
-          backgroundColor: AppColors.surfaceContainerHigh,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
           child: Text(
             initials,
-            style: tt.titleMedium?.copyWith(color: AppColors.primary),
+            style: tt.titleMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
           ),
         ),
         if (isOnline)

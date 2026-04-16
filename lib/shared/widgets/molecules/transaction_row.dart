@@ -28,21 +28,21 @@ class TransactionRow extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.amount,
-    this.amountColor = AppColors.primary,
+    this.amountColor,
     this.secondaryAmount,
     this.iconBgColor,
-    this.iconColor = AppColors.primary,
+    this.iconColor,
     this.strikethrough = false,
     this.onTap,
   });
 
   final IconData icon;
   final Color? iconBgColor;
-  final Color iconColor;
+  final Color? iconColor;
   final String title;
   final String subtitle;
   final String amount;
-  final Color amountColor;
+  final Color? amountColor;
   final String? secondaryAmount;
   final bool strikethrough;
   final VoidCallback? onTap;

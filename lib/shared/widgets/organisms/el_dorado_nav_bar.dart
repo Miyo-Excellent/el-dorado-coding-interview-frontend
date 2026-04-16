@@ -55,7 +55,7 @@ class ElDoradoNavBar extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: 0.9),
+        color: Theme.of(context).colorScheme.surfaceContainerLow.withValues(alpha: 0.95),
         boxShadow: AppShadows.navBar,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(32),
@@ -115,7 +115,7 @@ class _NavPill extends StatelessWidget {
             : const EdgeInsets.all(AppSpacing.md - 2),
         decoration: isActive
             ? BoxDecoration(
-                color: AppColors.primaryContainer,
+                color: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(AppRadius.full),
                 boxShadow: AppShadows.goldenGlow(opacity: 0.30),
               )
@@ -124,8 +124,8 @@ class _NavPill extends StatelessWidget {
           isActive ? item.selectedIcon : item.icon,
           size: 24,
           color: isActive
-              ? AppColors.onPrimary
-              : AppColors.primary.withValues(alpha: 0.4),
+              ? Theme.of(context).colorScheme.onPrimaryContainer
+              : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
         ),
       ),
     );

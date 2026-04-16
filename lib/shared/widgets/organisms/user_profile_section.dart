@@ -41,30 +41,41 @@ class UserProfileSection extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            // ATOM: verified avatar with badge
-            VerifiedAvatar(
-              initials: initials,
-              isVerified: isVerified,
-              onTap: onAvatarTap,
-            ),
-            const SizedBox(width: AppSpacing.lg),
-            // MOLECULE: username + VERIFIED label
-            ProfileNameColumn(username: username, isVerified: isVerified),
-          ],
+        Expanded(
+          child: Row(
+            children: [
+              // ATOM: verified avatar with badge
+              VerifiedAvatar(
+                initials: initials,
+                isVerified: isVerified,
+                onTap: onAvatarTap,
+              ),
+              const SizedBox(width: AppSpacing.lg),
+              // MOLECULE: username + VERIFIED label
+              Flexible(
+                child: ProfileNameColumn(username: username, isVerified: isVerified),
+              ),
+            ],
+          ),
         ),
         // View profile link
         if (onViewProfile != null)
           TextButton(
             onPressed: onViewProfile,
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.primaryContainer,
+              textStyle: tt.labelMedium,
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
             child: Text(
               'Ver Perfil',
               style: tt.labelMedium?.copyWith(
-                color: AppColors.primaryContainer,
+                color: Theme.of(context).colorScheme.primaryContainer,
                 decoration: TextDecoration.underline,
                 decorationColor:
-                    AppColors.primaryContainer.withValues(alpha: 0.4),
+                    Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.4),
               ),
             ),
           ),
