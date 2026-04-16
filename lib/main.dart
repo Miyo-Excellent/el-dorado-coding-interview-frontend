@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'core/di/injection_container.dart';
-import 'core/router/app_router.dart';
-import 'core/storage/hive_storage.dart';
-import 'core/theme/app_theme.dart';
-import 'core/theme/theme_cubit.dart';
-import 'features/home/presentation/bloc/exchange_bloc.dart';
-import 'features/wallet/presentation/cubit/wallet_cubit.dart';
-import 'features/activity/presentation/cubit/activity_cubit.dart';
+import 'domain/di/injection_container.dart';
+import 'infrastructure/router/app_router.dart';
+import 'infrastructure/storage/hive_storage.dart';
+import 'infrastructure/ui/theme/app_theme.dart';
+import 'infrastructure/data/cubits/theme/theme_cubit.dart';
+import 'infrastructure/data/blocs/home/exchange_bloc.dart';
+import 'infrastructure/data/cubits/wallet/wallet_cubit.dart';
+import 'infrastructure/data/cubits/activity/activity_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
