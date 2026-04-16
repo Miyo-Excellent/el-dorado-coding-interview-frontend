@@ -113,6 +113,35 @@ class HomeCubit extends Cubit<HomeState> {
     fetchRecommendations();
   }
 
+  /// Updates the converted amount (reverse calculation).
+  void changeConvertedAmount(String newConvertedObj) {
+    final val = double.tryParse(newConvertedObj.replaceAll(',', '')) ?? 0.0;
+    final activeRate = _getActiveRate(state.byPrice, state.byReputation);
+    if (activeRate == 0) return;
+
+    double newBase = 0;
+    if (state.type == 0) {
+      // CRYPTO -> FIAT. newConvertedObj is FIAT.
+      // Fiat = Crypto * Rate => Crypto = Fiat / Rate
+      newBase = val / activeRate;
+    } else {
+      // FIAT -> CRYPTO. newConvertedObj is CRYPTO.
+      // Crypto = Fiat / Rate => Fiat = Crypto * Rate
+      newBase = val * activeRate;
+    }
+
+    // Keep crypto amount to sensible decimals
+    final newAmountStr = newBase.toStringAsFixed(newBase.truncateToDouble() == newBase ? 0 : 2);
+    
+    emit(state.copyWith(
+      amount: newAmountStr,
+      // We purposefully don't override convertedAmount directly in state 
+      // because `convertedAmount` mathematically comes from `amount * rate`.
+      // The listener handles text field typing.
+    ));
+    fetchRecommendations();
+  }
+
   /// Toggles the exchange direction (buy/sell).
   void toggleDirection() {
     final newType = state.type == 0 ? 1 : 0;

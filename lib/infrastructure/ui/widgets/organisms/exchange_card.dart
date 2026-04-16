@@ -33,8 +33,10 @@ class ExchangeCard extends StatelessWidget {
     required this.toSymbol,
     this.limitsText,
     this.fromAmountController,
-    this.onFromAmountChanged,
     this.toAmountController,
+    this.fromFocusNode,
+    this.toFocusNode,
+    this.onFromAmountChanged,
     this.onToAmountChanged,
     this.onSwap,
     this.onFromCurrencyTap,
@@ -51,8 +53,10 @@ class ExchangeCard extends StatelessWidget {
   final String toSymbol;
   final String? limitsText;
   final TextEditingController? fromAmountController;
-  final ValueChanged<String>? onFromAmountChanged;
   final TextEditingController? toAmountController;
+  final FocusNode? fromFocusNode;
+  final FocusNode? toFocusNode;
+  final ValueChanged<String>? onFromAmountChanged;
   final ValueChanged<String>? onToAmountChanged;
   final VoidCallback? onSwap;
   final VoidCallback? onFromCurrencyTap;
@@ -101,6 +105,7 @@ class ExchangeCard extends StatelessWidget {
                   currencySymbol: fromSymbol,
                   isInput: true,
                   amountController: fromAmountController,
+                  focusNode: fromFocusNode,
                   onAmountChanged: onFromAmountChanged,
                   onCurrencyTap: onFromCurrencyTap,
                 ),
@@ -117,6 +122,7 @@ class ExchangeCard extends StatelessWidget {
                   currencySymbol: toSymbol,
                   isInput: true,
                   amountController: toAmountController,
+                  focusNode: toFocusNode,
                   onAmountChanged: onToAmountChanged,
                   onCurrencyTap: onToCurrencyTap,
                 ),

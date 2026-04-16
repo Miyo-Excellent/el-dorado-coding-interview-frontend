@@ -23,8 +23,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _tengoController = TextEditingController(text: '50');
+  final _tengoController = TextEditingController();
   final _quieroController = TextEditingController();
+  final _tengoFocus = FocusNode();
+  final _quieroFocus = FocusNode();
 
   @override
   void initState() {
@@ -35,6 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    _tengoFocus.dispose();
+    _quieroFocus.dispose();
     _tengoController.dispose();
     _quieroController.dispose();
     super.dispose();
@@ -65,11 +69,12 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: BlocConsumer<HomeCubit, HomeState>(
         listener: (context, state) {
-          // Sync controllers with state without triggering onChanged loops
-          if (_tengoController.text != state.amount) {
+          // Sync controllers with state without triggering onChanged loops,
+          // and respect user typing by not overwriting focused text fields.
+          if (!_tengoFocus.hasFocus && _tengoController.text != state.amount) {
             _tengoController.text = state.amount;
           }
-          if (_quieroController.text != state.formattedConvertedAmount) {
+          if (!_quieroFocus.hasFocus && _quieroController.text != state.formattedConvertedAmount) {
             _quieroController.text = state.formattedConvertedAmount;
           }
         },
@@ -127,13 +132,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           limitsText: state.limitsText,
                           fromAmountController: _tengoController,
                           toAmountController: _quieroController,
+                          fromFocusNode: _tengoFocus,
+                          toFocusNode: _quieroFocus,
                           onFromAmountChanged: (val) {
                             if (val.isNotEmpty) {
                               context.read<HomeCubit>().changeAmount(val);
                             }
                           },
                           onToAmountChanged: (val) {
-                            // Optionally handle reverse calculation here
+                            if (val.isNotEmpty) {
+                              context.read<HomeCubit>().changeConvertedAmount(val);
+                            }
                           },
                           onFromCurrencyTap: () => _showCurrencyPicker(context, state.type == 0),
                           onToCurrencyTap: () => _showCurrencyPicker(context, state.type == 1),

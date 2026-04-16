@@ -28,6 +28,7 @@ class CurrencyRow extends StatefulWidget {
     required this.currencySymbol,
     this.isInput = false,
     this.amountController,
+    this.focusNode,
     this.onAmountChanged,
     this.onCurrencyTap,
   });
@@ -39,6 +40,7 @@ class CurrencyRow extends StatefulWidget {
   final String currencySymbol;
   final bool isInput;
   final TextEditingController? amountController;
+  final FocusNode? focusNode;
   final ValueChanged<String>? onAmountChanged;
   final VoidCallback? onCurrencyTap;
 
@@ -96,6 +98,7 @@ class _CurrencyRowState extends State<CurrencyRow> {
                   child: widget.isInput
                       ? TextField(
                           controller: widget.amountController,
+                          focusNode: widget.focusNode,
                           onChanged: widget.onAmountChanged,
                           keyboardType: const TextInputType.numberWithOptions(
                               decimal: true),
