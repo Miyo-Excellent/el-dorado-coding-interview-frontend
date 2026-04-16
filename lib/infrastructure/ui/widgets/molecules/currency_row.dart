@@ -18,7 +18,7 @@ import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/at
 ///   currencySymbol: '₮',
 /// )
 /// ```
-class CurrencyRow extends StatelessWidget {
+class CurrencyRow extends StatefulWidget {
   const CurrencyRow({
     super.key,
     required this.label,
@@ -43,59 +43,97 @@ class CurrencyRow extends StatelessWidget {
   final VoidCallback? onCurrencyTap;
 
   @override
+  State<CurrencyRow> createState() => _CurrencyRowState();
+}
+
+class _CurrencyRowState extends State<CurrencyRow> {
+  bool _isFocused = false;
+
+  @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Uppercase label
-        Text(
-          label,
-          style: tt.labelSmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-            letterSpacing: 1.5,
+    return Focus(
+      onFocusChange: (hasFocus) {
+        setState(() {
+          _isFocused = hasFocus;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(
+            color: _isFocused
+                ? colorScheme.primaryContainer.withValues(alpha: 0.4)
+                : Colors.transparent,
+            width: 2,
           ),
         ),
-        const SizedBox(height: AppSpacing.sm),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Amount display
-            Expanded(
-              child: isInput 
-                ? TextField(
-                    controller: amountController,
-                    onChanged: onAmountChanged,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    style: tt.displaySmall?.copyWith(
-                      fontSize: 32,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  )
-                : Text(
-                    amount,
-                    style: tt.displaySmall?.copyWith(
-                      fontSize: 32,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
+            // Helper Text / Uppercase label
+            Text(
+              widget.label,
+              style: tt.labelSmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                letterSpacing: 1.5,
+              ),
             ),
-            // ATOM: currency pill selector
-            CurrencyPill(
-              color: currencyColor,
-              symbol: currencySymbol,
-              code: currencyCode,
-              onTap: onCurrencyTap,
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Amount display
+                Expanded(
+                  child: widget.isInput
+                      ? TextField(
+                          controller: widget.amountController,
+                          onChanged: widget.onAmountChanged,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                          style: tt.displaySmall?.copyWith(
+                            fontSize: 32,
+                            color: colorScheme.primary,
+                          ),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                            filled: false,
+                            hoverColor: Colors.transparent,
+                          ),
+                        )
+                      : Text(
+                          widget.amount,
+                          style: tt.displaySmall?.copyWith(
+                            fontSize: 32,
+                            color: colorScheme.primary,
+                          ),
+                        ),
+                ),
+                // ATOM: currency pill selector
+                CurrencyPill(
+                  color: widget.currencyColor,
+                  symbol: widget.currencySymbol,
+                  code: widget.currencyCode,
+                  onTap: widget.onCurrencyTap,
+                ),
+              ],
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 }
+
