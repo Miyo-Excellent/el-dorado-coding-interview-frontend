@@ -27,20 +27,20 @@ abstract final class GsDarkColors {
   static const Color primary = Color(0xFFFFB400);
   /// #191C1D — Charcoal for text on gold.
   static const Color onPrimary = Color(0xFF191C1D);
-  /// #3D2C00 — Deep amber container on dark.
-  static const Color primaryContainer = Color(0xFF3D2C00);
-  /// #FFDFA0 — Warm text on dark gold container.
-  static const Color onPrimaryContainer = Color(0xFFFFDFA0);
+  /// #FFB400 — Deep amber container on dark.
+  static const Color primaryContainer = Color(0xFFFFB400);
+  /// #191C1D — Warm text on dark gold container.
+  static const Color onPrimaryContainer = Color(0xFF191C1D);
 
   // ─── Secondary — Trust Green (dark variant) ────────────────────────────────
-  static const Color secondary = Color(0xFF4CAF50);
-  static const Color onSecondary = Color(0xFF003A05);
+  static const Color secondary = Color(0xFFE0F7FA);
+  static const Color onSecondary = Color(0xFF191C1D);
   static const Color secondaryContainer = Color(0xFF00531A);
   static const Color onSecondaryContainer = Color(0xFF86EF8E);
 
   // ─── Tertiary — Cyber Teal (dark variant) ─────────────────────────────────
-  static const Color tertiary = Color(0xFF4DD0E1);
-  static const Color onTertiary = Color(0xFF00363B);
+  static const Color tertiary = Color(0xFF28A745);
+  static const Color onTertiary = Color(0xFFFFFFFF);
   static const Color tertiaryContainer = Color(0xFF00525A);
   static const Color onTertiaryContainer = Color(0xFFB2EBF2);
 
@@ -52,11 +52,11 @@ abstract final class GsDarkColors {
 
   // ─── Surface tiers — Deep Midnight Teal base ──────────────────────────────
   /// #0D1F22 — Midnight teal canvas.
-  static const Color surface = Color(0xFF0D1F22);
-  /// #E0F2F4 — Light text on dark teal surface.
-  static const Color onSurface = Color(0xFFE0F2F4);
-  /// #7FA9AE — Muted teal-tinted secondary text.
-  static const Color onSurfaceVariant = Color(0xFF7FA9AE);
+  static const Color surface = Color(0xFF191C1D);
+  /// #E0F7FA — Light text on dark surface.
+  static const Color onSurface = Color(0xFFE0F7FA);
+  /// Muted light text for variants.
+  static const Color onSurfaceVariant = Color(0xFFB0C4C7);
   /// #08181A — The deepest recesses.
   static const Color surfaceContainerLowest = Color(0xFF08181A);
   /// #121E21 — Section backgrounds.
@@ -75,8 +75,8 @@ abstract final class GsDarkColors {
   static const Color outlineVariant = Color(0xFF254044);
 
   // ─── Inverse ──────────────────────────────────────────────────────────────
-  static const Color inverseSurface = Color(0xFFE0F2F4);
-  static const Color onInverseSurface = Color(0xFF0D1F22);
+  static const Color inverseSurface = Color(0xFFE0F7FA);
+  static const Color onInverseSurface = Color(0xFF191C1D);
   static const Color inversePrimary = Color(0xFF3D2C00);
 
   static Color shadow(double opacity) =>
@@ -272,6 +272,7 @@ ThemeData buildGoldenStandardDark() {
       backgroundColor: GsDarkColors.surfaceContainerHigh,
       selectedColor: GsDarkColors.primary,
       labelStyle: TextStyle(fontFamily: AppFonts.inter, fontSize: 12, fontWeight: FontWeight.w500, color: GsDarkColors.onSurface),
+      secondaryLabelStyle: TextStyle(fontFamily: AppFonts.inter, fontSize: 12, fontWeight: FontWeight.w500, color: GsDarkColors.onPrimary),
       shape: const StadiumBorder(side: BorderSide.none),
       elevation: 0,
     ),

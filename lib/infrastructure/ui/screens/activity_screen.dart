@@ -43,13 +43,17 @@ class ActivityScreen extends StatelessWidget {
                           title: i.title,
                           time: i.time,
                           status: i.status,
-                          statusColor: i.statusColor == 0
-                              ? colorScheme.onSurfaceVariant
-                              : Color(i.statusColor),
+                          statusColor: i.statusColor == 1
+                              ? colorScheme.primary
+                              : i.statusColor == 2
+                                  ? colorScheme.error
+                                  : colorScheme.onSurfaceVariant,
                           amount: i.amount,
-                          amountColor: i.amountColor == 0
-                              ? null
-                              : Color(i.amountColor),
+                          amountColor: i.amountColor == 1
+                              ? colorScheme.primary
+                              : i.amountColor == 2
+                                  ? colorScheme.error
+                                  : null,
                           secondaryAmount: i.secondaryAmount,
                           strikethrough: i.strikethrough,
                         ),

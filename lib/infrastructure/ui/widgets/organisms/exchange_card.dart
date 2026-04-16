@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_theme.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/molecules/currency_row.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/molecules/swap_divider.dart';

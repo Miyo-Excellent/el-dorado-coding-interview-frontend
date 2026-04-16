@@ -1,6 +1,6 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_theme.dart';
+
 import 'activity_state.dart';
 
 /// Cubit managing activity screen state.
@@ -34,7 +34,7 @@ class ActivityCubit extends Cubit<ActivityState> {
                 title: 'Recarga USDT',
                 time: '10:15',
                 status: 'Pendiente',
-                statusColor: AppColors.primaryContainer.toARGB32(),
+                statusColor: 1,
                 amount: '+100.00 USDT',
                 amountColor: 0, // resolved from theme
               ),
@@ -57,7 +57,7 @@ class ActivityCubit extends Cubit<ActivityState> {
                 title: 'Cambio USDC a VES',
                 time: '09:20',
                 status: 'Cancelado',
-                statusColor: AppColors.error.toARGB32(),
+                statusColor: 2,
                 amount: '-20.00 USDC',
                 amountColor: 0, // resolved from theme
                 strikethrough: true,

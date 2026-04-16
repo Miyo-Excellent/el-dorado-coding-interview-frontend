@@ -102,24 +102,24 @@ class WalletScreen extends StatelessWidget {
                               amount: '-\$50.00',
                               amountColor: Theme.of(
                                 context,
-                              ).colorScheme.primary,
+                              ).colorScheme.onSurface,
                               onTap: () {},
                             ),
                             RecentTransaction(
                               icon: Icons.download,
                               iconBgColor: Theme.of(context)
                                   .colorScheme
-                                  .primaryContainer
+                                  .secondary
                                   .withValues(alpha: 0.10),
                               iconColor: Theme.of(
                                 context,
-                              ).colorScheme.primaryContainer,
+                              ).colorScheme.secondary,
                               title: 'Recarga Nequi',
                               subtitle: 'Yesterday, 09:15',
                               amount: '+\$100.00',
                               amountColor: Theme.of(
                                 context,
-                              ).colorScheme.primaryContainer,
+                              ).colorScheme.secondary,
                               onTap: () {},
                             ),
                           ],

@@ -34,19 +34,19 @@ enum AppThemeVariant {
 
   /// Human-readable display name for Settings UI.
   String get displayName => switch (this) {
-        goldenLight => 'Golden Standard — Claro',
-        goldenDark => 'Golden Standard — Oscuro',
-        alchemistDark => 'Electric Alchemist — Oscuro',
-        alchemistLight => 'Electric Alchemist — Claro',
-      };
+    goldenLight => 'Golden Standard — Claro',
+    goldenDark => 'Golden Standard — Oscuro',
+    alchemistDark => 'Electric Alchemist — Oscuro',
+    alchemistLight => 'Electric Alchemist — Claro',
+  };
 
   /// Short subtitle for the theme picker card.
   String get subtitle => switch (this) {
-        goldenLight => 'Cian suave · Oro · Manrope',
-        goldenDark => 'Azul noche · Oro · Manrope',
-        alchemistDark => 'Negro carbón · Neón · Space Grotesk',
-        alchemistLight => 'Crema cálida · Neón · Space Grotesk',
-      };
+    goldenLight => 'Cian suave · Oro · Manrope',
+    goldenDark => 'Azul noche · Oro · Manrope',
+    alchemistDark => 'Negro carbón · Neón · Space Grotesk',
+    alchemistLight => 'Crema cálida · Neón · Space Grotesk',
+  };
 
   /// Whether this variant belongs to Brightness.dark.
   bool get isDark =>
@@ -61,11 +61,11 @@ enum AppThemeVariant {
 
   /// Palette preview colors [background, primary accent].
   (Color, Color) get previewColors => switch (this) {
-        goldenLight => (const Color(0xFFE4F6F8), const Color(0xFFFFB400)),
-        goldenDark  => (const Color(0xFF0D1F22), const Color(0xFFFFB400)),
-        alchemistDark => (const Color(0xFF131313), const Color(0xFFDEED00)),
-        alchemistLight => (const Color(0xFFF8F8F2), const Color(0xFFDEED00)),
-      };
+    goldenLight => (const Color(0xFFE4F6F8), const Color(0xFFFFB400)),
+    goldenDark => (const Color(0xFF0D1F22), const Color(0xFFFFB400)),
+    alchemistDark => (const Color(0xFF131313), const Color(0xFFDEED00)),
+    alchemistLight => (const Color(0xFFF8F8F2), const Color(0xFFDEED00)),
+  };
 }
 
 // =============================================================================
@@ -82,7 +82,7 @@ class ThemeCubit extends Cubit<AppThemeVariant> {
     final stored = HiveStorage.themeMode;
     return AppThemeVariant.values.firstWhere(
       (v) => v.storageKey == stored,
-      orElse: () => AppThemeVariant.goldenLight, // default to new primary theme
+      orElse: () => AppThemeVariant.goldenDark, // default to new primary theme
     );
   }
 
@@ -97,8 +97,8 @@ class ThemeCubit extends Cubit<AppThemeVariant> {
   /// Toggle between dark and light within the same design system family.
   void toggleBrightness() {
     final next = switch (state) {
-      AppThemeVariant.goldenLight   => AppThemeVariant.goldenDark,
-      AppThemeVariant.goldenDark    => AppThemeVariant.goldenLight,
+      AppThemeVariant.goldenLight => AppThemeVariant.goldenDark,
+      AppThemeVariant.goldenDark => AppThemeVariant.goldenLight,
       AppThemeVariant.alchemistDark => AppThemeVariant.alchemistLight,
       AppThemeVariant.alchemistLight => AppThemeVariant.alchemistDark,
     };

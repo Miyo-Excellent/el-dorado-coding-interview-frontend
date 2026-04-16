@@ -28,21 +28,21 @@ abstract final class GsColors {
   static const Color primary = Color(0xFFFFB400);
   /// #191C1D — Dark charcoal for text on gold backgrounds.
   static const Color onPrimary = Color(0xFF191C1D);
-  /// #FFF0C0 — Soft gold tint for containers.
-  static const Color primaryContainer = Color(0xFFFFF0C0);
-  /// #4A3800 — Rich text on the gold container.
-  static const Color onPrimaryContainer = Color(0xFF4A3800);
+  /// #FFB400 — Used across main app bars and navigational containers to pop.
+  static const Color primaryContainer = Color(0xFFFFB400);
+  /// #191C1D — Dark gray text over Gold containers.
+  static const Color onPrimaryContainer = Color(0xFF191C1D);
 
   // ─── Secondary role — Trust Green ─────────────────────────────────────────
   /// #28A745 — Verification badges, positive trends, success states.
-  static const Color secondary = Color(0xFF28A745);
-  static const Color onSecondary = Color(0xFFFFFFFF);
+  static const Color secondary = Color(0xFFE0F7FA);
+  static const Color onSecondary = Color(0xFF191C1D);
   static const Color secondaryContainer = Color(0xFFD4EDDA);
   static const Color onSecondaryContainer = Color(0xFF0D3318);
 
   // ─── Tertiary role — Cyber Teal ───────────────────────────────────────────
   /// #00838F — Accent for crypto indicators, links.
-  static const Color tertiary = Color(0xFF00838F);
+  static const Color tertiary = Color(0xFF28A745);
   static const Color onTertiary = Color(0xFFFFFFFF);
   static const Color tertiaryContainer = Color(0xFFB2EBF2);
   static const Color onTertiaryContainer = Color(0xFF00363B);
@@ -55,7 +55,7 @@ abstract final class GsColors {
 
   // ─── Surface tiers — Soft Cyan base ───────────────────────────────────────
   /// #E4F6F8 — The Soft Cyan base canvas.
-  static const Color surface = Color(0xFFE4F6F8);
+  static const Color surface = Color(0xFFE0F7FA);
   /// #191C1D — Charcoal (not pure black) for readable body text.
   static const Color onSurface = Color(0xFF191C1D);
   /// #586060 — Muted text on surface.
@@ -81,7 +81,7 @@ abstract final class GsColors {
 
   // ─── Inverse ──────────────────────────────────────────────────────────────
   static const Color inverseSurface = Color(0xFF191C1D);
-  static const Color onInverseSurface = Color(0xFFE4F6F8);
+  static const Color onInverseSurface = Color(0xFFE0F7FA);
   static const Color inversePrimary = Color(0xFFFFB400);
 
   // ─── Shadows ──────────────────────────────────────────────────────────────
@@ -378,6 +378,7 @@ ThemeData buildGoldenStandardLight() {
       disabledColor: GsColors.surfaceContainer,
       deleteIconColor: GsColors.onSurfaceVariant,
       labelStyle: TextStyle(fontFamily: AppFonts.inter, fontSize: 12, fontWeight: FontWeight.w500, color: GsColors.onSurface),
+      secondaryLabelStyle: TextStyle(fontFamily: AppFonts.inter, fontSize: 12, fontWeight: FontWeight.w500, color: GsColors.onPrimary),
       shape: const StadiumBorder(side: BorderSide.none),
       elevation: 0,
     ),
