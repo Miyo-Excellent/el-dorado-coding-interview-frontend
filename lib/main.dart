@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'domain/di/injection_container.dart';
 import 'infrastructure/router/app_router.dart';
 import 'infrastructure/storage/hive_storage.dart';
-import 'infrastructure/ui/theme/app_theme.dart';
+import 'infrastructure/ui/theme/registry.dart';
 import 'infrastructure/data/cubits/theme/theme_cubit.dart';
-import 'infrastructure/data/blocs/home/exchange_bloc.dart';
+import 'infrastructure/data/blocs/exchange/exchange_bloc.dart';
 import 'infrastructure/data/cubits/wallet/wallet_cubit.dart';
 import 'infrastructure/data/cubits/activity/activity_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Allow Google Fonts to download missing font variants at runtime.
+  // (Manrope for Golden Standard, Space Grotesk for Electric Alchemist)
+  GoogleFonts.config.allowRuntimeFetching = true;
 
   // Initialize local storage
   await HiveStorage.init();
@@ -27,8 +32,18 @@ Future<void> main() async {
 /// Wraps the entire app with [MultiBlocProvider] to make global state
 /// available to all screens via the widget tree.
 ///
-/// Uses [BlocBuilder] on [ThemeCubit] to reactively switch between
-/// dark and light themes.
+/// Listens to [ThemeCubit] state ([AppThemeVariant]) to select the
+/// correct pair of dark/light [ThemeData] and [ThemeMode].
+///
+/// Theme mapping:
+/// ┌──────────────────┬─────────────────────────────────┬──────────────┐
+/// │ AppThemeVariant  │ ThemeData pair                  │ ThemeMode    │
+/// ├──────────────────┼─────────────────────────────────┼──────────────┤
+/// │ goldenLight      │ GS Light / GS Dark              │ light        │
+/// │ goldenDark       │ GS Light / GS Dark              │ dark         │
+/// │ alchemistDark    │ EA Light / EA Dark              │ dark         │
+/// │ alchemistLight   │ EA Light / EA Dark              │ light        │
+/// └──────────────────┴─────────────────────────────────┴──────────────┘
 class ElDoradoApp extends StatelessWidget {
   const ElDoradoApp({super.key});
 
@@ -44,15 +59,20 @@ class ElDoradoApp extends StatelessWidget {
         BlocProvider<WalletCubit>(create: (_) => sl<WalletCubit>()),
         BlocProvider<ActivityCubit>(create: (_) => sl<ActivityCubit>()),
       ],
-      child: BlocBuilder<ThemeCubit, ThemeMode>(
-        builder: (context, themeMode) {
+      child: BlocBuilder<ThemeCubit, AppThemeVariant>(
+        builder: (context, variant) {
+          // variant.pair() → AppThemeVariantX extension (registry.dart)
+          // Resolves the correct light + dark ThemeData for this design system family.
+          final (ThemeData light, ThemeData dark) = variant.pair();
+
           return MaterialApp.router(
             title: 'El Dorado',
             debugShowCheckedModeBanner: false,
-            theme: buildLightTheme(),
-            darkTheme: buildDarkTheme(),
-            themeMode: themeMode,
-            themeAnimationDuration: Duration.zero,
+            theme: light,
+            darkTheme: dark,
+            themeMode: variant.themeMode,
+            themeAnimationDuration: const Duration(milliseconds: 300),
+            themeAnimationCurve: Curves.easeInOut,
             routerConfig: appRouter,
           );
         },

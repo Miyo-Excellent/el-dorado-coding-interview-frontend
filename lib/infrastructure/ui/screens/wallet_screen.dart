@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_theme.dart';
@@ -33,7 +33,6 @@ class WalletScreen extends StatelessWidget {
                   // ── ORGANISM: Wallet App Bar ──────────────────────────
                   const ElDoradoSliverAppBar(
                     variant: ElDoradoAppBarVariant.wallet,
-                    backgroundOpacity: 0.95,
                   ),
 
                   SliverPadding(

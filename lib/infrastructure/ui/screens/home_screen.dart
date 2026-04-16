@@ -1,11 +1,11 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_theme.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/widgets.dart';
-import 'package:el_dorado_coding_interview_frontend/infrastructure/data/blocs/home/exchange_bloc.dart';
-import 'package:el_dorado_coding_interview_frontend/infrastructure/data/blocs/home/exchange_event.dart';
-import 'package:el_dorado_coding_interview_frontend/infrastructure/data/blocs/home/exchange_state.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/blocs/exchange/exchange_bloc.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/blocs/exchange/exchange_event.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/blocs/exchange/exchange_state.dart';
 
 /// Home / Exchange screen.
 ///
@@ -74,7 +74,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   // ── ORGANISM: Branded App Bar ─────────────────────────
                   const ElDoradoSliverAppBar(
                     variant: ElDoradoAppBarVariant.branded,
-                    backgroundOpacity: 0.95,
                   ),
 
                   SliverPadding(

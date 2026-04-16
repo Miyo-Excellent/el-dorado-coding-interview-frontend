@@ -8,21 +8,19 @@ import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/wi
 /// Settings screen.
 ///
 /// **MVVM pattern:**
-/// - **ViewModel** → [ThemeCubit] for the theme toggle
+/// - **ViewModel** → [ThemeCubit] for the theme variant
 /// - **View** → this widget
 ///
-/// The theme toggle is the key integration point: tapping it
-/// triggers [ThemeCubit.toggleTheme()], which persists to Hive
-/// and rebuilds the entire MaterialApp reactively.
+/// The "Apariencia" setting opens a [ThemePickerBottomSheet] that lets the
+/// user select any of the 4 available theme variants. The cubit persists
+/// the selection to Hive and reactively rebuilds the entire MaterialApp.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ThemeCubit, ThemeMode>(
-      builder: (context, themeMode) {
-        final themeCubit = context.read<ThemeCubit>();
-
+    return BlocBuilder<ThemeCubit, AppThemeVariant>(
+      builder: (context, variant) {
         final sections = [
           SettingsSection(
             headline: 'CUENTA',
@@ -74,11 +72,12 @@ class SettingsScreen extends StatelessWidget {
                 trailingLabel: 'English',
                 onTap: () {},
               ),
+              // ── Theme picker — opens bottom sheet ─────────────────────
               SettingItem(
-                icon: Icons.dark_mode_outlined,
-                label: 'Theme',
-                trailingLabel: themeCubit.label,
-                onTap: () => themeCubit.toggleTheme(),
+                icon: Icons.palette_outlined,
+                label: 'Apariencia',
+                trailingLabel: variant.isDark ? '🌙' : '☀️',
+                onTap: () => ThemePickerBottomSheet.show(context),
               ),
             ],
           ),
@@ -110,19 +109,16 @@ class SettingsScreen extends StatelessWidget {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: Stack(
             children: [
-              // ── ATOM: Ambient Glow ───────────────────────────────────
+              // ── ATOM: Ambient Glow ───────────────────────────────────────
               const AmbientGlowBackground(),
 
               CustomScrollView(
                 slivers: [
-                  // ── ORGANISM: Settings App Bar ────────────────────────
-                  ElDoradoSliverAppBar(
+                  // ── ORGANISM: Settings App Bar ────────────────────────────
+                  const ElDoradoSliverAppBar(
                     variant: ElDoradoAppBarVariant.page,
                     title: 'Ajustes',
-                    titleLetterSpacing: -0.5,
-                    leadingIcon: Icons.arrow_back,
-                    onLeadingTap: () {},
-                    backgroundOpacity: 0.95,
+                    leadingAction: ElDoradoAppBarLeading.back,
                   ),
 
                   SliverPadding(
@@ -134,7 +130,7 @@ class SettingsScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // ── ORGANISM: User Profile Section ────────────
+                          // ── ORGANISM: User Profile Section ─────────────
                           UserProfileSection(
                             initials: 'G',
                             username: 'glo_cop_usdt',
@@ -143,7 +139,11 @@ class SettingsScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: AppSpacing.xxl),
 
-                          // ── ORGANISM: Settings Body ──────────────────
+                          // ── Active Theme Chip ──────────────────────────
+                          _ActiveThemeChip(variant: variant),
+                          const SizedBox(height: AppSpacing.xxl),
+
+                          // ── ORGANISM: Settings Body ────────────────────
                           SettingsBody(sections: sections),
                           const SizedBox(height: AppSpacing.xxl),
                         ],
@@ -156,6 +156,87 @@ class SettingsScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+// =============================================================================
+// LOCAL ATOM — _ActiveThemeChip
+// =============================================================================
+
+/// Shows the currently active theme as an informational chip.
+class _ActiveThemeChip extends StatelessWidget {
+  const _ActiveThemeChip({required this.variant});
+  final AppThemeVariant variant;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    final (bg, accent) = variant.previewColors;
+
+    return GestureDetector(
+      onTap: () => ThemePickerBottomSheet.show(context),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
+        decoration: BoxDecoration(
+          color: cs.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(
+            color: cs.primary.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            // Color swatch
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: bg,
+                borderRadius: BorderRadius.circular(AppRadius.sm),
+                border: Border.all(
+                  color: cs.outlineVariant.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Center(
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(color: accent, shape: BoxShape.circle),
+                ),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.lg),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Tema activo',
+                    style: tt.labelSmall?.copyWith(
+                      color: cs.onSurfaceVariant,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    variant.displayName,
+                    style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded, color: cs.onSurfaceVariant, size: 20),
+          ],
+        ),
+      ),
     );
   }
 }

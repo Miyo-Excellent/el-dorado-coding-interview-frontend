@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_theme.dart';
@@ -67,14 +67,12 @@ class ActivityScreen extends StatelessWidget {
               CustomScrollView(
                 slivers: [
                   // ── ORGANISM: Activity App Bar ────────────────────────
-                  ElDoradoSliverAppBar(
+                  const ElDoradoSliverAppBar(
                     variant: ElDoradoAppBarVariant.page,
                     title: 'ACTIVIDAD',
-                    titleColor: colorScheme.onSurface,
-                    titleLetterSpacing: 2,
+                    titleSpacing: ElDoradoAppBarTitleSpacing.caps,
                     centerTitle: true,
-                    leadingIcon: Icons.menu,
-                    backgroundOpacity: 0.95,
+                    leadingAction: ElDoradoAppBarLeading.menu,
                   ),
 
                   // ── MOLECULE: Filter Pills Bar ────────────────────────

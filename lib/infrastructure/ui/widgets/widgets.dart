@@ -60,5 +60,6 @@ export 'organisms/quick_actions_bar.dart';
 export 'organisms/recent_activity_list.dart';
 export 'organisms/settings_body.dart';
 export 'organisms/settings_group.dart';
+export 'organisms/theme_picker_bottom_sheet.dart';
 export 'organisms/user_profile_section.dart';
 export 'organisms/wealth_card.dart';
