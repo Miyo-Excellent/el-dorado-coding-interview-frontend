@@ -368,4 +368,36 @@ flutter run -d <device-id>
 
 ---
 
-_Prueba técnica desarrollada por **[Tu Nombre]** · Abril 2026_
+_Prueba técnica desarrollada por **Michell Excellent Marin** · Abril 2026_
+
+---
+
+## 👨‍💻 About the Author
+
+<table>
+  <tr>
+    <td width="120" align="center">
+      <a href="https://github.com/Miyo-Excellent">
+        <img src="https://github.com/Miyo-Excellent.png" width="100" style="border-radius: 50%;" alt="Michell Excellent Marin"/>
+        <br />
+        <sub><b>Michell Excellent Marin</b></sub>
+      </a>
+    </td>
+    <td>
+      <p><strong>Full Stack Developer</strong> con más de media década de experiencia en desarrollo de software.</p>
+      <p>Especializado en la creación de soluciones multiplataforma con Flutter, Dart, y ecosistemas nativos Android (Kotlin). Apasionado por construir herramientas reutilizables y open-source que simplifiquen el desarrollo móvil.</p>
+      <p>
+        🌍 <strong>Location:</strong> Colombia<br/>
+        🗣️ <strong>Languages:</strong> Español (Nativo), English<br/>
+        🎓 <strong>Education:</strong> Instituto Universitario de Nuevas Profesiones (2012 - 2015)<br/>
+        💼 <strong>Status:</strong> Autónomo — Freelance Developer
+      </p>
+      <p>
+        <a href="https://github.com/Miyo-Excellent"><img src="https://img.shields.io/badge/GitHub-Miyo--Excellent-181717?style=flat-square&logo=github" alt="GitHub"></a>
+        <a href="https://www.linkedin.com/in/michellexcellent/"><img src="https://img.shields.io/badge/LinkedIn-michellexcellent-0A66C2?style=flat-square&logo=linkedin" alt="LinkedIn"></a>
+      </p>
+    </td>
+  </tr>
+</table>
+
+---
