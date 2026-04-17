@@ -56,58 +56,79 @@ class _CurrencyRowState extends State<CurrencyRow> {
   bool _isFocused = false;
 
   @override
+  void initState() {
+    super.initState();
+    widget.focusNode?.addListener(_onFocusChange);
+  }
+
+  @override
+  void didUpdateWidget(CurrencyRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      oldWidget.focusNode?.removeListener(_onFocusChange);
+      widget.focusNode?.addListener(_onFocusChange);
+      _isFocused = widget.focusNode?.hasFocus ?? false;
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.focusNode?.removeListener(_onFocusChange);
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isFocused = widget.focusNode?.hasFocus ?? false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Focus(
-      onFocusChange: (hasFocus) {
-        setState(() {
-          _isFocused = hasFocus;
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.md,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(
+          color: _isFocused
+              ? colorScheme.primaryContainer.withValues(alpha: 0.4)
+              : Colors.transparent,
+          width: 2,
         ),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: Border.all(
-            color: _isFocused
-                ? colorScheme.primaryContainer.withValues(alpha: 0.4)
-                : Colors.transparent,
-            width: 2,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Helper Text / Uppercase label
-            Text(
-              widget.label,
-              style: tt.labelSmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-                letterSpacing: 1.5,
-              ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Helper Text / Uppercase label
+          Text(
+            widget.label,
+            style: tt.labelSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              letterSpacing: 1.5,
             ),
-            const SizedBox(height: AppSpacing.sm),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Amount display
-                Expanded(
-                  child: widget.isInput
-                      ? TextField(
-                          controller: widget.amountController,
-                          focusNode: widget.focusNode,
-                          onChanged: widget.onAmountChanged,
-                          keyboardType: TextInputType.none,
-                          readOnly: true,
-                          showCursor: true,
-                          onTap: widget.onInputTap,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Amount display
+              Expanded(
+                child: widget.isInput
+                    ? TextField(
+                        controller: widget.amountController,
+                        focusNode: widget.focusNode,
+                        onChanged: widget.onAmountChanged,
+                        keyboardType: TextInputType.none,
+                        showCursor: true,
+                        onTap: widget.onInputTap,
                           style: tt.displaySmall?.copyWith(
                             fontSize: 32,
                             color: colorScheme.primary,
@@ -142,7 +163,6 @@ class _CurrencyRowState extends State<CurrencyRow> {
             ),
           ],
         ),
-      ),
     );
   }
 }

@@ -5,7 +5,6 @@ import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/widgets.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/home/home_cubit.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/home/home_state.dart';
-import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/currency/currency_cubit.dart';
 
 /// Home / Exchange screen.
 ///
@@ -49,23 +48,32 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  PersistentBottomSheetController? _keypadController;
+
   void _showNumericKeypad(BuildContext context, TextEditingController controller, FocusNode focusNode, bool isTengo) {
+    if (_keypadController != null) {
+      _keypadController!.close();
+    }
+    
     focusNode.requestFocus();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black26,
-      builder: (BuildContext ctx) {
+    
+    _keypadController = Scaffold.of(context).showBottomSheet(
+      (BuildContext ctx) {
         return NumericKeypad(
           onKeyPress: (val) {
             final t = controller.text;
             if (val == '.' && t.contains('.')) return;
-            if (t.length > 15) return;
+            if (t.length > 20) return;
             
-            final newText = t + val;
+            final currentOffset = controller.selection.baseOffset;
+            final offset = currentOffset >= 0 ? currentOffset : t.length;
+            
+            final prefix = t.substring(0, offset);
+            final suffix = t.substring(offset);
+            final newText = prefix + val + suffix;
+            
             controller.text = newText;
-            controller.selection = TextSelection.fromPosition(TextPosition(offset: newText.length));
+            controller.selection = TextSelection.collapsed(offset: offset + val.length);
 
             if (isTengo) {
               context.read<HomeCubit>().changeAmount(newText);
@@ -77,9 +85,17 @@ class _HomeScreenState extends State<HomeScreen> {
             final t = controller.text;
             if (t.isEmpty) return;
             
-            final newText = t.substring(0, t.length - 1);
+            final currentOffset = controller.selection.baseOffset;
+            final offset = currentOffset >= 0 ? currentOffset : t.length;
+            
+            if (offset == 0) return; // Nothig to delete before cursor
+            
+            final prefix = t.substring(0, offset - 1);
+            final suffix = t.substring(offset);
+            final newText = prefix + suffix;
+            
             controller.text = newText;
-            controller.selection = TextSelection.fromPosition(TextPosition(offset: newText.length));
+            controller.selection = TextSelection.collapsed(offset: offset - 1);
 
             if (newText.isEmpty) {
               if (isTengo) {
@@ -98,12 +114,17 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           onDone: () {
             focusNode.unfocus();
-            Navigator.of(ctx).pop();
+            _keypadController?.close();
+            _keypadController = null;
           },
         );
       },
-    ).whenComplete(() {
-      focusNode.unfocus();
+      backgroundColor: Colors.transparent,
+      elevation: 10,
+    );
+    
+    _keypadController!.closed.then((_) {
+      _keypadController = null;
     });
   }
 
@@ -188,6 +209,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           onFromCurrencyTap: () => _showCurrencyPicker(context, isTengo: true),
                           onToCurrencyTap: () => _showCurrencyPicker(context, isTengo: false),
                           onSwap: () {
+                            _tengoFocus.unfocus();
+                            _quieroFocus.unfocus();
+                            if (_keypadController != null) {
+                              _keypadController!.close();
+                              _keypadController = null;
+                            }
                             context.read<HomeCubit>().toggleDirection();
                           },
                           onFromInputTap: () => _showNumericKeypad(
@@ -258,14 +285,14 @@ class _HomeScreenState extends State<HomeScreen> {
         );
 
       case HomeStatus.error:
-        return _ErrorCard(message: state.errorMessage);
+        return ErrorStateCard(message: state.errorMessage);
 
       case HomeStatus.empty:
-        return const _EmptyCard();
+        return const EmptyStateCard();
 
       case HomeStatus.loaded:
         final offer = state.activeOffer;
-        if (offer == null) return const _EmptyCard();
+        if (offer == null) return const EmptyStateCard();
 
         final stats = offer.offerMakerStats;
         final paymentNames = offer.paymentMethods
@@ -307,195 +334,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (ctx) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.6,
-          minChildSize: 0.4,
-          maxChildSize: 0.8,
-          builder: (_, scrollController) {
-            return Container(
-              padding: const EdgeInsets.only(top: AppSpacing.xl, left: AppSpacing.xl, right: AppSpacing.xl),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
-              ),
-              child: BlocBuilder<CurrencyCubit, CurrencyState>(
-                builder: (context, currencyState) {
-                  if (currencyState is CurrencyLoading || currencyState is CurrencyInitial) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (currencyState is CurrencyError) {
-                    return Center(child: Text('Error cargando monedas', style: TextStyle(color: Theme.of(context).colorScheme.error)));
-                  }
-
-                  if (currencyState is CurrencyLoaded) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Seleccionar Moneda',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        Expanded(
-                          child: ListView(
-                            controller: scrollController,
-                            children: [
-                              // Category: CRYPTO
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                                child: Text(
-                                  'CRYPTO',
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                    letterSpacing: 1.5,
-                                  ),
-                                ),
-                              ),
-                              ...currencyState.cryptoCurrencies.map((currency) {
-                                return ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor: const Color(0xFF26A17B),
-                                    backgroundImage: currency.iconUrl.isNotEmpty ? NetworkImage(currency.iconUrl) : null,
-                                    radius: 12,
-                                    child: currency.iconUrl.isEmpty ? Text(
-                                      currency.symbolShort,
-                                      style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
-                                    ) : null,
-                                  ),
-                                  title: Text(currency.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                                  subtitle: Text(currency.symbol),
-                                  onTap: () {
-                                    context.read<HomeCubit>().selectCurrency(currency, isTengo: isTengo);
-                                    Navigator.pop(ctx);
-                                  },
-                                );
-                              }),
-                              const SizedBox(height: AppSpacing.md),
-                              // Category: FIAT
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                                child: Text(
-                                  'FIAT',
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                    letterSpacing: 1.5,
-                                  ),
-                                ),
-                              ),
-                              ...currencyState.fiatCurrencies.map((currency) {
-                                return ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor: const Color(0xFFFFD100),
-                                    backgroundImage: currency.iconUrl.isNotEmpty ? NetworkImage(currency.iconUrl) : null,
-                                    radius: 12,
-                                    child: currency.iconUrl.isEmpty ? Text(
-                                      currency.symbolShort,
-                                      style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
-                                    ) : null,
-                                  ),
-                                  title: Text(currency.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                                  subtitle: Text(currency.symbol),
-                                  onTap: () {
-                                    context.read<HomeCubit>().selectCurrency(currency, isTengo: isTengo);
-                                    Navigator.pop(ctx);
-                                  },
-                                );
-                              }),
-                              const SizedBox(height: AppSpacing.xl),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                  return const SizedBox();
-                },
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-}
-
-
-/// Error state card.
-class _ErrorCard extends StatelessWidget {
-  final String message;
-  const _ErrorCard({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: BoxDecoration(
-        color: Theme.of(
-          context,
-        ).colorScheme.errorContainer.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(AppRadius.md),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.error_outline,
-            color: Theme.of(context).colorScheme.error,
-            size: 48,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            'Error al obtener ofertas',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            message,
-            style: Theme.of(context).textTheme.bodySmall,
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Empty state card — no offers available.
-class _EmptyCard extends StatelessWidget {
-  const _EmptyCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.inbox_outlined,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-            size: 48,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            'Sin ofertas disponibles',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            'No hay liquidez para este par de moneda. Prueba con otro monto o divisa.',
-            style: Theme.of(context).textTheme.bodySmall,
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+      builder: (ctx) => CurrencyPickerBottomSheet(isTengo: isTengo),
     );
   }
 }

@@ -166,7 +166,16 @@ class HomeCubit extends Cubit<HomeState> {
   /// Toggles the exchange direction (buy/sell).
   void toggleDirection() {
     final newType = state.type == 0 ? 1 : 0;
-    emit(state.copyWith(type: newType));
+    
+    // Convert current target amount into the new source amount
+    String newAmountStr = state.convertedAmount.toStringAsFixed(8).replaceAll(RegExp(r'0*$'), '').replaceAll(RegExp(r'\.$'), '');
+    if (newAmountStr.isEmpty) newAmountStr = '0';
+
+    emit(state.copyWith(
+      type: newType,
+      amount: newAmountStr,
+      convertedAmount: Decimal.zero,
+    ));
     fetchRecommendations();
   }
 
