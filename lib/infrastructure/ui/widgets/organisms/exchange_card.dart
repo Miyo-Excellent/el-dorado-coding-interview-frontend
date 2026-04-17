@@ -27,10 +27,12 @@ class ExchangeCard extends StatelessWidget {
     required this.fromCurrency,
     required this.fromColor,
     required this.fromSymbol,
+    this.fromIconUrl = '',
     required this.toAmount,
     required this.toCurrency,
     required this.toColor,
     required this.toSymbol,
+    this.toIconUrl = '',
     this.limitsText,
     this.fromAmountController,
     this.toAmountController,
@@ -41,16 +43,20 @@ class ExchangeCard extends StatelessWidget {
     this.onSwap,
     this.onFromCurrencyTap,
     this.onToCurrencyTap,
+    this.onFromInputTap,
+    this.onToInputTap,
   });
 
   final String fromAmount;
   final String fromCurrency;
   final Color fromColor;
   final String fromSymbol;
+  final String fromIconUrl;
   final String toAmount;
   final String toCurrency;
   final Color toColor;
   final String toSymbol;
+  final String toIconUrl;
   final String? limitsText;
   final TextEditingController? fromAmountController;
   final TextEditingController? toAmountController;
@@ -61,6 +67,8 @@ class ExchangeCard extends StatelessWidget {
   final VoidCallback? onSwap;
   final VoidCallback? onFromCurrencyTap;
   final VoidCallback? onToCurrencyTap;
+  final VoidCallback? onFromInputTap;
+  final VoidCallback? onToInputTap;
 
   @override
   Widget build(BuildContext context) {
@@ -103,11 +111,13 @@ class ExchangeCard extends StatelessWidget {
                   currencyCode: fromCurrency,
                   currencyColor: fromColor,
                   currencySymbol: fromSymbol,
+                  iconUrl: fromIconUrl,
                   isInput: true,
                   amountController: fromAmountController,
                   focusNode: fromFocusNode,
                   onAmountChanged: onFromAmountChanged,
                   onCurrencyTap: onFromCurrencyTap,
+                  onInputTap: onFromInputTap,
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 // MOLECULE: swap divider
@@ -120,11 +130,13 @@ class ExchangeCard extends StatelessWidget {
                   currencyCode: toCurrency,
                   currencyColor: toColor,
                   currencySymbol: toSymbol,
+                  iconUrl: toIconUrl,
                   isInput: true,
                   amountController: toAmountController,
                   focusNode: toFocusNode,
                   onAmountChanged: onToAmountChanged,
                   onCurrencyTap: onToCurrencyTap,
+                  onInputTap: onToInputTap,
                 ),
                 if (limitsText != null) ...[
                   const SizedBox(height: AppSpacing.lg),

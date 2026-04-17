@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:decimal/decimal.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/blocs/exchange/exchange_bloc.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/blocs/exchange/exchange_event.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/blocs/exchange/exchange_state.dart' as ex;
 import 'package:el_dorado_coding_interview_frontend/domain/models/offer_model.dart';
 import 'package:el_dorado_coding_interview_frontend/domain/usecases/calculate_conversion.dart';
 import 'package:el_dorado_coding_interview_frontend/domain/usecases/validate_offer_limits.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/models/currency_model.dart';
 import 'home_state.dart';
 
 /// Cubit that manages the home screen UI state.
@@ -21,7 +23,7 @@ class HomeCubit extends Cubit<HomeState> {
     required this.exchangeBloc,
     required this.calculateConversion,
     required this.validateOfferLimits,
-  }) : super(const HomeState()) {
+  }) : super(HomeState()) {
     // 1. Subscribe to the raw data bloc
     _exchangeSub = exchangeBloc.stream.listen((exState) {
       _syncFromExchangeState(exState);
@@ -34,7 +36,6 @@ class HomeCubit extends Cubit<HomeState> {
   @override
   Future<void> close() {
     _exchangeSub?.cancel();
-    // Stop polling when home cubit shuts down if needed or keep it global
     return super.close();
   }
 
@@ -42,10 +43,10 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> fetchRecommendations() async {
     exchangeBloc.add(StartPolling(
       type: state.type,
-      fiatCurrencyId: state.fiatCurrencyId,
+      fiatCurrencyId: state.fiatCurrency.id,
+      cryptoCurrencyId: state.cryptoCurrency.id,
       amount: state.amount,
     ));
-    // Provide brief visual feedback
     await Future.delayed(const Duration(milliseconds: 600));
   }
 
@@ -64,7 +65,7 @@ class HomeCubit extends Cubit<HomeState> {
       emit(state.copyWith(
         status: HomeStatus.empty,
         clearOffers: true,
-        convertedAmount: 0,
+        convertedAmount: Decimal.zero,
       ));
       return;
     }
@@ -86,50 +87,42 @@ class HomeCubit extends Cubit<HomeState> {
       return;
     }
 
-    // Pass-through loading status
     if (exState.status == ex.ExchangeStatus.loading) {
-      // Avoid flashing loading state if we already have valid data (silent background update)
       if (state.status != HomeStatus.loaded) {
         emit(state.copyWith(status: HomeStatus.loading));
       }
     }
   }
 
-  /// Determine which rate to use based on the selected tab
   double _getActiveRate(OfferModel? byP, OfferModel? byR) {
     final active = state.selectedOfferTab == 0 ? byP : byR;
     return active?.fiatToCryptoExchangeRate ?? 0;
   }
 
-  /// Updates the fiat currency.
-  void changeFiatCurrency(String fiatCurrencyId) {
-    emit(state.copyWith(fiatCurrencyId: fiatCurrencyId));
+  void changeFiatCurrency(CurrencyModel fiatCurrency) {
+    emit(state.copyWith(fiatCurrency: fiatCurrency));
     fetchRecommendations();
   }
 
-  /// Advanced picker logic: allows selecting any currency (FIAT or USDT) on either TENGO or QUIERO.
-  /// Automatically flips the direction if needed.
-  void selectCurrency(String currency, {required bool isTengo}) {
+  void selectCurrency(CurrencyModel currency, {required bool isTengo}) {
     int newType = state.type;
-    String newFiat = state.fiatCurrencyId;
+    CurrencyModel newFiat = state.fiatCurrency;
+    CurrencyModel newCrypto = state.cryptoCurrency;
 
-    if (currency == 'USDT') {
-      // If user wants USDT in TENGO, type is 0. If in QUIERO, type is 1.
+    if (currency.isCrypto) {
       newType = isTengo ? 0 : 1;
+      newCrypto = currency;
     } else {
-      // User selected a FIAT currency.
-      // If user wants FIAT in TENGO, type is 1. If in QUIERO, type is 0.
       newType = isTengo ? 1 : 0;
       newFiat = currency;
     }
 
-    if (newType != state.type || newFiat != state.fiatCurrencyId) {
-      emit(state.copyWith(type: newType, fiatCurrencyId: newFiat));
+    if (newType != state.type || newFiat.id != state.fiatCurrency.id || newCrypto.id != state.cryptoCurrency.id) {
+      emit(state.copyWith(type: newType, fiatCurrency: newFiat, cryptoCurrency: newCrypto));
       fetchRecommendations();
     }
   }
 
-  /// Updates the input amount.
   void changeAmount(String amount) {
     final activeRate = _getActiveRate(state.byPrice, state.byReputation);
     final converted = calculateConversion(
@@ -137,35 +130,37 @@ class HomeCubit extends Cubit<HomeState> {
       rate: activeRate,
       type: state.type,
     );
+    // Removed fetchRecommendations() to avoid continuous API calling
     emit(state.copyWith(amount: amount, convertedAmount: converted));
-    fetchRecommendations();
   }
 
-  /// Updates the converted amount (reverse calculation).
   void changeConvertedAmount(String newConvertedObj) {
-    final val = double.tryParse(newConvertedObj.replaceAll(',', '')) ?? 0.0;
+    final cleanStr = newConvertedObj.replaceAll(',', '');
+    final val = Decimal.tryParse(cleanStr) ?? Decimal.zero;
     final activeRate = _getActiveRate(state.byPrice, state.byReputation);
     if (activeRate == 0) return;
 
-    double newBase = 0;
+    final dRate = Decimal.parse(activeRate.toString());
+    Decimal newBase = Decimal.zero;
+
     if (state.type == 0) {
-      // CRYPTO -> FIAT. newConvertedObj is FIAT.
-      // Fiat = Crypto * Rate => Crypto = Fiat / Rate
-      newBase = val / activeRate;
+      // CRYPTO -> FIAT
+      // Crypto = Fiat / Rate
+      newBase = (val.toRational() / dRate.toRational()).toDecimal(scaleOnInfinitePrecision: 8);
     } else {
-      // FIAT -> CRYPTO. newConvertedObj is CRYPTO.
-      // Crypto = Fiat / Rate => Fiat = Crypto * Rate
-      newBase = val * activeRate;
+      // FIAT -> CRYPTO
+      newBase = val * dRate;
     }
 
-    // Keep crypto amount to sensible decimals
-    final newAmountStr = newBase.toStringAsFixed(newBase.truncateToDouble() == newBase ? 0 : 2);
+    final String newAmountStr = (state.type == 0)
+        ? newBase.toStringAsFixed(8).replaceAll(RegExp(r'0*$'), '').replaceAll(RegExp(r'\.$'), '')
+        : newBase.toStringAsFixed(2);
     
     emit(state.copyWith(
       amount: newAmountStr,
       convertedAmount: val,
     ));
-    fetchRecommendations();
+    // Removed fetchRecommendations() 
   }
 
   /// Toggles the exchange direction (buy/sell).

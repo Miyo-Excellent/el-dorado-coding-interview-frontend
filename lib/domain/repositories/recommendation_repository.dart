@@ -8,6 +8,7 @@ abstract class RecommendationRepository {
   Future<RecommendationResponse> getRecommendations({
     required int type,
     required String fiatCurrencyId,
+    required String cryptoCurrencyId,
     String? amount,
     String? amountCurrencyId,
   });

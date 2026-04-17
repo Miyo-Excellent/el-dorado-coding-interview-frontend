@@ -5,6 +5,7 @@ import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/widgets.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/home/home_cubit.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/home/home_state.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/currency/currency_cubit.dart';
 
 /// Home / Exchange screen.
 ///
@@ -21,7 +22,6 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
-
 class _HomeScreenState extends State<HomeScreen> {
   final _tengoController = TextEditingController();
   final _quieroController = TextEditingController();
@@ -31,8 +31,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    // Initialize controllers with default state values
+    final cubit = context.read<HomeCubit>();
+    _tengoController.text = cubit.state.amount;
+    _quieroController.text = cubit.state.formattedConvertedAmount;
+    
     // Trigger initial API fetch
-    context.read<HomeCubit>().fetchRecommendations();
+    cubit.fetchRecommendations();
   }
 
   @override
@@ -44,27 +49,65 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  /// Available fiat currencies for the exchange.
-  static const _fiatCurrencies = ['COP', 'BRL', 'PEN', 'USD', 'VES'];
+  void _showNumericKeypad(BuildContext context, TextEditingController controller, FocusNode focusNode, bool isTengo) {
+    focusNode.requestFocus();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black26,
+      builder: (BuildContext ctx) {
+        return NumericKeypad(
+          onKeyPress: (val) {
+            final t = controller.text;
+            if (val == '.' && t.contains('.')) return;
+            if (t.length > 15) return;
+            
+            final newText = t + val;
+            controller.text = newText;
+            controller.selection = TextSelection.fromPosition(TextPosition(offset: newText.length));
 
-  /// Map currency code → display symbol
-  static const _currencySymbols = {
-    'COP': '\$',
-    'BRL': 'R\$',
-    'PEN': 'S/',
-    'USD': '\$',
-    'VES': 'Bs.',
-  };
+            if (isTengo) {
+              context.read<HomeCubit>().changeAmount(newText);
+            } else {
+              context.read<HomeCubit>().changeConvertedAmount(newText);
+            }
+          },
+          onDelete: () {
+            final t = controller.text;
+            if (t.isEmpty) return;
+            
+            final newText = t.substring(0, t.length - 1);
+            controller.text = newText;
+            controller.selection = TextSelection.fromPosition(TextPosition(offset: newText.length));
 
-  /// Map currency code → color
-  static const _currencyColors = {
-    'COP': Color(0xFFFFD100),
-    'BRL': Color(0xFF009739),
-    'PEN': Color(0xFFD91023),
-    'USD': Color(0xFF85BB65),
-    'VES': Color(0xFFF1C40F),
-  };
+            if (newText.isEmpty) {
+              if (isTengo) {
+                context.read<HomeCubit>().changeAmount('');
+              } else {
+                context.read<HomeCubit>().changeConvertedAmount('');
+              }
+              return;
+            }
 
+            if (isTengo) {
+              context.read<HomeCubit>().changeAmount(newText);
+            } else {
+              context.read<HomeCubit>().changeConvertedAmount(newText);
+            }
+          },
+          onDone: () {
+            focusNode.unfocus();
+            Navigator.of(ctx).pop();
+          },
+        );
+      },
+    ).whenComplete(() {
+      focusNode.unfocus();
+    });
+  }
+
+  // Hardcoded lists removed.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,26 +150,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         ExchangeCard(
                           fromAmount: state.amount,
                           fromCurrency: state.type == 0
-                              ? 'USDT'
-                              : state.fiatCurrencyId,
-                          fromColor: state.type == 0
-                              ? const Color(0xFF26A17B)
-                              : _currencyColors[state.fiatCurrencyId] ??
-                                    const Color(0xFFFFD100),
+                              ? state.cryptoCurrency.symbol
+                              : state.fiatCurrency.symbol,
+                          fromColor: const Color(0xFF26A17B),
                           fromSymbol: state.type == 0
-                              ? '₮'
-                              : (_currencySymbols[state.fiatCurrencyId] ?? '\$'),
+                              ? state.cryptoCurrency.symbolShort
+                              : state.fiatCurrency.symbolShort,
+                          fromIconUrl: state.type == 0
+                              ? state.cryptoCurrency.iconUrl
+                              : state.fiatCurrency.iconUrl,
                           toAmount: state.formattedConvertedAmount,
                           toCurrency: state.type == 0
-                              ? state.fiatCurrencyId
-                              : 'USDT',
-                          toColor: state.type == 0
-                              ? _currencyColors[state.fiatCurrencyId] ??
-                                    const Color(0xFFFFD100)
-                              : const Color(0xFF26A17B),
+                              ? state.fiatCurrency.symbol
+                              : state.cryptoCurrency.symbol,
+                          toColor: const Color(0xFFFFD100),
                           toSymbol: state.type == 0
-                              ? (_currencySymbols[state.fiatCurrencyId] ?? '\$')
-                              : '₮',
+                              ? state.fiatCurrency.symbolShort
+                              : state.cryptoCurrency.symbolShort,
+                          toIconUrl: state.type == 0
+                              ? state.fiatCurrency.iconUrl
+                              : state.cryptoCurrency.iconUrl,
                           limitsText: state.limitsText,
                           fromAmountController: _tengoController,
                           toAmountController: _quieroController,
@@ -147,6 +190,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           onSwap: () {
                             context.read<HomeCubit>().toggleDirection();
                           },
+                          onFromInputTap: () => _showNumericKeypad(
+                            context,
+                            _tengoController,
+                            _tengoFocus,
+                            true,
+                          ),
+                          onToInputTap: () => _showNumericKeypad(
+                            context,
+                            _quieroController,
+                            _quieroFocus,
+                            false,
+                          ),
                         ),
                         const SizedBox(height: AppSpacing.xxl),
 
@@ -172,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         // ── ATOM: Primary CTA ───────────────────────────
                         PrimaryButton(
-                          label: 'Cambiar a ${state.fiatCurrencyId}',
+                          label: 'Cambiar a ${state.fiatCurrency.symbol}',
                           onPressed: state.status == HomeStatus.loaded
                               ? () {}
                               : null,
@@ -248,50 +303,121 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showCurrencyPicker(BuildContext context, {required bool isTengo}) {
-    final allCurrencies = ['USDT', ..._fiatCurrencies];
-
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (ctx) {
-        return Container(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerHigh,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Seleccionar Moneda',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.4,
+          maxChildSize: 0.8,
+          builder: (_, scrollController) {
+            return Container(
+              padding: const EdgeInsets.only(top: AppSpacing.xl, left: AppSpacing.xl, right: AppSpacing.xl),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
               ),
-              const SizedBox(height: AppSpacing.lg),
-              ...allCurrencies.map((currency) {
-                final isCrypto = currency == 'USDT';
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: isCrypto ? const Color(0xFF26A17B) : (_currencyColors[currency] ?? const Color(0xFFFFD100)),
-                    radius: 12,
-                    child: Text(
-                      isCrypto ? '₮' : (_currencySymbols[currency] ?? '\$'),
-                      style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  title: Text(currency, style: const TextStyle(fontWeight: FontWeight.w600)),
-                  onTap: () {
-                    context.read<HomeCubit>().selectCurrency(currency, isTengo: isTengo);
-                    Navigator.pop(ctx);
-                  },
-                );
-              }),
-              const SizedBox(height: AppSpacing.xl),
-            ],
-          ),
+              child: BlocBuilder<CurrencyCubit, CurrencyState>(
+                builder: (context, currencyState) {
+                  if (currencyState is CurrencyLoading || currencyState is CurrencyInitial) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (currencyState is CurrencyError) {
+                    return Center(child: Text('Error cargando monedas', style: TextStyle(color: Theme.of(context).colorScheme.error)));
+                  }
+
+                  if (currencyState is CurrencyLoaded) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Seleccionar Moneda',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        Expanded(
+                          child: ListView(
+                            controller: scrollController,
+                            children: [
+                              // Category: CRYPTO
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                                child: Text(
+                                  'CRYPTO',
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    letterSpacing: 1.5,
+                                  ),
+                                ),
+                              ),
+                              ...currencyState.cryptoCurrencies.map((currency) {
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: const Color(0xFF26A17B),
+                                    backgroundImage: currency.iconUrl.isNotEmpty ? NetworkImage(currency.iconUrl) : null,
+                                    radius: 12,
+                                    child: currency.iconUrl.isEmpty ? Text(
+                                      currency.symbolShort,
+                                      style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+                                    ) : null,
+                                  ),
+                                  title: Text(currency.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                  subtitle: Text(currency.symbol),
+                                  onTap: () {
+                                    context.read<HomeCubit>().selectCurrency(currency, isTengo: isTengo);
+                                    Navigator.pop(ctx);
+                                  },
+                                );
+                              }),
+                              const SizedBox(height: AppSpacing.md),
+                              // Category: FIAT
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                                child: Text(
+                                  'FIAT',
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    letterSpacing: 1.5,
+                                  ),
+                                ),
+                              ),
+                              ...currencyState.fiatCurrencies.map((currency) {
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: const Color(0xFFFFD100),
+                                    backgroundImage: currency.iconUrl.isNotEmpty ? NetworkImage(currency.iconUrl) : null,
+                                    radius: 12,
+                                    child: currency.iconUrl.isEmpty ? Text(
+                                      currency.symbolShort,
+                                      style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+                                    ) : null,
+                                  ),
+                                  title: Text(currency.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                  subtitle: Text(currency.symbol),
+                                  onTap: () {
+                                    context.read<HomeCubit>().selectCurrency(currency, isTengo: isTengo);
+                                    Navigator.pop(ctx);
+                                  },
+                                );
+                              }),
+                              const SizedBox(height: AppSpacing.xl),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
+            );
+          },
         );
       },
     );

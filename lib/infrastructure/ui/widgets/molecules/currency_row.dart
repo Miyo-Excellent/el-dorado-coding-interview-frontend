@@ -26,11 +26,13 @@ class CurrencyRow extends StatefulWidget {
     required this.currencyCode,
     required this.currencyColor,
     required this.currencySymbol,
+    this.iconUrl = '',
     this.isInput = false,
     this.amountController,
     this.focusNode,
     this.onAmountChanged,
     this.onCurrencyTap,
+    this.onInputTap,
   });
 
   final String label;
@@ -38,11 +40,13 @@ class CurrencyRow extends StatefulWidget {
   final String currencyCode;
   final Color currencyColor;
   final String currencySymbol;
+  final String iconUrl;
   final bool isInput;
   final TextEditingController? amountController;
   final FocusNode? focusNode;
   final ValueChanged<String>? onAmountChanged;
   final VoidCallback? onCurrencyTap;
+  final VoidCallback? onInputTap;
 
   @override
   State<CurrencyRow> createState() => _CurrencyRowState();
@@ -100,8 +104,10 @@ class _CurrencyRowState extends State<CurrencyRow> {
                           controller: widget.amountController,
                           focusNode: widget.focusNode,
                           onChanged: widget.onAmountChanged,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true),
+                          keyboardType: TextInputType.none,
+                          readOnly: true,
+                          showCursor: true,
+                          onTap: widget.onInputTap,
                           style: tt.displaySmall?.copyWith(
                             fontSize: 32,
                             color: colorScheme.primary,
@@ -129,6 +135,7 @@ class _CurrencyRowState extends State<CurrencyRow> {
                   color: widget.currencyColor,
                   symbol: widget.currencySymbol,
                   code: widget.currencyCode,
+                  iconUrl: widget.iconUrl,
                   onTap: widget.onCurrencyTap,
                 ),
               ],

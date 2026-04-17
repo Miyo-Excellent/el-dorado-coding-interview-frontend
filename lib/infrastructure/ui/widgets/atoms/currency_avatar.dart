@@ -14,11 +14,13 @@ class CurrencyAvatar extends StatelessWidget {
     super.key,
     required this.color,
     required this.symbol,
+    this.iconUrl = '',
     this.radius = 10,
   });
 
   final Color color;
   final String symbol;
+  final String iconUrl;
   final double radius;
 
   @override
@@ -26,15 +28,18 @@ class CurrencyAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: radius,
       backgroundColor: color,
-      child: Text(
-        symbol,
-        style: TextStyle(
-          fontSize: radius * 0.9,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-          height: 1,
-        ),
-      ),
+      backgroundImage: iconUrl.isNotEmpty ? NetworkImage(iconUrl) : null,
+      child: iconUrl.isEmpty
+          ? Text(
+              symbol,
+              style: TextStyle(
+                fontSize: radius * 0.9,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                height: 1,
+              ),
+            )
+          : null,
     );
   }
 }

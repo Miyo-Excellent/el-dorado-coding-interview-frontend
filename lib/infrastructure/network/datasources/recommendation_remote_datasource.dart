@@ -20,21 +20,33 @@ class RecommendationRemoteDataSource {
   Future<RecommendationResponse> getRecommendations({
     required int type,
     required String fiatCurrencyId,
+    required String cryptoCurrencyId,
     String? amount,
     String? amountCurrencyId,
-    String cryptoCurrencyId = 'TATUM-TRON-USDT',
   }) async {
+    // Map standard 'USDT' to the specific testnet ID required by this staging API.
+    // Map missing cryptos (like BTC) so they don't break the staging API but can still be clicked.
+    String finalCryptoId = cryptoCurrencyId;
+    if (cryptoCurrencyId == 'USDT' || cryptoCurrencyId == 'TATUM-TRON-USDT') {
+      finalCryptoId = 'TATUM-TRON-USDT';
+    } else {
+      // The staging API does not currently support any crypto other than TATUM-TRON-USDT.
+      // (e.g. BITGO-BTC returns 500 INVALID_REQUEST from the server).
+      // Return empty safely to mimic lack of liquidity.
+      return const RecommendationResponse();
+    }
+
     // Determine amountCurrencyId based on type if not explicitly provided
-    final resolvedAmountCurrencyId = amountCurrencyId ?? (type == 0 ? cryptoCurrencyId : fiatCurrencyId);
+    String resolvedAmountCurrencyId = amountCurrencyId ?? (type == 0 ? finalCryptoId : fiatCurrencyId);
 
     try {
       final response = await dio.get(
         _endpoint,
         queryParameters: {
           'type': type,
-          'cryptoCurrencyId': cryptoCurrencyId,
+          'cryptoCurrencyId': finalCryptoId,
           'fiatCurrencyId': fiatCurrencyId,
-          ?amount: amount,
+          if (amount != null && amount.isNotEmpty) 'amount': amount,
           'amountCurrencyId': resolvedAmountCurrencyId,
         },
       );

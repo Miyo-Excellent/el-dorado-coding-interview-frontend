@@ -1,3 +1,5 @@
+import 'package:decimal/decimal.dart';
+
 /// Use case: Calculate the exact conversion result between crypto and fiat.
 ///
 /// Encapsulates the mathematical rule defined by the business:
@@ -11,21 +13,27 @@ class CalculateConversion {
   /// - [amount]: The raw string input from the user.
   /// - [rate]: The `fiatToCryptoExchangeRate` from the active offer.
   /// - [type]: The operation direction (0 = Sell Crypto, 1 = Buy Crypto).
-  double call({
+  Decimal call({
     required String amount,
     required double rate,
     required int type,
   }) {
-    final inputAmount = double.tryParse(amount) ?? 0.0;
+    if (rate == 0 || amount.isEmpty) return Decimal.zero;
 
-    if (rate == 0 || inputAmount == 0) return 0.0;
+    final parsedAmount = Decimal.tryParse(amount);
+    if (parsedAmount == null) return Decimal.zero;
+
+    // We can parse the rate double safely
+    final dRate = Decimal.parse(rate.toString());
 
     if (type == 0) {
       // User is exchanging Crypto for Fiat
-      return inputAmount * rate;
+      return (parsedAmount * dRate);
     } else {
       // User is exchanging Fiat for Crypto
-      return inputAmount / rate;
+      // Since it's division, we must handle precision. The rational package (used by Decimal)
+      // returns a Rational natively. By calling toDecimal() with a scaleOnInfinitePrecision, it avoids infinite repeating decimals.
+      return (parsedAmount.toRational() / dRate.toRational()).toDecimal(scaleOnInfinitePrecision: 8);
     }
   }
 }

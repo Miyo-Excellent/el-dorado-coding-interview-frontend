@@ -17,12 +17,14 @@ class GetRecommendations {
   Future<RecommendationResponse> call({
     required int type,
     required String fiatCurrencyId,
+    required String cryptoCurrencyId,
     String? amount,
     String? amountCurrencyId,
   }) {
     return repository.getRecommendations(
       type: type,
       fiatCurrencyId: fiatCurrencyId,
+      cryptoCurrencyId: cryptoCurrencyId,
       amount: amount,
       amountCurrencyId: amountCurrencyId,
     );

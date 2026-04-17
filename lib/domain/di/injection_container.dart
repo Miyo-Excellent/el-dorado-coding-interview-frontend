@@ -21,6 +21,12 @@ import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/w
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/activity/activity_cubit.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/theme/theme_cubit.dart';
 
+import 'package:el_dorado_coding_interview_frontend/infrastructure/network/datasources/currency_remote_datasource.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/repositories/currency_repository.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/repositories/currency_repository_impl.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/usecases/get_currencies.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/currency/currency_cubit.dart';
+
 /// Global service locator instance.
 final GetIt sl = GetIt.instance;
 
@@ -33,12 +39,16 @@ void configureDependencies() {
 
   // ── Data Sources ──────────────────────────────────────────────────────────
   sl.registerLazySingleton(() => RecommendationRemoteDataSource(dio: sl()));
+  sl.registerLazySingleton(() => CurrencyRemoteDataSource(dio: sl()));
   sl.registerLazySingleton(() => const WalletMockRemoteDataSource());
   sl.registerLazySingleton(() => const ActivityMockRemoteDataSource());
 
   // ── Repositories ──────────────────────────────────────────────────────────
   sl.registerLazySingleton<RecommendationRepository>(
     () => RecommendationRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<CurrencyRepository>(
+    () => CurrencyRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<WalletRepository>(
     () => WalletRepositoryImpl(sl()),
@@ -49,6 +59,7 @@ void configureDependencies() {
 
   // ── Use Cases ─────────────────────────────────────────────────────────────
   sl.registerLazySingleton(() => GetRecommendations(repository: sl()));
+  sl.registerLazySingleton(() => GetCurrenciesUseCase(sl()));
   sl.registerLazySingleton(() => const CalculateConversion());
   sl.registerLazySingleton(() => const ValidateOfferLimits());
   sl.registerLazySingleton(() => GetWalletData(sl()));
@@ -57,6 +68,9 @@ void configureDependencies() {
   // ── BLoCs / Cubits ────────────────────────────────────────────────────────
   // ExchangeBloc is a singleton that constantly queries API every 10s.
   sl.registerLazySingleton(() => ExchangeBloc(getRecommendations: sl()));
+  
+  // Global Currency Cubit
+  sl.registerLazySingleton(() => CurrencyCubit(getCurrenciesUseCase: sl()));
 
   // HomeCubit acts as the ViewModel consuming ExchangeBloc.
   sl.registerFactory(() => HomeCubit(

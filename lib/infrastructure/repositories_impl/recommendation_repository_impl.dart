@@ -14,12 +14,14 @@ class RecommendationRepositoryImpl implements RecommendationRepository {
   Future<RecommendationResponse> getRecommendations({
     required int type,
     required String fiatCurrencyId,
+    required String cryptoCurrencyId,
     String? amount,
     String? amountCurrencyId,
   }) {
     return remoteDataSource.getRecommendations(
       type: type,
       fiatCurrencyId: fiatCurrencyId,
+      cryptoCurrencyId: cryptoCurrencyId,
       amount: amount,
       amountCurrencyId: amountCurrencyId,
     );

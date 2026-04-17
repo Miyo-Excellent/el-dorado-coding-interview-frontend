@@ -11,9 +11,10 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
   Timer? _timer;
   
   // Cache the last requested query parameters to use on each tick
-  int _lastType = 0;
-  String _lastFiatCurrencyId = 'COP';
-  String _lastAmount = '';
+  int _lastType = 1;
+  String _lastFiatCurrencyId = 'USD';
+  String _lastCryptoCurrencyId = 'BTC';
+  String _lastAmount = '1';
 
   ExchangeBloc({required this.getRecommendations})
     : super(const ExchangeState()) {
@@ -26,12 +27,14 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
   void _onStartPolling(StartPolling event, Emitter<ExchangeState> emit) {
     _lastType = event.type;
     _lastFiatCurrencyId = event.fiatCurrencyId;
+    _lastCryptoCurrencyId = event.cryptoCurrencyId;
     _lastAmount = event.amount;
 
     // Immediately fetch when starting
     add(FetchRecommendations(
       type: _lastType,
       fiatCurrencyId: _lastFiatCurrencyId,
+      cryptoCurrencyId: _lastCryptoCurrencyId,
       amount: _lastAmount,
     ));
 
@@ -53,6 +56,7 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
     add(FetchRecommendations(
       type: _lastType,
       fiatCurrencyId: _lastFiatCurrencyId,
+      cryptoCurrencyId: _lastCryptoCurrencyId,
       amount: _lastAmount,
     ));
   }
@@ -70,10 +74,12 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
     // Always store the last requested params manually fetched
     _lastType = event.type;
     _lastFiatCurrencyId = event.fiatCurrencyId;
+    _lastCryptoCurrencyId = event.cryptoCurrencyId;
     _lastAmount = event.amount;
 
     final response = await getRecommendations(
       type: _lastType,
+      cryptoCurrencyId: _lastCryptoCurrencyId,
       fiatCurrencyId: _lastFiatCurrencyId,
       amount: _lastAmount,
     );

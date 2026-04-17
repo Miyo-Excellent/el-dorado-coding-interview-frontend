@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_theme.dart';
 import 'currency_avatar.dart';
 
@@ -21,12 +21,14 @@ class CurrencyPill extends StatelessWidget {
     required this.color,
     required this.symbol,
     required this.code,
+    this.iconUrl = '',
     this.onTap,
   });
 
   final Color color;
   final String symbol;
   final String code;
+  final String iconUrl;
   final VoidCallback? onTap;
 
   @override
@@ -47,7 +49,11 @@ class CurrencyPill extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CurrencyAvatar(color: color, symbol: symbol),
+            CurrencyAvatar(
+              color: color,
+              symbol: symbol,
+              iconUrl: iconUrl,
+            ),
             const SizedBox(width: 6),
             Text(
               code,

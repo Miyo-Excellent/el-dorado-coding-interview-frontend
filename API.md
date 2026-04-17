@@ -27,39 +27,85 @@ curl.exe "https://74j6q7lg6a.execute-api.eu-west-1.amazonaws.com/stage/orderbook
 # Conversión FIAT → CRYPTO:  crypto = fiat   / rate
 ```
 
-| Param | Valores válidos | Requerido |
-|---|---|---|
-| `type` | `0` (CRYPTO→FIAT) \| `1` (FIAT→CRYPTO) | ✅ |
-| `cryptoCurrencyId` | `TATUM-TRON-USDT` | ✅ |
-| `fiatCurrencyId` | `VES` `COP` `BRL` `PEN` `USD` | ✅ |
-| `amount` | número positivo > 0 | ⚠️ Opcional (ver §params) |
-| `amountCurrencyId` | `cryptoCurrencyId` o `fiatCurrencyId` | ⚠️ Opcional (ver §params) |
+| Param              | Valores válidos                        | Requerido                 |
+| ------------------ | -------------------------------------- | ------------------------- |
+| `type`             | `0` (CRYPTO→FIAT) \| `1` (FIAT→CRYPTO) | ✅                        |
+| `cryptoCurrencyId` | `TATUM-TRON-USDT`                      | ✅                        |
+| `fiatCurrencyId`   | `VES` `COP` `BRL` `PEN` `USD`          | ✅                        |
+| `amount`           | número positivo > 0                    | ⚠️ Opcional (ver §params) |
+| `amountCurrencyId` | `cryptoCurrencyId` o `fiatCurrencyId`  | ⚠️ Opcional (ver §params) |
 
 ---
 
 ## 📋 Tabla de contenidos
 
 1. [Endpoint e infraestructura](#endpoint)
-2. [Headers de respuesta](#headers-de-respuesta)
-3. [Query Parameters](#query-parameters)
-4. [Estado actual por par de moneda](#estado-actual-por-par-de-moneda)
-5. [Comportamiento de `amountCurrencyId`](#comportamiento-del-parámetro-amountcurrencyid)
-6. [Casos de respuesta](#casos-de-respuesta)
-7. [Catálogo de errores de validación](#catálogo-completo-de-errores-de-validación)
-8. [Estructura del Response exitoso](#estructura-completa-del-response-exitoso)
-9. [Estructura de `offerMakerStats`](#estructura-de-offermakerStats)
-10. [Sistema de Scores](#sistema-de-scores-mmscore--mtscore)
-11. [Métodos de pago](#métodos-de-pago-observados)
-12. [Campo clave: `fiatToCryptoExchangeRate`](#el-campo-clave-fiattocryptoexchangerate)
-13. [TypeScript Interfaces](#typescript-interfaces)
-14. [Comportamiento HTTP y Latencia](#comportamiento-http-y-latencia)
-15. [Resumen de llamados realizados](#resumen-de-todos-los-llamados-realizados)
-16. [Notas de implementación Flutter/Dart](#notas-de-implementación-para-flutterdart)
-17. [Notas JS / Python](#notas-de-implementación-para-javascript--python)
-18. [Árbol de decisión](#árbol-de-decisión-para-mostrar-resultados)
-19. [Preguntas frecuentes (FAQ)](#preguntas-frecuentes-faq)
-20. [Ejemplos reales de respuesta](#ejemplos-reales-de-respuesta)
-21. [Historial de versiones](#historial-de-versiones-de-este-documento)
+2. [Endpoint de Monedas (Currencies)](#endpoint-de-monedas)
+3. [Headers de respuesta](#headers-de-respuesta)
+4. [Query Parameters](#query-parameters)
+5. [Estado actual por par de moneda](#estado-actual-por-par-de-moneda)
+6. [Comportamiento de `amountCurrencyId`](#comportamiento-del-parámetro-amountcurrencyid)
+7. [Casos de respuesta](#casos-de-respuesta)
+8. [Catálogo de errores de validación](#catálogo-completo-de-errores-de-validación)
+9. [Estructura del Response exitoso](#estructura-completa-del-response-exitoso)
+10. [Estructura de `offerMakerStats`](#estructura-de-offermakerStats)
+11. [Sistema de Scores](#sistema-de-scores-mmscore--mtscore)
+12. [Métodos de pago](#métodos-de-pago-observados)
+13. [Campo clave: `fiatToCryptoExchangeRate`](#el-campo-clave-fiattocryptoexchangerate)
+14. [TypeScript Interfaces](#typescript-interfaces)
+15. [Comportamiento HTTP y Latencia](#comportamiento-http-y-latencia)
+16. [Resumen de llamados realizados](#resumen-de-todos-los-llamados-realizados)
+17. [Notas de implementación Flutter/Dart](#notas-de-implementación-para-flutterdart)
+18. [Notas JS / Python](#notas-de-implementación-para-javascript--python)
+19. [Árbol de decisión](#árbol-de-decisión-para-mostrar-resultados)
+20. [Preguntas frecuentes (FAQ)](#preguntas-frecuentes-faq)
+21. [Ejemplos reales de respuesta](#ejemplos-reales-de-respuesta)
+22. [Historial de versiones](#historial-de-versiones-de-este-documento)
+
+---
+
+## 1. Endpoint e infraestructura
+
+- **URL Base:** `https://74j6q7lg6a.execute-api.eu-west-1.amazonaws.com/stage`
+- **Path Recommendations:** `/orderbook/public/recommendations`
+- **Método HTTP:** `GET`
+- **Infraestructura detectada:** AWS API Gateway + CloudFront
+- **Auth:** Ninguna (Endpoint 100% público)
+
+---
+
+## 2. Endpoint de Monedas
+
+- **Path Currencies:** `/currencies`
+- **Método HTTP:** `GET`
+- **Descripción:** Devuelve el catálogo completo de criptomonedas y monedas locales (FIAT) soportadas.
+
+```json
+{
+  "data": {
+    "currencies": [
+      {
+        "id": "TATUM-TRON-USDT",
+        "type": 1, // 1 = CRYPTO
+        "symbol": "USDT",
+        "symbolShort": "USDT",
+        "name": "Tether",
+        "iconUrl": "https://cdn.eldorado.io/api/assets/crypto_currencies/currency_usdt.png"
+      },
+      {
+        "id": "VES",
+        "type": 0, // 0 = FIAT
+        "symbol": "VES",
+        "symbolShort": "Bs",
+        "name": "Bolívares",
+        "iconUrl": "https://cdn.eldorado.io/api/assets/fiat_currencies/currency_ves.png"
+      }
+    ]
+  }
+}
+```
+
+> **IMPORTANTE:** Para el endpoint de recomendaciones, se requiere pasar el campo `id` de esta respuesta en `cryptoCurrencyId` o `fiatCurrencyId` respectivamente.
 
 ---
 
@@ -75,13 +121,13 @@ GET https://74j6q7lg6a.execute-api.eu-west-1.amazonaws.com/stage/orderbook/publi
 
 ## Headers de respuesta
 
-| Header | Valor |
-|---|---|
-| `Content-Type` | `application/json` |
-| `Access-Control-Allow-Origin` | `*` (CORS completamente abierto) |
+| Header                         | Valor                                                          |
+| ------------------------------ | -------------------------------------------------------------- |
+| `Content-Type`                 | `application/json`                                             |
+| `Access-Control-Allow-Origin`  | `*` (CORS completamente abierto)                               |
 | `Access-Control-Allow-Methods` | `GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH, TRACE, CONNECT` |
-| `Access-Control-Allow-Headers` | `*` |
-| `Access-Control-Max-Age` | `86400` (24 horas de preflight cache) |
+| `Access-Control-Allow-Headers` | `*`                                                            |
+| `Access-Control-Max-Age`       | `86400` (24 horas de preflight cache)                          |
 
 > **El HTTP Status es siempre `200 OK`**, incluso en casos de error o datos vacíos. La lógica del resultado va 100% en el body JSON.
 
@@ -91,13 +137,13 @@ GET https://74j6q7lg6a.execute-api.eu-west-1.amazonaws.com/stage/orderbook/publi
 
 ### Parámetros requeridos
 
-| Parámetro | Tipo | Descripción |
-|---|---|---|
-| `type` | `integer` | **`0`** = CRYPTO → FIAT  /  **`1`** = FIAT → CRYPTO |
-| `cryptoCurrencyId` | `string` | ID de la moneda crypto. Debe ser un valor válido de la plataforma |
-| `fiatCurrencyId` | `string` | ID de la moneda fiat. Debe ser un valor válido de la plataforma |
-| `amount` | `number` | Cantidad a convertir. Debe ser un número **positivo mayor a 0** |
-| `amountCurrencyId` | `string` | La moneda del `amount`. Puede ser el `cryptoCurrencyId` o el `fiatCurrencyId` |
+| Parámetro          | Tipo      | Descripción                                                                   |
+| ------------------ | --------- | ----------------------------------------------------------------------------- |
+| `type`             | `integer` | **`0`** = CRYPTO → FIAT / **`1`** = FIAT → CRYPTO                             |
+| `cryptoCurrencyId` | `string`  | ID de la moneda crypto. Debe ser un valor válido de la plataforma             |
+| `fiatCurrencyId`   | `string`  | ID de la moneda fiat. Debe ser un valor válido de la plataforma               |
+| `amount`           | `number`  | Cantidad a convertir. Debe ser un número **positivo mayor a 0**               |
+| `amountCurrencyId` | `string`  | La moneda del `amount`. Puede ser el `cryptoCurrencyId` o el `fiatCurrencyId` |
 
 > **Todos los parámetros son requeridos.** Omitir cualquiera genera un `INVALID_REQUEST`.  
 > **Excepción:** Omitir `amount` **no** genera error — el servidor usa un valor por defecto (retorna datos normalmente).  
@@ -110,31 +156,31 @@ GET https://74j6q7lg6a.execute-api.eu-west-1.amazonaws.com/stage/orderbook/publi
 > [!NOTE]
 > Esta tabla refleja el estado observado el 2026-04-16. Las tasas y umbrales cambian en tiempo real con las ofertas del mercado P2P.
 
-| Par | Estado | `amount` mínimo (USDT) | `amount` recomendado | Tasa aprox. (USDT→FIAT) | Métodos principales |
-|---|---|---|---|---|---|
-| USDT/COP 🇨🇴 | ✅ **Activo** | ~1.51 USDT | 5–490 USDT | `3545`–`3608` COP | Nequi, Bancolombia, Llave |
-| USDT/BRL 🇧🇷 | ✅ **Activo** | ~2 USDT | 5–800 USDT | `4.97`–`5.11` BRL | PIX |
-| USDT/PEN 🇵🇪 | ✅ **Activo** | ~2 USDT | 5–500 USDT | `3.34`–`3.46` PEN | Yape, Plin, Interbank |
-| USDT/USD 🇺🇸 | ✅ **Activo** | ~1.5 USDT | 2–494 USDT | `0.95`–`1.04` USD | Binance Pay, Bybit |
-| USDT/VES 🇻🇪 | ❌ **Sin liquidez** | N/A | N/A | N/A | N/A |
+| Par         | Estado              | `amount` mínimo (USDT) | `amount` recomendado | Tasa aprox. (USDT→FIAT) | Métodos principales       |
+| ----------- | ------------------- | ---------------------- | -------------------- | ----------------------- | ------------------------- |
+| USDT/COP 🇨🇴 | ✅ **Activo**       | ~1.51 USDT             | 5–490 USDT           | `3545`–`3608` COP       | Nequi, Bancolombia, Llave |
+| USDT/BRL 🇧🇷 | ✅ **Activo**       | ~2 USDT                | 5–800 USDT           | `4.97`–`5.11` BRL       | PIX                       |
+| USDT/PEN 🇵🇪 | ✅ **Activo**       | ~2 USDT                | 5–500 USDT           | `3.34`–`3.46` PEN       | Yape, Plin, Interbank     |
+| USDT/USD 🇺🇸 | ✅ **Activo**       | ~1.5 USDT              | 2–494 USDT           | `0.95`–`1.04` USD       | Binance Pay, Bybit        |
+| USDT/VES 🇻🇪 | ❌ **Sin liquidez** | N/A                    | N/A                  | N/A                     | N/A                       |
 
 ### Valores conocidos — `cryptoCurrencyId`
 
-| ID | Red | Asset | Fuente |
-|---|---|---|---|
+| ID                | Red  | Asset         | Fuente                                          |
+| ----------------- | ---- | ------------- | ----------------------------------------------- |
 | `TATUM-TRON-USDT` | TRON | USDT (Tether) | `/assets/cripto_currencies/TATUM-TRON-USDT.png` |
 
 > El ID coincide exactamente con el nombre del archivo PNG en `/assets/cripto_currencies/` (sin extensión).
 
 ### Valores conocidos — `fiatCurrencyId`
 
-| ID | Moneda | País | `fiatToCryptoExchangeRate` observada |
-|---|---|---|---|
-| `VES` | Bolívar Venezolano | Venezuela 🇻🇪 | Sin datos (sin liquidez) |
-| `COP` | Peso Colombiano | Colombia 🇨🇴 | `"3566"` — `"3608"` |
-| `BRL` | Real Brasileño | Brasil 🇧🇷 | `"4.972"` — `"5.11"` |
-| `PEN` | Sol Peruano | Perú 🇵🇪 | `"3.334"` — `"3.46"` |
-| `USD` | Dólar Estadounidense | USA 🇺🇸 | `"0.95"` — `"1.039"` |
+| ID    | Moneda               | País         | `fiatToCryptoExchangeRate` observada |
+| ----- | -------------------- | ------------ | ------------------------------------ |
+| `VES` | Bolívar Venezolano   | Venezuela 🇻🇪 | Sin datos (sin liquidez)             |
+| `COP` | Peso Colombiano      | Colombia 🇨🇴  | `"3566"` — `"3608"`                  |
+| `BRL` | Real Brasileño       | Brasil 🇧🇷    | `"4.972"` — `"5.11"`                 |
+| `PEN` | Sol Peruano          | Perú 🇵🇪      | `"3.334"` — `"3.46"`                 |
+| `USD` | Dólar Estadounidense | USA 🇺🇸       | `"0.95"` — `"1.039"`                 |
 
 > Los IDs coinciden con los nombres de archivos en `/assets/fiat_currencies/`. `USD` no tiene asset en el proyecto pero es soportado por la API.
 
@@ -142,12 +188,12 @@ GET https://74j6q7lg6a.execute-api.eu-west-1.amazonaws.com/stage/orderbook/publi
 
 ## Comportamiento del parámetro `amountCurrencyId`
 
-| `type` | `amountCurrencyId` recomendado | Comportamiento |
-|---|---|---|
-| `0` (CRYPTO→FIAT) | `cryptoCurrencyId` | El `amount` se interpreta en unidades de crypto |
-| `0` (CRYPTO→FIAT) | `fiatCurrencyId` | También válido — retorna `data: {}` (sin match de oferta) |
-| `1` (FIAT→CRYPTO) | `fiatCurrencyId` | El `amount` se interpreta en unidades de fiat |
-| `1` (FIAT→CRYPTO) | `cryptoCurrencyId` | También válido — retorna datos si hay oferta compatible |
+| `type`            | `amountCurrencyId` recomendado | Comportamiento                                            |
+| ----------------- | ------------------------------ | --------------------------------------------------------- |
+| `0` (CRYPTO→FIAT) | `cryptoCurrencyId`             | El `amount` se interpreta en unidades de crypto           |
+| `0` (CRYPTO→FIAT) | `fiatCurrencyId`               | También válido — retorna `data: {}` (sin match de oferta) |
+| `1` (FIAT→CRYPTO) | `fiatCurrencyId`               | El `amount` se interpreta en unidades de fiat             |
+| `1` (FIAT→CRYPTO) | `cryptoCurrencyId`             | También válido — retorna datos si hay oferta compatible   |
 
 > La API acepta cualquier combinación. La presencia de datos depende de si el mercado tiene ofertas que coincidan con el monto.
 
@@ -211,30 +257,30 @@ Todos los errores siguen la misma estructura:
 
 ### Tabla de errores por causa
 
-| Causa | Campo | Mensaje `reason` |
-|---|---|---|
-| Sin query params | `query` | `✖ Expected object, received null → at query` |
-| `type` faltante | `query.type` | `✖ Expected number, received nan → at query.type` |
-| `type` inválido (ej: `2`) | `query.type` | `✖ Invalid enum value. Expected 0 \| 1, received '2' → at query.type` |
-| `cryptoCurrencyId` faltante | `query.cryptoCurrencyId` | `✖ Required → at query.cryptoCurrencyId` |
-| `cryptoCurrencyId` inválido | `query.cryptoCurrencyId` | `✖ invalid crypto currency id → at query.cryptoCurrencyId` |
-| `fiatCurrencyId` faltante | `query.fiatCurrencyId` | `✖ Required → at query.fiatCurrencyId` |
-| `fiatCurrencyId` inválido | `query.fiatCurrencyId` | `✖ invalid fiat currency id → at query.fiatCurrencyId` |
-| `amount` = `0` | `query.amount` | `✖ Must be a positive number represented as a string → at query.amount` |
-| `amount` negativo (ej: `-10`) | `query.amount` | `✖ Must be a positive number represented as a string → at query.amount` |
-| `amount` no numérico (ej: `"abc"`) | `query.amount` | `✖ Must be a positive number represented as a string → at query.amount` |
+| Causa                              | Campo                    | Mensaje `reason`                                                        |
+| ---------------------------------- | ------------------------ | ----------------------------------------------------------------------- |
+| Sin query params                   | `query`                  | `✖ Expected object, received null → at query`                           |
+| `type` faltante                    | `query.type`             | `✖ Expected number, received nan → at query.type`                       |
+| `type` inválido (ej: `2`)          | `query.type`             | `✖ Invalid enum value. Expected 0 \| 1, received '2' → at query.type`   |
+| `cryptoCurrencyId` faltante        | `query.cryptoCurrencyId` | `✖ Required → at query.cryptoCurrencyId`                                |
+| `cryptoCurrencyId` inválido        | `query.cryptoCurrencyId` | `✖ invalid crypto currency id → at query.cryptoCurrencyId`              |
+| `fiatCurrencyId` faltante          | `query.fiatCurrencyId`   | `✖ Required → at query.fiatCurrencyId`                                  |
+| `fiatCurrencyId` inválido          | `query.fiatCurrencyId`   | `✖ invalid fiat currency id → at query.fiatCurrencyId`                  |
+| `amount` = `0`                     | `query.amount`           | `✖ Must be a positive number represented as a string → at query.amount` |
+| `amount` negativo (ej: `-10`)      | `query.amount`           | `✖ Must be a positive number represented as a string → at query.amount` |
+| `amount` no numérico (ej: `"abc"`) | `query.amount`           | `✖ Must be a positive number represented as a string → at query.amount` |
 
 ### Comportamientos NO esperados (descubrimientos)
 
-| Caso | Resultado |
-|---|---|
-| `amount` omitido | ✅ Retorna datos normalmente (comporta como si fuera un `amount` genérico) |
-| `amountCurrencyId` omitido | ✅ Retorna datos normalmente |
-| Params extras desconocidos | ✅ Ignorados silenciosamente |
-| `type=0` + `amountCurrencyId=fiatCurrencyId` | ⚠️ `data: {}` (sin error, pero sin resultados) |
-| VES con cualquier amount/type | ⚠️ Siempre `data: {}` (sin liquidez en el mercado) |
-| COP con amount=0.01 (decimal pequeño) | ⚠️ `data: {}` (por debajo del mínimo de oferta) |
-| COP con amount=999999 (enorme) | ⚠️ `data: {}` (supera el máximo de oferta disponible) |
+| Caso                                         | Resultado                                                                  |
+| -------------------------------------------- | -------------------------------------------------------------------------- |
+| `amount` omitido                             | ✅ Retorna datos normalmente (comporta como si fuera un `amount` genérico) |
+| `amountCurrencyId` omitido                   | ✅ Retorna datos normalmente                                               |
+| Params extras desconocidos                   | ✅ Ignorados silenciosamente                                               |
+| `type=0` + `amountCurrencyId=fiatCurrencyId` | ⚠️ `data: {}` (sin error, pero sin resultados)                             |
+| VES con cualquier amount/type                | ⚠️ Siempre `data: {}` (sin liquidez en el mercado)                         |
+| COP con amount=0.01 (decimal pequeño)        | ⚠️ `data: {}` (por debajo del mínimo de oferta)                            |
+| COP con amount=999999 (enorme)               | ⚠️ `data: {}` (supera el máximo de oferta disponible)                      |
 
 ---
 
@@ -243,8 +289,12 @@ Todos los errores siguen la misma estructura:
 ```json
 {
   "data": {
-    "byPrice": { /* Oferta con mejor tasa de cambio para el usuario */ },
-    "byReputation": { /* Oferta del vendedor con mejor reputación */ }
+    "byPrice": {
+      /* Oferta con mejor tasa de cambio para el usuario */
+    },
+    "byReputation": {
+      /* Oferta del vendedor con mejor reputación */
+    }
   }
 }
 ```
@@ -281,7 +331,9 @@ Ambos objetos `byPrice` y `byReputation` comparten la misma estructura:
   },
   "isDepleted": false,
   "fiatToCryptoExchangeRate": "string (número decimal — CAMPO CLAVE)",
-  "offerMakerStats": { /* Ver sección dedicada */ },
+  "offerMakerStats": {
+    /* Ver sección dedicada */
+  },
   "paymentMethods": ["string (ej: 'app_nequi_co', 'bank_bancolombia')"],
   "paused": "boolean",
   "user_status": "string ('ONLINE' | 'OFFLINE' | 'AWAY') — 3 estados confirmados",
@@ -296,10 +348,10 @@ Ambos objetos `byPrice` y `byReputation` comparten la misma estructura:
 
 ### Campo `offerType`
 
-| Valor | Operación | Quién vende |
-|---|---|---|
-| `0` | Vendedor ofrece CRYPTO, comprador paga FIAT | Vendedor tiene USDT |
-| `1` | Vendedor compra CRYPTO, vendedor paga FIAT | Vendedor quiere USDT |
+| Valor | Operación                                   | Quién vende          |
+| ----- | ------------------------------------------- | -------------------- |
+| `0`   | Vendedor ofrece CRYPTO, comprador paga FIAT | Vendedor tiene USDT  |
+| `1`   | Vendedor compra CRYPTO, vendedor paga FIAT  | Vendedor quiere USDT |
 
 > Coincide con el parámetro `type` del request.
 
@@ -322,8 +374,12 @@ Ambos objetos `byPrice` y `byReputation` comparten la misma estructura:
   "uniqueTradersCount": "integer",
   "marketMakerOrderTime": "number (minutos promedio para completar orden)",
   "marketMakerSuccessRatio": "number (0.0 - 1.0, ratio de órdenes exitosas)",
-  "mmScore": { /* Score como Market Maker — ver abajo */ },
-  "mtScore": { /* Score como Market Taker — misma estructura */ },
+  "mmScore": {
+    /* Score como Market Maker — ver abajo */
+  },
+  "mtScore": {
+    /* Score como Market Taker — misma estructura */
+  },
   "user_lastSeen": "string",
   "user_status": "string ('ONLINE' | 'OFFLINE')"
 }
@@ -343,9 +399,15 @@ Todos los scores observados usan `"version": "v3.6"`.
 {
   "dirty": "boolean (true si el score está siendo recalculado)",
   "score": "number (0.0 - 1.0)",
-  "tier": { /* Tier alcanzado según el score */ },
-  "scorePerFeature": [ /* Array de métricas individuales */ ],
-  "overrideScorePerFeature": [ /* Opcional: métricas de override cuando NO se tienen datos de 30 días */ ],
+  "tier": {
+    /* Tier alcanzado según el score */
+  },
+  "scorePerFeature": [
+    /* Array de métricas individuales */
+  ],
+  "overrideScorePerFeature": [
+    /* Opcional: métricas de override cuando NO se tienen datos de 30 días */
+  ],
   "version": "string ('v3.6')"
 }
 ```
@@ -354,19 +416,19 @@ Todos los scores observados usan `"version": "v3.6"`.
 
 ### Tiers del sistema
 
-| `nameCode` | Nombre (es/en/pt) | `minScore` | `maxScore` | Color bg dark | Flags |
-|---|---|---|---|---|---|
-| `NO_TIER` | Base / Base / Base | `0.3` | `0.6` | `#5B5B55` | `isBuildingScore: true` o `isNewUser: false` |
-| `SILVER` | Plata / Silver / Prata | `0.8` | `0.9` | `#165B8D` | `isExpressCapable`, `canOperateWithNewUsers` |
-| `GOLD` | Dorado / Gold / Dourado | `0.9` | — | `#E5E517` | `isExpressCapable`, `canOperateWithNewUsers` |
+| `nameCode` | Nombre (es/en/pt)       | `minScore` | `maxScore` | Color bg dark | Flags                                        |
+| ---------- | ----------------------- | ---------- | ---------- | ------------- | -------------------------------------------- |
+| `NO_TIER`  | Base / Base / Base      | `0.3`      | `0.6`      | `#5B5B55`     | `isBuildingScore: true` o `isNewUser: false` |
+| `SILVER`   | Plata / Silver / Prata  | `0.8`      | `0.9`      | `#165B8D`     | `isExpressCapable`, `canOperateWithNewUsers` |
+| `GOLD`     | Dorado / Gold / Dourado | `0.9`      | —          | `#E5E517`     | `isExpressCapable`, `canOperateWithNewUsers` |
 
 #### URLs de imágenes de tiers (CDN: `cdn.eldorado.io`)
 
-| Tier | badge dark | badge light | card dark | card light |
-|---|---|---|---|---|
-| `NO_TIER` | — | — | `.../dark_base.png` | `.../light_base.png` |
-| `SILVER` | `.../badge_dark_silver.png` | `.../badge_light_silver.png` | `.../dark_silver.png` | `.../light_silver.png` |
-| `GOLD` | `.../badge_dark_gold.png` | `.../badge_light_gold.png` | `.../dark_gold.png` | `.../light_gold.png` |
+| Tier      | badge dark                  | badge light                  | card dark             | card light             |
+| --------- | --------------------------- | ---------------------------- | --------------------- | ---------------------- |
+| `NO_TIER` | —                           | —                            | `.../dark_base.png`   | `.../light_base.png`   |
+| `SILVER`  | `.../badge_dark_silver.png` | `.../badge_light_silver.png` | `.../dark_silver.png` | `.../light_silver.png` |
+| `GOLD`    | `.../badge_dark_gold.png`   | `.../badge_light_gold.png`   | `.../dark_gold.png`   | `.../light_gold.png`   |
 
 Base URL: `https://cdn.eldorado.io/api/assets/score_tiers/`
 
@@ -398,46 +460,46 @@ Base URL: `https://cdn.eldorado.io/api/assets/score_tiers/`
 
 #### Tabla de métricas
 
-| `nameCode` | `displayFormat` | `icon` | `globalAvg` | `bad` | `good` | Descripción |
-|---|---|---|---|---|---|---|
-| `LAST_30_DAYS_RATING` | `RATING` | `star` | `4.6` | `3` | `5` | Promedio de calificaciones (1–5) en últimos 30 días |
-| `LAST_30_DAYS_MM_ORDER_TIME` | `MINUTES` | `timer` | `4` min | `20` min | `2` min | Tiempo promedio para completar una orden |
-| `LAST_30_DAYS_MM_SUCCESS_RATIO` | `PERCENTAGE` | `circle-percentage` | `0.9` | `0.75` | `0.95` | % de órdenes completadas exitosamente |
-| `HISTORICAL_MM_COMPLETED_ORDERS` | `NUMBER` | `circle-check` | `200` | `50` | `250` | Total histórico de órdenes completadas |
-| `LAST_30_DAYS_COMPLETED_ORDERS` | `NUMBER` | `circle-check` | `20` | `0` | `20` | Órdenes completadas en los últimos 30 días *(solo en `overrideScorePerFeature`)* |
+| `nameCode`                       | `displayFormat` | `icon`              | `globalAvg` | `bad`    | `good`  | Descripción                                                                      |
+| -------------------------------- | --------------- | ------------------- | ----------- | -------- | ------- | -------------------------------------------------------------------------------- |
+| `LAST_30_DAYS_RATING`            | `RATING`        | `star`              | `4.6`       | `3`      | `5`     | Promedio de calificaciones (1–5) en últimos 30 días                              |
+| `LAST_30_DAYS_MM_ORDER_TIME`     | `MINUTES`       | `timer`             | `4` min     | `20` min | `2` min | Tiempo promedio para completar una orden                                         |
+| `LAST_30_DAYS_MM_SUCCESS_RATIO`  | `PERCENTAGE`    | `circle-percentage` | `0.9`       | `0.75`   | `0.95`  | % de órdenes completadas exitosamente                                            |
+| `HISTORICAL_MM_COMPLETED_ORDERS` | `NUMBER`        | `circle-check`      | `200`       | `50`     | `250`   | Total histórico de órdenes completadas                                           |
+| `LAST_30_DAYS_COMPLETED_ORDERS`  | `NUMBER`        | `circle-check`      | `20`        | `0`      | `20`    | Órdenes completadas en los últimos 30 días _(solo en `overrideScorePerFeature`)_ |
 
 ---
 
 ## Medición del `rateLimit` por tier
 
-| Tier | `maxPendingOrders` | `maxDisputedOrders` |
-|---|---|---|
-| `NO_TIER` | `3` | `3` — `10` |
-| `SILVER` | `20` | `100` |
-| `GOLD` | `20` | `100` |
+| Tier      | `maxPendingOrders` | `maxDisputedOrders` |
+| --------- | ------------------ | ------------------- |
+| `NO_TIER` | `3`                | `3` — `10`          |
+| `SILVER`  | `20`               | `100`               |
+| `GOLD`    | `20`               | `100`               |
 
 ---
 
 ## Métodos de pago observados
 
-| ID | País | Descripción |
-|---|---|---|
-| `app_nequi_co` | 🇨🇴 Colombia | App Nequi |
-| `app_llave_co` | 🇨🇴 Colombia | App Llave |
-| `bank_bancolombia` | 🇨🇴 Colombia | Banco Bancolombia |
-| `app_pix_brl` | 🇧🇷 Brasil | PIX (transferencia instantánea) |
-| `app_plin_pe` | 🇵🇪 Perú | App Plin |
-| `app_yape_pe` | 🇵🇪 Perú | App Yape |
-| `bank_bbva_pe` | 🇵🇪 Perú | BBVA Perú |
-| `bank_creditbank_pe` | 🇵🇪 Perú | Creditbank Perú |
-| `bank_interbank_pe` | 🇵🇪 Perú | Interbank Perú |
-| `app_zinli_us` | 🇺🇸 USA | App Zinli |
-| `app_wally_us` | 🇺🇸 USA | App Wally |
-| `app_mony` | 🌍 Multi | App Mony |
-| `bank_mercantil_pa` | 🇵🇦 Panamá | Banco Mercantil |
-| `bank_nubank` | 🇨🇴 Colombia / 🇧🇷 Brasil | Nubank (neobank) |
-| `app_binance_pay_usdt` | 🇺🇸 USA / Global | Binance Pay (USDT directo) |
-| `app_bybit_us` | 🇺🇸 USA | Bybit Exchange |
+| ID                     | País                    | Descripción                     |
+| ---------------------- | ----------------------- | ------------------------------- |
+| `app_nequi_co`         | 🇨🇴 Colombia             | App Nequi                       |
+| `app_llave_co`         | 🇨🇴 Colombia             | App Llave                       |
+| `bank_bancolombia`     | 🇨🇴 Colombia             | Banco Bancolombia               |
+| `app_pix_brl`          | 🇧🇷 Brasil               | PIX (transferencia instantánea) |
+| `app_plin_pe`          | 🇵🇪 Perú                 | App Plin                        |
+| `app_yape_pe`          | 🇵🇪 Perú                 | App Yape                        |
+| `bank_bbva_pe`         | 🇵🇪 Perú                 | BBVA Perú                       |
+| `bank_creditbank_pe`   | 🇵🇪 Perú                 | Creditbank Perú                 |
+| `bank_interbank_pe`    | 🇵🇪 Perú                 | Interbank Perú                  |
+| `app_zinli_us`         | 🇺🇸 USA                  | App Zinli                       |
+| `app_wally_us`         | 🇺🇸 USA                  | App Wally                       |
+| `app_mony`             | 🌍 Multi                | App Mony                        |
+| `bank_mercantil_pa`    | 🇵🇦 Panamá               | Banco Mercantil                 |
+| `bank_nubank`          | 🇨🇴 Colombia / 🇧🇷 Brasil | Nubank (neobank)                |
+| `app_binance_pay_usdt` | 🇺🇸 USA / Global         | Binance Pay (USDT directo)      |
+| `app_bybit_us`         | 🇺🇸 USA                  | Bybit Exchange                  |
 
 ---
 
@@ -447,17 +509,17 @@ Este es el campo central para la calculadora. Siempre viene como **`string`** (n
 
 ### Tasas observadas por par (mercado P2P, valores reales de 2026-04-16)
 
-| Par | `type` | `fiatToCryptoExchangeRate` | Fórmula de conversión |
-|---|---|---|---|
-| USDT/COP (CRYPTO→FIAT) | `0` | `"3566"` — `"3608"` | `fiat = crypto × rate` |
-| USDT/COP (FIAT→CRYPTO) | `1` | `"3566"` — `"3608"` | `crypto = fiat / rate` |
-| USDT/BRL (CRYPTO→FIAT) | `0` | `"4.972"` | `fiat = crypto × rate` |
-| USDT/BRL (FIAT→CRYPTO) | `1` | `"5.11"` | `crypto = fiat / rate` |
-| USDT/PEN (CRYPTO→FIAT) | `0` | `"3.334"` | `fiat = crypto × rate` |
-| USDT/PEN (FIAT→CRYPTO) | `1` | `"3.46"` | `crypto = fiat / rate` |
-| USDT/USD (CRYPTO→FIAT) | `0` | `"0.95"` | `fiat = crypto × rate` |
-| USDT/USD (FIAT→CRYPTO) | `1` | `"1.039"` | `crypto = fiat / rate` |
-| USDT/VES | any | N/A | Sin liquidez (data vacío) |
+| Par                    | `type` | `fiatToCryptoExchangeRate` | Fórmula de conversión     |
+| ---------------------- | ------ | -------------------------- | ------------------------- |
+| USDT/COP (CRYPTO→FIAT) | `0`    | `"3566"` — `"3608"`        | `fiat = crypto × rate`    |
+| USDT/COP (FIAT→CRYPTO) | `1`    | `"3566"` — `"3608"`        | `crypto = fiat / rate`    |
+| USDT/BRL (CRYPTO→FIAT) | `0`    | `"4.972"`                  | `fiat = crypto × rate`    |
+| USDT/BRL (FIAT→CRYPTO) | `1`    | `"5.11"`                   | `crypto = fiat / rate`    |
+| USDT/PEN (CRYPTO→FIAT) | `0`    | `"3.334"`                  | `fiat = crypto × rate`    |
+| USDT/PEN (FIAT→CRYPTO) | `1`    | `"3.46"`                   | `crypto = fiat / rate`    |
+| USDT/USD (CRYPTO→FIAT) | `0`    | `"0.95"`                   | `fiat = crypto × rate`    |
+| USDT/USD (FIAT→CRYPTO) | `1`    | `"1.039"`                  | `crypto = fiat / rate`    |
+| USDT/VES               | any    | N/A                        | Sin liquidez (data vacío) |
 
 > Las tasas varían en tiempo real. El API siempre retorna la mejor oferta disponible en ese instante.
 
@@ -475,60 +537,60 @@ cryptoAmount = inputAmount / parseFloat(fiatToCryptoExchangeRate)
 
 ## Resumen de todos los llamados realizados
 
-| # | `type` | `fiatCurrencyId` | `amountCurrencyId` | `amount` | Resultado |
-|---|---|---|---|---|---|
-| 1 | `0` | `VES` | `TATUM-TRON-USDT` | `100` | ⚠️ `data: {}` |
-| 2 | `1` | `VES` | `VES` | `100` | ⚠️ `data: {}` |
-| 3 | `1` | `VES` | `VES` | `100000` | ⚠️ `data: {}` |
-| 4 | `0` | `VES` | `TATUM-TRON-USDT` | `1` | ⚠️ `data: {}` |
-| 5 | `0` | `VES` | `TATUM-TRON-USDT` | `1000` | ⚠️ `data: {}` |
-| 6 | `0` | `COP` | `TATUM-TRON-USDT` | `50` | ✅ Datos completos |
-| 7 | `1` | `COP` | `COP` | `1000000` | ✅ Datos completos |
-| 8 | `1` | `COP` | `TATUM-TRON-USDT` | `100` | ✅ Datos completos |
-| 9 | `0` | `COP` | `TATUM-TRON-USDT` | `1` | ⚠️ `data: {}` (amount debajo del mínimo) |
-| 10 | `0` | `COP` | `TATUM-TRON-USDT` | `0.01` | ⚠️ `data: {}` |
-| 11 | `0` | `COP` | `TATUM-TRON-USDT` | `999999` | ⚠️ `data: {}` (amount sobre el máximo) |
-| 12 | `0` | `COP` | `TATUM-TRON-USDT` | `100` | ✅ Datos completos |
-| 13 | `0` | `COP` | `COP` | `100` | ⚠️ `data: {}` (type/amount mismatch) |
-| 14 | `0` | `BRL` | `TATUM-TRON-USDT` | `10` | ✅ Datos completos |
-| 15 | `1` | `BRL` | `BRL` | `500` | ✅ Datos completos |
-| 16 | `0` | `PEN` | `TATUM-TRON-USDT` | `200` | ✅ Datos completos |
-| 17 | `1` | `PEN` | `PEN` | `500` | ✅ Datos completos |
-| 18 | `0` | `USD` | `TATUM-TRON-USDT` | `100` | ✅ Datos completos |
-| 19 | `0` | `USD` | `TATUM-TRON-USDT` | `10` | ✅ Datos completos (rate: `0.95`) |
-| 20 | `1` | `USD` | `USD` | `50` | ✅ Datos completos (rate: `1.039`) |
-| 21 | — | — | — | — | ❌ `INVALID_REQUEST` (sin params) |
-| 22 | — | — | — | `0` | ❌ amount debe ser positivo |
-| 23 | — | — | — | `-10` | ❌ amount debe ser positivo |
-| 24 | — | — | — | `"abc"` | ❌ amount debe ser número |
-| 25 | `2` | `COP` | `TATUM-TRON-USDT` | `100` | ❌ type solo acepta 0 ó 1 |
-| 26 | `0` | `INVALIDO` | `TATUM-TRON-USDT` | `100` | ❌ fiat currency id inválido |
-| 27 | `0` | `COP` | `INVALID-COIN` | `100` | ❌ crypto currency id inválido |
-| 28 | *(sin type)* | `COP` | `TATUM-TRON-USDT` | `100` | ❌ type requerido + crypto requerido |
-| 29 | `0` | *(sin fiat)* | `TATUM-TRON-USDT` | `100` | ❌ fiatCurrencyId requerido |
-| 30 | `0` | `COP` | `TATUM-TRON-USDT` | *(sin amount)* | ✅ Datos normales (amount es opcional) |
-| 31 | `0` | `COP` | — | `100` | ⚠️ `data: {}` (amountCurrencyId omitido) |
-| 32 | `0` | `COP` | `TATUM-TRON-USDT` | `100` + `extraParam=test` | ✅ Params extra ignorados |
-| 33 | POST | `COP` | `TATUM-TRON-USDT` | `50` | ❌ `404 Not found` — solo acepta GET |
-| 34 | OPTIONS | — | — | — | ✅ `200 OK` + headers CORS (sin body) |
-| 35 | `1` | `VES` | `VES` | `1000000` | ⚠️ `data: {}` — VES sin liquidez sin importar el monto |
-| 36 | `0` | `COP` | `TATUM-TRON-USDT` | `1.5` | ✅ Decimales aceptados, datos completos |
-| 37 | `0` | `COP` | `TATUM-TRON-USDT` | `10.123456789` | ✅ 9 decimales aceptados, datos completos |
-| 38 | `0` | `COP` | `BRL` (tercera moneda) | `50` | ✅ Retorna datos (ignora el mismatch de moneda) |
-| 39 | `0` | `COP` | `TATUM-TRON-USDT` | `2` | ✅ Datos completos (nuevo mínimo confirmado ~1.5) |
-| 40 | `0` | `COP` | `TATUM-TRON-USDT` | `1.51` | ✅ Datos completos (exactamente en el minLimit) |
-| 41 | `0` | `COP` | `TATUM-TRON-USDT` | `5` | ✅ Datos completos |
-| 42 | — | `BTC` | — | `1` | ❌ `invalid crypto currency id` (BTC no soportado) |
-| 43 | `0` (2da vez) | `COP` | `TATUM-TRON-USDT` | `50` | ✅ `X-Cache: Miss` — no hay caché en CloudFront |
-| 44 | Latencia medida | `COP` | `TATUM-TRON-USDT` | `50` | ✅ Total: ~654ms, TTFB: ~647ms |
-| 45 | `0` | `BRL` | `TATUM-TRON-USDT` | `0.5` | ⚠️ `data: {}` (bajo mínimo ~2 USDT) |
-| 46 | `0` | `BRL` | `TATUM-TRON-USDT` | `2` | ✅ Datos completos — `user_status: "AWAY"` descubierto |
-| 47 | `0` | `PEN` | `TATUM-TRON-USDT` | `0.5` | ⚠️ `data: {}` (bajo mínimo ~2 USDT) |
-| 48 | `0` | `PEN` | `TATUM-TRON-USDT` | `2` | ✅ Datos completos (rate: `3.347`) |
-| 49 | `0` | `USD` | `TATUM-TRON-USDT` | `0.5` | ⚠️ `data: {}` (bajo mínimo ~1.5 USDT) |
-| 50 | `0` | `USD` | `TATUM-TRON-USDT` | `2` | ✅ Datos — `app_binance_pay_usdt` + `app_bybit_us` descubiertos |
-| 51 | `0` | `COP` | `TATUM-TRON-USDT` | `490` | ✅ Datos completos (cerca del maxLimit ~495 USDT) |
-| 52 | `0` (×2, Δ500ms) | `COP` | `TATUM-TRON-USDT` | `50` | ✅ **Mismo `offerId`** en ambos requests — datos estables |
+| #   | `type`           | `fiatCurrencyId` | `amountCurrencyId`     | `amount`                  | Resultado                                                       |
+| --- | ---------------- | ---------------- | ---------------------- | ------------------------- | --------------------------------------------------------------- |
+| 1   | `0`              | `VES`            | `TATUM-TRON-USDT`      | `100`                     | ⚠️ `data: {}`                                                   |
+| 2   | `1`              | `VES`            | `VES`                  | `100`                     | ⚠️ `data: {}`                                                   |
+| 3   | `1`              | `VES`            | `VES`                  | `100000`                  | ⚠️ `data: {}`                                                   |
+| 4   | `0`              | `VES`            | `TATUM-TRON-USDT`      | `1`                       | ⚠️ `data: {}`                                                   |
+| 5   | `0`              | `VES`            | `TATUM-TRON-USDT`      | `1000`                    | ⚠️ `data: {}`                                                   |
+| 6   | `0`              | `COP`            | `TATUM-TRON-USDT`      | `50`                      | ✅ Datos completos                                              |
+| 7   | `1`              | `COP`            | `COP`                  | `1000000`                 | ✅ Datos completos                                              |
+| 8   | `1`              | `COP`            | `TATUM-TRON-USDT`      | `100`                     | ✅ Datos completos                                              |
+| 9   | `0`              | `COP`            | `TATUM-TRON-USDT`      | `1`                       | ⚠️ `data: {}` (amount debajo del mínimo)                        |
+| 10  | `0`              | `COP`            | `TATUM-TRON-USDT`      | `0.01`                    | ⚠️ `data: {}`                                                   |
+| 11  | `0`              | `COP`            | `TATUM-TRON-USDT`      | `999999`                  | ⚠️ `data: {}` (amount sobre el máximo)                          |
+| 12  | `0`              | `COP`            | `TATUM-TRON-USDT`      | `100`                     | ✅ Datos completos                                              |
+| 13  | `0`              | `COP`            | `COP`                  | `100`                     | ⚠️ `data: {}` (type/amount mismatch)                            |
+| 14  | `0`              | `BRL`            | `TATUM-TRON-USDT`      | `10`                      | ✅ Datos completos                                              |
+| 15  | `1`              | `BRL`            | `BRL`                  | `500`                     | ✅ Datos completos                                              |
+| 16  | `0`              | `PEN`            | `TATUM-TRON-USDT`      | `200`                     | ✅ Datos completos                                              |
+| 17  | `1`              | `PEN`            | `PEN`                  | `500`                     | ✅ Datos completos                                              |
+| 18  | `0`              | `USD`            | `TATUM-TRON-USDT`      | `100`                     | ✅ Datos completos                                              |
+| 19  | `0`              | `USD`            | `TATUM-TRON-USDT`      | `10`                      | ✅ Datos completos (rate: `0.95`)                               |
+| 20  | `1`              | `USD`            | `USD`                  | `50`                      | ✅ Datos completos (rate: `1.039`)                              |
+| 21  | —                | —                | —                      | —                         | ❌ `INVALID_REQUEST` (sin params)                               |
+| 22  | —                | —                | —                      | `0`                       | ❌ amount debe ser positivo                                     |
+| 23  | —                | —                | —                      | `-10`                     | ❌ amount debe ser positivo                                     |
+| 24  | —                | —                | —                      | `"abc"`                   | ❌ amount debe ser número                                       |
+| 25  | `2`              | `COP`            | `TATUM-TRON-USDT`      | `100`                     | ❌ type solo acepta 0 ó 1                                       |
+| 26  | `0`              | `INVALIDO`       | `TATUM-TRON-USDT`      | `100`                     | ❌ fiat currency id inválido                                    |
+| 27  | `0`              | `COP`            | `INVALID-COIN`         | `100`                     | ❌ crypto currency id inválido                                  |
+| 28  | _(sin type)_     | `COP`            | `TATUM-TRON-USDT`      | `100`                     | ❌ type requerido + crypto requerido                            |
+| 29  | `0`              | _(sin fiat)_     | `TATUM-TRON-USDT`      | `100`                     | ❌ fiatCurrencyId requerido                                     |
+| 30  | `0`              | `COP`            | `TATUM-TRON-USDT`      | _(sin amount)_            | ✅ Datos normales (amount es opcional)                          |
+| 31  | `0`              | `COP`            | —                      | `100`                     | ⚠️ `data: {}` (amountCurrencyId omitido)                        |
+| 32  | `0`              | `COP`            | `TATUM-TRON-USDT`      | `100` + `extraParam=test` | ✅ Params extra ignorados                                       |
+| 33  | POST             | `COP`            | `TATUM-TRON-USDT`      | `50`                      | ❌ `404 Not found` — solo acepta GET                            |
+| 34  | OPTIONS          | —                | —                      | —                         | ✅ `200 OK` + headers CORS (sin body)                           |
+| 35  | `1`              | `VES`            | `VES`                  | `1000000`                 | ⚠️ `data: {}` — VES sin liquidez sin importar el monto          |
+| 36  | `0`              | `COP`            | `TATUM-TRON-USDT`      | `1.5`                     | ✅ Decimales aceptados, datos completos                         |
+| 37  | `0`              | `COP`            | `TATUM-TRON-USDT`      | `10.123456789`            | ✅ 9 decimales aceptados, datos completos                       |
+| 38  | `0`              | `COP`            | `BRL` (tercera moneda) | `50`                      | ✅ Retorna datos (ignora el mismatch de moneda)                 |
+| 39  | `0`              | `COP`            | `TATUM-TRON-USDT`      | `2`                       | ✅ Datos completos (nuevo mínimo confirmado ~1.5)               |
+| 40  | `0`              | `COP`            | `TATUM-TRON-USDT`      | `1.51`                    | ✅ Datos completos (exactamente en el minLimit)                 |
+| 41  | `0`              | `COP`            | `TATUM-TRON-USDT`      | `5`                       | ✅ Datos completos                                              |
+| 42  | —                | `BTC`            | —                      | `1`                       | ❌ `invalid crypto currency id` (BTC no soportado)              |
+| 43  | `0` (2da vez)    | `COP`            | `TATUM-TRON-USDT`      | `50`                      | ✅ `X-Cache: Miss` — no hay caché en CloudFront                 |
+| 44  | Latencia medida  | `COP`            | `TATUM-TRON-USDT`      | `50`                      | ✅ Total: ~654ms, TTFB: ~647ms                                  |
+| 45  | `0`              | `BRL`            | `TATUM-TRON-USDT`      | `0.5`                     | ⚠️ `data: {}` (bajo mínimo ~2 USDT)                             |
+| 46  | `0`              | `BRL`            | `TATUM-TRON-USDT`      | `2`                       | ✅ Datos completos — `user_status: "AWAY"` descubierto          |
+| 47  | `0`              | `PEN`            | `TATUM-TRON-USDT`      | `0.5`                     | ⚠️ `data: {}` (bajo mínimo ~2 USDT)                             |
+| 48  | `0`              | `PEN`            | `TATUM-TRON-USDT`      | `2`                       | ✅ Datos completos (rate: `3.347`)                              |
+| 49  | `0`              | `USD`            | `TATUM-TRON-USDT`      | `0.5`                     | ⚠️ `data: {}` (bajo mínimo ~1.5 USDT)                           |
+| 50  | `0`              | `USD`            | `TATUM-TRON-USDT`      | `2`                       | ✅ Datos — `app_binance_pay_usdt` + `app_bybit_us` descubiertos |
+| 51  | `0`              | `COP`            | `TATUM-TRON-USDT`      | `490`                     | ✅ Datos completos (cerca del maxLimit ~495 USDT)               |
+| 52  | `0` (×2, Δ500ms) | `COP`            | `TATUM-TRON-USDT`      | `50`                      | ✅ **Mismo `offerId`** en ambos requests — datos estables       |
 
 ---
 
@@ -568,16 +630,19 @@ final cryptoResult = fiatInput / rate;
 
 ```javascript
 // JavaScript / TypeScript
-const BASE = 'https://74j6q7lg6a.execute-api.eu-west-1.amazonaws.com/stage/orderbook/public/recommendations';
+const BASE =
+  "https://74j6q7lg6a.execute-api.eu-west-1.amazonaws.com/stage/orderbook/public/recommendations";
 
 async function getRate({ type, fiatCurrencyId, amount }) {
   const url = new URL(BASE);
-  url.searchParams.set('type', type);                          // 0 o 1
-  url.searchParams.set('cryptoCurrencyId', 'TATUM-TRON-USDT');
-  url.searchParams.set('fiatCurrencyId', fiatCurrencyId);
-  url.searchParams.set('amount', String(amount));              // debe ser String
-  url.searchParams.set('amountCurrencyId',
-    type === 0 ? 'TATUM-TRON-USDT' : fiatCurrencyId);
+  url.searchParams.set("type", type); // 0 o 1
+  url.searchParams.set("cryptoCurrencyId", "TATUM-TRON-USDT");
+  url.searchParams.set("fiatCurrencyId", fiatCurrencyId);
+  url.searchParams.set("amount", String(amount)); // debe ser String
+  url.searchParams.set(
+    "amountCurrencyId",
+    type === 0 ? "TATUM-TRON-USDT" : fiatCurrencyId,
+  );
 
   const res = await fetch(url);
   const json = await res.json();
@@ -628,11 +693,11 @@ def get_rate(type_: int, fiat_currency_id: str, amount: float) -> dict | None:
 
 ### Métodos HTTP soportados
 
-| Método | Resultado | Notas |
-|---|---|---|
-| `GET` | ✅ Normal | Único método soportado para este endpoint |
-| `POST` | ❌ `{"message": "404 Not found"}` | No soportado, aunque el header CORS lo lista |
-| `OPTIONS` | ✅ `200 OK` sin body | Preflight CORS — retorna todos los headers CORS pero `data` vacío |
+| Método    | Resultado                         | Notas                                                             |
+| --------- | --------------------------------- | ----------------------------------------------------------------- |
+| `GET`     | ✅ Normal                         | Único método soportado para este endpoint                         |
+| `POST`    | ❌ `{"message": "404 Not found"}` | No soportado, aunque el header CORS lo lista                      |
+| `OPTIONS` | ✅ `200 OK` sin body              | Preflight CORS — retorna todos los headers CORS pero `data` vacío |
 
 > [!IMPORTANT]
 > El header `Access-Control-Allow-Methods` lista POST, PUT, DELETE, etc., pero **solo GET funciona**. Los demás retornan `404`.
@@ -640,18 +705,19 @@ def get_rate(type_: int, fiat_currency_id: str, amount: float) -> dict | None:
 ### Caching en CloudFront
 
 Todos los requests observados devuelven `X-Cache: Miss from cloudfront`. Esto significa:
+
 - **No hay cache en CloudFront** para este endpoint — cada request llega al origen
 - Las tasas de cambio son siempre frescas (tiempo real)
 - No existe riesgo de mostrar tasas desactualizadas
 
 ### Latencia observada (desde Miami → Europa `DUB56-P4`)
 
-| Métrica curl | Valor observado |
-|---|---|
-| `time_namelookup` | ~5ms |
-| `time_connect` | ~73ms |
-| `time_starttransfer` (TTFB) | ~647ms |
-| `time_total` | ~654ms |
+| Métrica curl                | Valor observado |
+| --------------------------- | --------------- |
+| `time_namelookup`           | ~5ms            |
+| `time_connect`              | ~73ms           |
+| `time_starttransfer` (TTFB) | ~647ms          |
+| `time_total`                | ~654ms          |
 
 > La latencia alta (~650ms) se explica por la distancia geográfica (servidor en EU, cliente en USA/América). Para apps móviles, considerar un loading state visible.
 
@@ -664,27 +730,35 @@ En pruebas con 12 requests simultáneos no se observó throttling ni errores `42
 ## Preguntas frecuentes (FAQ)
 
 **¿Por qué recibo `{ "data": {} }` si mis parámetros parecen correctos?**
+
 > El mercado P2P es dinámico. Las ofertas tienen `limits.fiat.minLimit` y `limits.fiat.maxLimit`. Si tu `amount` traducido a FIAT queda fuera del rango de cualquier oferta activa, el servidor retorna vacío. Usar un `amount` entre `~1.5` y `~500` USDT equivalente funciona para la mayoría de pares.
 
 **¿Por qué `fiatToCryptoExchangeRate` es un `String` y no un `number`?**
+
 > Porque los valores tienen precisión arbitraria (ej: `"3607.999"`, `"3554.01"`, `"0.95"`). Usar `String` evita pérdida de precisión por floating-point en JSON. **Siempre parsear con `parseFloat()` / `double.parse()` / `float()`.**
 
 **¿Cuál es la diferencia entre `byPrice` y `byReputation`?**
+
 > `byPrice` = oferta con la **mejor tasa de cambio** en ese momento (máximo beneficio económico). `byReputation` = oferta del **vendedor con mayor score** `mmScore`, aunque su tasa pueda ser peor. Son siempre ofertas de vendors distintos.
 
 **¿Es `VES` (Bolívar Venezolano) usable?**
+
 > En todas las pruebas (amounts de 1 a 1,000,000, type 0 y 1) siempre retornó `data: {}`. VES no tiene liquidez activa en el mercado. Tratar como moneda no soportada actualmente.
 
 **¿Puede `byPrice` y `byReputation` ser el mismo vendedor?**
+
 > No encontrado en ninguna de las 44 pruebas. Siempre fueron `offerId` distintos y `user.username` distintos.
 
 **¿La API soporta otras cryptos como BTC o ETH?**
+
 > No. `BTC`, `ETH` y similares retornan `invalid crypto currency id`. Solo `TATUM-TRON-USDT` es soportado.
 
 **¿`amountCurrencyId` puede ser una moneda distinta al par?**
+
 > Sí, la API lo acepta sin error (ej: `fiatCurrencyId=COP` + `amountCurrencyId=BRL`). El servidor retorna datos normalmente, aunque el significado del `amount` queda ambiguo. No recomendado.
 
 **¿El `amount` acepta decimales?**
+
 > Sí. Se probaron `1.5` y `10.123456789` (9 decimales), ambos retornaron datos correctamente.
 
 ---
@@ -783,7 +857,10 @@ Estructura abreviada del response (los objetos `byPrice` y `byReputation` tienen
               "bg": { "dark": "165B8D", "light": "BADDF6" },
               "bar": { "dark": "1C77B8", "light": "4EA7E8" }
             },
-            "flags": { "isExpressCapable": true, "canOperateWithNewUsers": true },
+            "flags": {
+              "isExpressCapable": true,
+              "canOperateWithNewUsers": true
+            },
             "image": {
               "badge": {
                 "dark": "https://cdn.eldorado.io/api/assets/score_tiers/badge_dark_silver.png",
@@ -817,29 +894,41 @@ Estructura abreviada del response (los objetos `byPrice` y `byReputation` tienen
               "nameCode": "LAST_30_DAYS_RATING",
               "displayFormat": "RATING",
               "icon": "star",
-              "globalAvg": 4.6, "bad": 3, "good": 5,
-              "score": 1, "value": 5
+              "globalAvg": 4.6,
+              "bad": 3,
+              "good": 5,
+              "score": 1,
+              "value": 5
             },
             {
               "nameCode": "LAST_30_DAYS_MM_ORDER_TIME",
               "displayFormat": "MINUTES",
               "icon": "timer",
-              "globalAvg": 4, "bad": 20, "good": 2,
-              "score": 0.8371842592592593, "value": 4.9306833333333335
+              "globalAvg": 4,
+              "bad": 20,
+              "good": 2,
+              "score": 0.8371842592592593,
+              "value": 4.9306833333333335
             },
             {
               "nameCode": "LAST_30_DAYS_MM_SUCCESS_RATIO",
               "displayFormat": "PERCENTAGE",
               "icon": "circle-percentage",
-              "globalAvg": 0.9, "bad": 0.75, "good": 0.95,
-              "score": 1, "value": 0.9849874895746455
+              "globalAvg": 0.9,
+              "bad": 0.75,
+              "good": 0.95,
+              "score": 1,
+              "value": 0.9849874895746455
             },
             {
               "nameCode": "HISTORICAL_MM_COMPLETED_ORDERS",
               "displayFormat": "NUMBER",
               "icon": "circle-check",
-              "globalAvg": 200, "bad": 50, "good": 250,
-              "score": 1, "value": 8751
+              "globalAvg": 200,
+              "bad": 50,
+              "good": 250,
+              "score": 1,
+              "value": 8751
             }
           ],
           "version": "v3.6"
@@ -951,7 +1040,9 @@ Cuando el vendedor tiene `mmScore.score = 0.5` forzado por inactividad, aparece 
         "nameCode": "LAST_30_DAYS_COMPLETED_ORDERS",
         "displayFormat": "NUMBER",
         "icon": "circle-check",
-        "globalAvg": 20, "bad": 0, "good": 20,
+        "globalAvg": 20,
+        "bad": 0,
+        "good": 20,
         "score": 0,
         "value": 0
       }
@@ -963,10 +1054,22 @@ Cuando el vendedor tiene `mmScore.score = 0.5` forzado por inactividad, aparece 
       "flags": { "isBuildingScore": true }
     },
     "scorePerFeature": [
-      { "nameCode": "LAST_30_DAYS_RATING",            "score": null, "value": null },
-      { "nameCode": "LAST_30_DAYS_MM_ORDER_TIME",     "score": null, "value": null },
-      { "nameCode": "LAST_30_DAYS_MM_SUCCESS_RATIO",  "score": null, "value": null },
-      { "nameCode": "HISTORICAL_MM_COMPLETED_ORDERS", "score": 1,    "value": 15790 }
+      { "nameCode": "LAST_30_DAYS_RATING", "score": null, "value": null },
+      {
+        "nameCode": "LAST_30_DAYS_MM_ORDER_TIME",
+        "score": null,
+        "value": null
+      },
+      {
+        "nameCode": "LAST_30_DAYS_MM_SUCCESS_RATIO",
+        "score": null,
+        "value": null
+      },
+      {
+        "nameCode": "HISTORICAL_MM_COMPLETED_ORDERS",
+        "score": 1,
+        "value": 15790
+      }
     ],
     "version": "v3.6"
   }
@@ -979,12 +1082,12 @@ Cuando el vendedor tiene `mmScore.score = 0.5` forzado por inactividad, aparece 
 
 ## Historial de versiones de este documento
 
-| Versión | Fecha | Llamados totales | Cambios |
-|---|---|---|---|
-| v1.0 | 2026-04-16 | 10 | Documento inicial: estructura básica, casos A/B/C, tasas COP/BRL/PEN/USD/VES, métodos de pago |
-| v2.0 | 2026-04-16 | 32 | Catálogo completo de errores, comportamientos inesperados, sistema de scores completo, `overrideScorePerFeature`, ejemplos reales JSON, árbol de decisión, notas Dart |
-| v3.0 | 2026-04-16 | 44 | Badges, Quick Reference, ToC, sección de latencia/HTTP, `bank_nubank` descubierto, BTC confirmado inválido, VES confirmado sin liquidez total, `amountCurrencyId` tercera moneda, decimales de alta precisión, FAQ, notas JS/Python, diagrama Mermaid |
-| v4.0 | 2026-04-16 | 52 | TypeScript interfaces completas, tabla de estado por par de moneda, tabla de llamados expandida, `user_status: "AWAY"` documentado, umbrales por moneda confirmados (BRL/PEN/USD ~2 USDT), `app_binance_pay_usdt` + `app_bybit_us` descubiertos, mismo `offerId` en requests consecutivos confirmado |
+| Versión | Fecha      | Llamados totales | Cambios                                                                                                                                                                                                                                                                                              |
+| ------- | ---------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| v1.0    | 2026-04-16 | 10               | Documento inicial: estructura básica, casos A/B/C, tasas COP/BRL/PEN/USD/VES, métodos de pago                                                                                                                                                                                                        |
+| v2.0    | 2026-04-16 | 32               | Catálogo completo de errores, comportamientos inesperados, sistema de scores completo, `overrideScorePerFeature`, ejemplos reales JSON, árbol de decisión, notas Dart                                                                                                                                |
+| v3.0    | 2026-04-16 | 44               | Badges, Quick Reference, ToC, sección de latencia/HTTP, `bank_nubank` descubierto, BTC confirmado inválido, VES confirmado sin liquidez total, `amountCurrencyId` tercera moneda, decimales de alta precisión, FAQ, notas JS/Python, diagrama Mermaid                                                |
+| v4.0    | 2026-04-16 | 52               | TypeScript interfaces completas, tabla de estado por par de moneda, tabla de llamados expandida, `user_status: "AWAY"` documentado, umbrales por moneda confirmados (BRL/PEN/USD ~2 USDT), `app_binance_pay_usdt` + `app_bybit_us` descubiertos, mismo `offerId` en requests consecutivos confirmado |
 
 ---
 
@@ -999,11 +1102,11 @@ Interfaces completas y listas para copiar en un proyecto TypeScript/Flutter.
 
 /** Parámetros del request GET */
 export interface RecommendationsParams {
-  type: 0 | 1;                    // 0 = CRYPTO→FIAT, 1 = FIAT→CRYPTO
-  cryptoCurrencyId: 'TATUM-TRON-USDT';
-  fiatCurrencyId: 'VES' | 'COP' | 'BRL' | 'PEN' | 'USD';
-  amount: string | number;        // Positivo > 0; acepta decimales
-  amountCurrencyId: string;       // cryptoCurrencyId o fiatCurrencyId
+  type: 0 | 1; // 0 = CRYPTO→FIAT, 1 = FIAT→CRYPTO
+  cryptoCurrencyId: "TATUM-TRON-USDT";
+  fiatCurrencyId: "VES" | "COP" | "BRL" | "PEN" | "USD";
+  amount: string | number; // Positivo > 0; acepta decimales
+  amountCurrencyId: string; // cryptoCurrencyId o fiatCurrencyId
 }
 
 /** Respuesta raíz — siempre HTTP 200 */
@@ -1019,47 +1122,47 @@ export interface ErrorResponse {
 }
 
 export interface ApiError {
-  message: string;  // "INVALID_REQUEST: {\"reason\":\"...\",\"message\":\"Invalid request format\"}"
-  code: 'INVALID_REQUEST';
+  message: string; // "INVALID_REQUEST: {\"reason\":\"...\",\"message\":\"Invalid request format\"}"
+  code: "INVALID_REQUEST";
 }
 
 /** data es {} cuando no hay ofertas disponibles */
 export type EmptyData = Record<string, never>;
 
 export interface OfferData {
-  byPrice: Offer;       // Mejor tasa de cambio para el usuario
-  byReputation: Offer;  // Vendedor con mayor mmScore — siempre un vendedor distinto
+  byPrice: Offer; // Mejor tasa de cambio para el usuario
+  byReputation: Offer; // Vendedor con mayor mmScore — siempre un vendedor distinto
 }
 
 export interface Offer {
-  offerId: string;           // UUID v4
+  offerId: string; // UUID v4
   user: OfferUser;
-  offerStatus: number;       // 1 = activa
-  offerType: 0 | 1;          // 0 = vendedor ofrece crypto, 1 = vendedor ofrece fiat
-  createdAt: string;         // ISO 8601, ej: '2025-12-30T14:31:21.615Z'
-  description: string;       // Texto libre del vendedor (puede tener emojis y saltos de línea)
-  cryptoCurrencyId: string;  // 'TATUM-TRON-USDT'
-  chain: string;             // 'TRON'
-  fiatCurrencyId: string;    // 'VES' | 'COP' | 'BRL' | 'PEN' | 'USD'
+  offerStatus: number; // 1 = activa
+  offerType: 0 | 1; // 0 = vendedor ofrece crypto, 1 = vendedor ofrece fiat
+  createdAt: string; // ISO 8601, ej: '2025-12-30T14:31:21.615Z'
+  description: string; // Texto libre del vendedor (puede tener emojis y saltos de línea)
+  cryptoCurrencyId: string; // 'TATUM-TRON-USDT'
+  chain: string; // 'TRON'
+  fiatCurrencyId: string; // 'VES' | 'COP' | 'BRL' | 'PEN' | 'USD'
   limits: OfferLimits;
-  isDepleted: boolean;       // Siempre false en respuestas activas observadas
+  isDepleted: boolean; // Siempre false en respuestas activas observadas
   /** ⚠️ IMPORTANTE: es String, no number. Parsear con parseFloat() */
   fiatToCryptoExchangeRate: string;
   offerMakerStats: OfferMakerStats;
-  paymentMethods: string[];  // ej: ['app_nequi_co', 'bank_bancolombia']
+  paymentMethods: string[]; // ej: ['app_nequi_co', 'bank_bancolombia']
   paused: boolean;
-  user_status: 'ONLINE' | 'OFFLINE' | 'AWAY';  // 3 estados confirmados
+  user_status: "ONLINE" | "OFFLINE" | "AWAY"; // 3 estados confirmados
   /** Segundos desde última actividad. '0' = ONLINE, '3' = AWAY, '133'+ = OFFLINE */
   user_lastSeen: string;
-  visibility: 'PUBLIC';
+  visibility: "PUBLIC";
   orderRequestEnabled: boolean;
   offerTransactionsEnabled: boolean;
-  escrow: 'INTERNAL_V2';
+  escrow: "INTERNAL_V2";
   allowsThirdPartyPayments: boolean;
 }
 
 export interface OfferUser {
-  id: string;       // UUID v4
+  id: string; // UUID v4
   username: string;
 }
 
@@ -1078,38 +1181,38 @@ export interface LimitRange {
 
 export interface OfferMakerStats {
   userId: string;
-  rating: number;                      // 1.0–5.0, promedio histórico
-  userRating: number;                  // 1.0–5.0, puede diferir de rating
-  releaseTime: number;                 // minutos promedio para liberar fondos
-  payTime: number;                     // minutos promedio para pagar
-  responseTime: number;                // minutos promedio de respuesta
+  rating: number; // 1.0–5.0, promedio histórico
+  userRating: number; // 1.0–5.0, puede diferir de rating
+  releaseTime: number; // minutos promedio para liberar fondos
+  payTime: number; // minutos promedio para pagar
+  responseTime: number; // minutos promedio de respuesta
   totalOffersCount: number;
   totalTransactionCount: number;
   marketMakerTransactionCount: number;
   marketTakerTransactionCount: number;
   uniqueTradersCount: number;
-  marketMakerOrderTime: number;        // minutos promedio para completar orden
-  marketMakerSuccessRatio: number;     // 0.0–1.0
-  mmScore: Score;                      // Score como Market Maker
-  mtScore: Score;                      // Score como Market Taker
+  marketMakerOrderTime: number; // minutos promedio para completar orden
+  marketMakerSuccessRatio: number; // 0.0–1.0
+  mmScore: Score; // Score como Market Maker
+  mtScore: Score; // Score como Market Taker
   user_lastSeen: string;
-  user_status: 'ONLINE' | 'OFFLINE' | 'AWAY';
+  user_status: "ONLINE" | "OFFLINE" | "AWAY";
 }
 
 export interface Score {
-  dirty: boolean;                              // true = recalculando
-  score: number;                               // 0.0–1.0
+  dirty: boolean; // true = recalculando
+  score: number; // 0.0–1.0
   tier: Tier;
-  scorePerFeature: ScoreFeature[];             // Métricas individuales
-  overrideScorePerFeature?: ScoreFeature[];    // Solo cuando score=0.5 forzado por inactividad
-  version: 'v3.6';
+  scorePerFeature: ScoreFeature[]; // Métricas individuales
+  overrideScorePerFeature?: ScoreFeature[]; // Solo cuando score=0.5 forzado por inactividad
+  version: "v3.6";
 }
 
 export interface Tier {
-  nameCode: 'NO_TIER' | 'SILVER' | 'GOLD';
+  nameCode: "NO_TIER" | "SILVER" | "GOLD";
   name: LocalizedString;
   minScore: number;
-  maxScore?: number;   // Ausente en GOLD (es el máximo)
+  maxScore?: number; // Ausente en GOLD (es el máximo)
   rateLimit: {
     maxPendingOrders: number;
     maxDisputedOrders: number;
@@ -1119,7 +1222,7 @@ export interface Tier {
     bar: ThemeColor;
   };
   image?: {
-    badge?: ThemeColor;  // Solo SILVER y GOLD
+    badge?: ThemeColor; // Solo SILVER y GOLD
     card: ThemeColor;
   };
   flags: TierFlags;
@@ -1131,29 +1234,29 @@ export interface Tier {
 }
 
 export interface TierFlags {
-  isExpressCapable?: boolean;       // SILVER, GOLD
+  isExpressCapable?: boolean; // SILVER, GOLD
   canOperateWithNewUsers?: boolean; // SILVER, GOLD
-  isBuildingScore?: boolean;        // NO_TIER en construcción
-  isNewUser?: boolean;              // NO_TIER nuevo
+  isBuildingScore?: boolean; // NO_TIER en construcción
+  isNewUser?: boolean; // NO_TIER nuevo
 }
 
 export interface ThemeColor {
-  dark: string;   // Hex sin '#', ej: 'E5E517'
-  light: string;  // Hex sin '#'
+  dark: string; // Hex sin '#', ej: 'E5E517'
+  light: string; // Hex sin '#'
 }
 
 export interface ScoreFeature {
   nameCode:
-    | 'LAST_30_DAYS_RATING'
-    | 'LAST_30_DAYS_MM_ORDER_TIME'
-    | 'LAST_30_DAYS_MM_SUCCESS_RATIO'
-    | 'HISTORICAL_MM_COMPLETED_ORDERS'
-    | 'LAST_30_DAYS_COMPLETED_ORDERS';  // Solo en overrideScorePerFeature
+    | "LAST_30_DAYS_RATING"
+    | "LAST_30_DAYS_MM_ORDER_TIME"
+    | "LAST_30_DAYS_MM_SUCCESS_RATIO"
+    | "HISTORICAL_MM_COMPLETED_ORDERS"
+    | "LAST_30_DAYS_COMPLETED_ORDERS"; // Solo en overrideScorePerFeature
   name: LocalizedString;
   description: LocalizedString;
   recommendation: LocalizedString;
-  icon: 'star' | 'timer' | 'circle-percentage' | 'circle-check';
-  displayFormat: 'RATING' | 'MINUTES' | 'PERCENTAGE' | 'NUMBER';
+  icon: "star" | "timer" | "circle-percentage" | "circle-check";
+  displayFormat: "RATING" | "MINUTES" | "PERCENTAGE" | "NUMBER";
   globalAvg: number;
   good: number;
   bad: number;
@@ -1179,7 +1282,7 @@ export interface LocalizedString {
 // Helper: type guard para saber si hay datos
 // ============================================================
 export function hasOffers(data: EmptyData | OfferData): data is OfferData {
-  return 'byPrice' in data;
+  return "byPrice" in data;
 }
 
 // ============================================================
@@ -1187,12 +1290,12 @@ export function hasOffers(data: EmptyData | OfferData): data is OfferData {
 // ============================================================
 export function convert(params: {
   amount: number;
-  rate: string;         // fiatToCryptoExchangeRate (es String)
+  rate: string; // fiatToCryptoExchangeRate (es String)
   type: 0 | 1;
 }): number {
   const r = parseFloat(params.rate);
   return params.type === 0
-    ? params.amount * r   // CRYPTO → FIAT
-    : params.amount / r;  // FIAT → CRYPTO
+    ? params.amount * r // CRYPTO → FIAT
+    : params.amount / r; // FIAT → CRYPTO
 }
 ```

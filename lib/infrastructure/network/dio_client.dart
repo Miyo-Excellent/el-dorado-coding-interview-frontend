@@ -29,9 +29,13 @@ class DioClient {
       ),
     )..interceptors.add(
         LogInterceptor(
-          requestBody: false,
-          responseBody: false,
-          logPrint: (obj) => obj, // silent in release; override in debug
+          request: true,
+          requestHeader: true,
+          requestBody: true,
+          responseHeader: true,
+          responseBody: true,
+          error: true,
+          // logPrint falls back to default print in console.
         ),
       );
     return _instance!;

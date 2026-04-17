@@ -11,16 +11,18 @@ abstract class ExchangeEvent extends Equatable {
 class FetchRecommendations extends ExchangeEvent {
   final int type;
   final String fiatCurrencyId;
+  final String cryptoCurrencyId;
   final String amount;
 
   const FetchRecommendations({
     required this.type,
     required this.fiatCurrencyId,
+    required this.cryptoCurrencyId,
     required this.amount,
   });
 
   @override
-  List<Object?> get props => [type, fiatCurrencyId, amount];
+  List<Object?> get props => [type, fiatCurrencyId, cryptoCurrencyId, amount];
 }
 
 /// Dispatched by the Bloc's periodic timer.
@@ -32,16 +34,18 @@ class TimerTick extends ExchangeEvent {
 class StartPolling extends ExchangeEvent {
   final int type;
   final String fiatCurrencyId;
+  final String cryptoCurrencyId;
   final String amount;
 
   const StartPolling({
     required this.type,
     required this.fiatCurrencyId,
+    required this.cryptoCurrencyId,
     required this.amount,
   });
 
   @override
-  List<Object?> get props => [type, fiatCurrencyId, amount];
+  List<Object?> get props => [type, fiatCurrencyId, cryptoCurrencyId, amount];
 }
 
 /// Stops the periodic polling.
