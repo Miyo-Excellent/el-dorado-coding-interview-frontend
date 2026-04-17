@@ -471,32 +471,158 @@ _Prueba técnica desarrollada por **Michell Excellent Marin** · Abril 2026_
 
 ---
 
-## 👨‍💻 About the Author
+## 👨‍💻 About the Author & Developer Profile
 
-<table>
-  <tr>
-    <td width="120" align="center">
-      <a href="https://github.com/Miyo-Excellent">
-        <img src="https://github.com/Miyo-Excellent.png" width="100" style="border-radius: 50%;" alt="Michell Excellent Marin"/>
-        <br />
-        <sub><b>Michell Excellent Marin</b></sub>
-      </a>
-    </td>
-    <td>
-      <p><strong>Full Stack Developer</strong> con más de media década de experiencia en desarrollo de software.</p>
-      <p>Especializado en la creación de soluciones multiplataforma con Flutter, Dart, y ecosistemas nativos Android (Kotlin). Apasionado por construir herramientas reutilizables y open-source que simplifiquen el desarrollo móvil.</p>
-      <p>
-        🌍 <strong>Location:</strong> Colombia<br/>
-        🗣️ <strong>Languages:</strong> Español (Nativo), English<br/>
-        🎓 <strong>Education:</strong> Instituto Universitario de Nuevas Profesiones (2012 - 2015)<br/>
-        💼 <strong>Status:</strong> Autónomo — Freelance Developer
-      </p>
-      <p>
-        <a href="https://github.com/Miyo-Excellent"><img src="https://img.shields.io/badge/GitHub-Miyo--Excellent-181717?style=flat-square&logo=github" alt="GitHub"></a>
-        <a href="https://www.linkedin.com/in/michellexcellent/"><img src="https://img.shields.io/badge/LinkedIn-michellexcellent-0A66C2?style=flat-square&logo=linkedin" alt="LinkedIn"></a>
-      </p>
-    </td>
-  </tr>
+<table width="100%" style="border-collapse: collapse; border: none;">
+<tr>
+<td width="30%" valign="top">
+<div align="center">
+<a href="https://github.com/Miyo-Excellent">
+<img src="https://avatars.githubusercontent.com/Miyo-Excellent" width="150" height="150" style="border-radius: 50%; border: 3px solid #FFB400; object-fit: cover; display: block;" alt="Michell Excellent Marin"/>
+</a>
+<br/>
+<h2>Michell Excellent Marin</h2>
+<p><b>Senior Full-Stack Developer</b></p>
+<br/>
+<a href="https://github.com/Miyo-Excellent"><img src="https://img.shields.io/badge/GitHub-Miyo--Excellent-181717?style=flat-square&logo=github" alt="GitHub"></a>
+<br/><br/>
+<a href="https://www.linkedin.com/in/michellexcellent/"><img src="https://img.shields.io/badge/LinkedIn-michellexcellent-0A66C2?style=flat-square&logo=linkedin" alt="LinkedIn"></a>
+</div>
+<hr/>
+<h3>📫 Contacto</h3>
+<ul style="list-style-type: none; padding-left: 0; font-size: 13.5px;">
+<li>🌍 <b>Colombia</b> (Bogotá)</li>
+<li>🏢 Remoto / Relocación</li>
+<li>✉️ <a href="mailto:theofficesmichell@gmail.com">Email Directo</a></li>
+<li>🗣️ Español e Inglés</li>
+</ul>
+<hr/>
+<h3>🛠️ Tech Stack</h3>
+<p style="font-size: 13.5px;"><b>Core:</b><br/>
+<img src="https://img.shields.io/badge/-TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" /> <img src="https://img.shields.io/badge/-JS-F7DF1E?style=flat-square&logo=javascript&logoColor=black" /> <br/><img src="https://img.shields.io/badge/-Kotlin-7F52FF?style=flat-square&logo=kotlin&logoColor=white" /> <img src="https://img.shields.io/badge/-Dart-0175C2?style=flat-square&logo=dart&logoColor=white" /></p>
+<p style="font-size: 13.5px;"><b>Frontend & Mobile:</b><br/>
+<img src="https://img.shields.io/badge/-React-20232A?style=flat-square&logo=react&logoColor=61DAFB" /> <img src="https://img.shields.io/badge/-Next.js-000000?style=flat-square&logo=Next.js&logoColor=white" /> <img src="https://img.shields.io/badge/-Redux-593D88?style=flat-square&logo=redux&logoColor=white" /> <br/><img src="https://img.shields.io/badge/-Tailwind-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white" /> <img src="https://img.shields.io/badge/-Flutter-02569B?style=flat-square&logo=flutter&logoColor=white" /></p>
+<p style="font-size: 13.5px;"><b>Backend & DB:</b><br/>
+<img src="https://img.shields.io/badge/-Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white" /> <img src="https://img.shields.io/badge/-Express-000000?style=flat-square&logo=express&logoColor=white" /> <br/><img src="https://img.shields.io/badge/-PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white" /></p>
+<hr/>
+<h3>🎓 Educación</h3>
+<ul style="padding-left: 15px; font-size: 13.5px;">
+<li style="margin-bottom: 8px;"><b>TSU Informática</b><br/><i>IUNP (2012-2015)</i></li>
+<li><b><a href="https://platzi.com/p/theofficesmichell/" target="_blank">Platzi Top Student</a></b><br/><i>12.5k pts, 47 Certs.</i></li>
+</ul>
+
+<p style="font-size: 14px;">🏆 <b>Rutas:</b></p>
+<ul style="padding-left: 15px; font-size: 13.5px; display: flex; flex-direction: column; gap: 10px;">
+<li style="margin-bottom: 8px;"><b>📱 Mobile:</b> iOS & Flutter<br/>
+  <div style="margin-top: 3px; display: flex; flex-direction: row; gap: 10px;">
+    <a href="https://platzi.com/p/theofficesmichell/curso/1603-flutter-avanzado/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badge-avanzado-flutter-fb7e966a-b3e0-472c-a390-bbc0489d7812.png" width="22" height="22" title="Flutter Avanzado"/></a>
+    <a href="https://platzi.com/p/theofficesmichell/curso/2354-swiftui-apps-ios/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badge_desarrollo-aplicaciones-ios-swiftui-b4cad4fd-ba82-4db1-8c50-814cb4418a85.png" width="22" height="22" title="iOS & SwiftUI"/></a>
+    <a href="https://platzi.com/p/theofficesmichell/curso/2365-swiftui-especializacion/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badges-swiftui-335abf65-922a-427d-bdf4-a07c7f9db1db.png" width="22" height="22" title="SwiftUI"/></a>
+    <a href="https://platzi.com/p/theofficesmichell/curso/2245-kotlin-2021/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badge-kotlin-eb74bb6e-ee76-4b91-9f17-be3d1da8804d.png" width="22" height="22" title="Kotlin"/></a>
+  </div>
+</li>
+<li style="margin-bottom: 8px;"><b>🌐 Web:</b> JS & React<br/>
+  <div style="margin-top: 3px; display: flex; flex-direction: row; gap: 10px;">
+    <a href="https://platzi.com/p/theofficesmichell/curso/2467-frontend-developer/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badge-curso-frontend-developer-825407d1-49b1-4c9b-90c4-eee793720ede.png" width="22" height="22" title="Frontend Developer"/></a>
+    <a href="https://platzi.com/p/theofficesmichell/curso/1642-javascript-profesional/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badge-profesional-javascript-13538df2-24ce-433f-9aa6-e34eed608e70.png" width="22" height="22" title="JS Profesional"/></a>
+    <a href="https://platzi.com/p/theofficesmichell/curso/1798-javascript-navegador/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badge-javascript-engine-v8-navegador-de67cba4-0548-4361-9c6a-1a25aa96fa2a.png" width="22" height="22" title="JS Engine V8"/></a>
+    <a href="https://platzi.com/p/theofficesmichell/curso/2558-react-native-formularios-almacenamiento/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/practico-react-native-formularios-almacenamiento_badge-dac0684a-0303-41fc-b54a-91f9.png" width="22" height="22" title="React Native"/></a>
+  </div>
+</li>
+<li style="margin-bottom: 8px;"><b>⚙️ Back:</b> Node & Nest<br/>
+  <div style="margin-top: 3px; display: flex; flex-direction: row; gap: 10px;">
+    <a href="https://platzi.com/p/theofficesmichell/curso/1759-fundamentos-node/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badge-fundamentos-nodejs-8fd9c0f4-562a-48e9-a85a-3a7db0fa384b.png" width="22" height="22" title="Node.js"/></a>
+    <a href="https://platzi.com/p/theofficesmichell/curso/2272-nestjs-2021/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badge-backend-nestjs-1409a1f0-34ad-495b-8144-14be0c0f0232.png" width="22" height="22" title="NestJS"/></a>
+    <a href="https://platzi.com/p/theofficesmichell/curso/2274-nestjs-modular/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badge-programacionmod-601a4224-0aa1-4738-b545-8050df95f6f7.png" width="22" height="22" title="NestJS Modular"/></a>
+    <a href="https://platzi.com/p/theofficesmichell/curso/1763-npm-js/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badge-gestion-dependencias-paquetes-npm-f02e4608-c688-4d99-aa6d-293ea6c0be8d.png" width="22" height="22" title="NPM"/></a>
+  </div>
+</li>
+<li><b>🧩 CS:</b> Git & POO<br/>
+  <div style="margin-top: 3px; display: flex; flex-direction: row; gap: 10px;">
+    <a href="https://platzi.com/p/theofficesmichell/curso/1474-oop/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badges-poo-513deb20-a5bd-40a7-b97a-c36dc772d512.png" width="22" height="22" title="POO"/></a>
+    <a href="https://platzi.com/p/theofficesmichell/curso/1557-git-github/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badge-github-0b729570-934d-47d8-ba6b-610d7f15e0ec.png" width="22" height="22" title="Git/GitHub"/></a>
+    <a href="https://platzi.com/p/theofficesmichell/curso/2218-pensamiento-logico-2020/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badge-algoritmos-pensamiento-logico-4b7a05c5-470a-41e6-bcd9-4693f4207a03.png" width="22" height="22" title="Algoritmos"/></a>
+    <a href="https://platzi.com/p/theofficesmichell/curso/2292-terminal-21/diploma/detalle/" target="_blank"><img src="https://static.platzi.com/media/achievements/badge-terminal-5c5518b5-43d0-4387-b39e-3d85db446c5f.png" width="22" height="22" title="Terminal"/></a>
+  </div>
+</li>
+</ul>
+</li>
+</ul>
+</td>
+<td width="70%" valign="top" style="padding-left: 15px;">
+<h3>📝 Resumen Profesional</h3>
+<p>Ingeniero de Software con <b>+9 años de experiencia comprobada (Sept 2016)</b> construyendo arquitecturas escalables B2B/B2C, fintechs y productos de alto tráfico para mercados en <b>EE.UU., Chile, Panamá, Colombia y Venezuela</b>. Stack consolidado en <b>TypeScript (Next.js/React y Node.js)</b>, ecosistemas móviles robustos (<i>Flutter, Kotlin, Swift</i>) e infraestructura Cloud (<i>AWS, Docker</i>). Defensor estricto del "Clean Code", principios SOLID, Testing (TDD/E2E) y refactorización orientada a la mantenibilidad extrema.</p>
+<hr/>
+<h3>💼 Experiencia Destacada (12 Posiciones · +9 Años)</h3>
+
+<ul>
+<li>
+  <b>2026 → Founder & Senior Software Architect</b> en 🇻🇪 <b>Tuloot</b> <i>(🎮 Gaming / Fintech)</i><br/>
+  ▸ Plataforma B2C cross-border de recargas automáticas. <b>+10.000 transacciones</b> autónomas, SLA &lt; 5 min. Stack: Next.js, Node.js, Flutter.
+  <br/><br/>
+</li>
+<li>
+  <b>2025 – 2026 · Desarrollador de Productos Senior</b> en 🇺🇸 <b>Immigrant Gateway</b> <i>(🏛️ LegalTech / IA)</i><br/>
+  ▸ CRM + ERP a medida para agencia de inmigración (+700 clientes). Multi-agente IA (Gemini) con Human-in-the-loop. OCR legal. <b>400% de optimización operativa.</b>
+  <br/><br/>
+</li>
+<li>
+  <b>2024 – 2025 · Senior Software Engineer (Frontend & QA)</b> en 🇨🇴 <b>Nivelics SAS → Seguros Bolívar</b> <i>(🛡️ Insurtech)</i><br/>
+  ▸ Resolución masiva de deuda técnica, TDD/E2E completo. <b>100% fiabilidad SonarQube</b> (0 bugs, 0 code smells, 0 vulnerabilidades). Stack: React, Angular.
+  <br/><br/>
+</li>
+<li>
+  <b>2024 · Senior JavaScript & AWS Developer</b> en 🇨🇴 <b>Delphi One, Inc.</b> <i>(📊 Fintech / Crypto)</i><br/>
+  ▸ Plataforma de valoraciones (Equities & Crypto). Frontend JS + infraestructura AWS con zero-downtime.
+  <br/><br/>
+</li>
+<li>
+  <b>2022 – 2023 · Sr. Full Stack Developer · Lead Mobile</b> en 🇨🇱 <b>Okane Capital</b> <i>(🪙 Blockchain / Fintech)</i><br/>
+  ▸ Lanzamiento v1 de <b>Skipo App</b> (App Store + Google Play). Algoritmia de alto rendimiento para mercados cripto en tiempo real. Mentoría técnica.
+  <br/><br/>
+</li>
+<li>
+  <b>2021 – 2022 · Sr. Full Stack Developer</b> en 🇨🇱 <b>TiTaskLatam / Touch</b> <i>(📡 SaaS B2B / Marketing)</i><br/>
+  ▸ Touch App v2 desde cero. APIs NestJS para telemetría de miles de captadores en LATAM.
+  <br/><br/>
+</li>
+<li>
+  <b>2021 · SR. Full Stack Developer (Web/Mobile)</b> en 🇨🇴 <b>Blossom (HomeCU)</b> <i>(🏦 US Fintech / BaaS)</i><br/>
+  ▸ Website Builder Multi-Tenant para cientos de Credit Unions. Arquitectura SaaS White Label con cumplimiento de seguridad financiera US.
+  <br/><br/>
+</li>
+<li>
+  <b>2020 – 2021 · Full Stack Engineer</b> en 🇨🇴 <b>CORNERSTONE Blockchain</b> <i>(⛓️ Blockchain / LegalTech)</i><br/>
+  ▸ Automatización notarial con Hyperledger Fabric. Billetera cripto nativa en Flutter con pagos QR.
+  <br/><br/>
+</li>
+<li>
+  <b>2019 – 2020 · Mobile Tech Lead (React Native)</b> en 🇵🇦 <b>LIV</b> <i>(📱 Marketplace)</i><br/>
+  ▸ Liderazgo del área móvil para plataforma de servicios multi-vertical.
+  <br/><br/>
+</li>
+<li>
+  <b>2018 – 2019 · Full Stack Developer</b> en 🇨🇴 <b>integ.ro</b> <i>(💻 Software)</i><br/>
+  ▸ Desarrollo Full Stack con JavaScript y bases de datos relacionales.
+  <br/><br/>
+</li>
+<li>
+  <b>2017 – 2018 · Desarrollador de Software</b> en 🇨🇴 <b>Genia Tecnologia</b> <i>(📲 Mobile / Web)</i><br/>
+  ▸ Desarrollo JS, React.js, React Native y Node.js.
+</li>
+</ul>
+
+<blockquote>
+<b>🧭 Hilo conductor:</b> Trayectoria consistente ascendente desde desarrollador junior hasta Founder & Architect, con especialización profunda en <b>Fintech</b> (5 empresas), ecosistemas <b>móviles nativos</b> (Flutter/React Native) y arquitecturas <b>End-to-End</b> para mercados internacionales (🇺🇸🇨🇱🇵🇦🇨🇴🇻🇪).
+</blockquote>
+
+<h3>📈 Open Source & Actividad General GitHub</h3>
+<ul>
+<li><b>+1,986 contribuciones hiper-activas</b> distribuidas orgánicamente en el último año.</li>
+<li>Aporte abierto sobre arquitectura base para proyectos reales mediante la creación de <b>96 Repositorios</b> (incluyendo contribuciones notables como <code>React-Architecture-Template</code>, <code>Wigi-Labs-Flutter-Node-Test</code>, <code>Tyba-Test</code>, <code>proyect_legest</code> y <code>Friender_Advance</code>).</li>
+</ul>
+</td>
+</tr>
 </table>
-
+  
 ---
