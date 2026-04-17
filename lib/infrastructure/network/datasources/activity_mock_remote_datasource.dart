@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../infrastructure/storage/hive_storage.dart';
 
 /// Simulates a remote data source fetching the user's transaction history.
 ///
@@ -9,60 +10,67 @@ class ActivityMockRemoteDataSource {
 
   Future<Map<String, dynamic>> fetchActivityData() async {
     // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 600));
+    await Future.delayed(const Duration(milliseconds: 300));
 
-    // Return dummy JSON response
-    return {
-      'groups': [
-        {
-          'dateLabel': 'Hoy',
-          'items': [
-            {
-              'iconCode': Icons.swap_horiz.codePoint,
-              'title': 'Cambio USDT a COP',
-              'time': '14:30',
-              'status': 'Completado',
-              'statusColor': 0,
-              'amount': '-50.00 USDT',
-              'amountColor': 0,
-              'secondaryAmount': '+195,000 COP',
-            },
-            {
-              'iconCode': Icons.arrow_downward.codePoint,
-              'title': 'Recarga USDT',
-              'time': '10:15',
-              'status': 'Pendiente',
-              'statusColor': 1,
-              'amount': '+100.00 USDT',
-              'amountColor': 0,
-            },
-          ],
-        },
-        {
-          'dateLabel': 'Ayer',
-          'items': [
-            {
-              'iconCode': Icons.arrow_upward.codePoint,
-              'title': 'Retiro a Banco',
-              'time': '18:45',
-              'status': 'Completado',
-              'statusColor': 0,
-              'amount': '-500,000 COP',
-              'amountColor': 0,
-            },
-            {
-              'iconCode': Icons.swap_horiz.codePoint,
-              'title': 'Cambio USDC a VES',
-              'time': '09:20',
-              'status': 'Cancelado',
-              'statusColor': 2,
-              'amount': '-20.00 USDC',
-              'amountColor': 0,
-              'strikethrough': true,
-            },
-          ],
-        },
-      ]
-    };
+    final txs = HiveStorage.transactions.values.toList();
+    
+    if (txs.isEmpty) {
+      return {'groups': []};
+    }
+
+    // Sort by date descending
+    txs.sort((a, b) {
+      final da = DateTime.tryParse(a['date']?.toString() ?? '') ?? DateTime.now();
+      final db = DateTime.tryParse(b['date']?.toString() ?? '') ?? DateTime.now();
+      return db.compareTo(da);
+    });
+
+    final Map<String, List<Map<String, dynamic>>> grouped = {};
+
+    for (final rawTx in txs) {
+      final tx = Map<String, dynamic>.from(rawTx);
+      final dt = DateTime.tryParse(tx['date']?.toString() ?? '') ?? DateTime.now();
+      final String dateLabel = '${dt.day}/${dt.month}/${dt.year}';
+      
+      final type = tx['type'].toString(); // SELL_CRYPTO or BUY_CRYPTO
+      final fiatSymbol = tx['fiatSymbol'] ?? 'FIAT';
+      final cryptoSymbol = tx['cryptoSymbol'] ?? 'CRYPTO';
+      
+      final String amountStr = tx['amount'].toString();
+      final String convertedStr = double.tryParse(tx['convertedAmount']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00';
+
+      final String title = type == 'SELL_CRYPTO' 
+          ? 'Venta de $cryptoSymbol por $fiatSymbol' 
+          : 'Compra de $cryptoSymbol con $fiatSymbol';
+
+      final String mainAmount = type == 'SELL_CRYPTO'
+          ? '-$amountStr $cryptoSymbol'
+          : '+$convertedStr $cryptoSymbol';
+
+      final String secondaryAmount = type == 'SELL_CRYPTO'
+          ? '+$convertedStr $fiatSymbol'
+          : '-$amountStr $fiatSymbol';
+
+      grouped.putIfAbsent(dateLabel, () => []).add({
+        'iconCode': Icons.swap_horiz.codePoint,
+        'title': title,
+        'time': '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}',
+        'status': 'Completado',
+        'statusColor': 0, // 0 = default mapped to success/neutral
+        'amount': mainAmount,
+        'amountColor': type == 'SELL_CRYPTO' ? 0 : 1, // 0 = standard, 1 = primary (green/yellow)
+        'secondaryAmount': secondaryAmount,
+        'strikethrough': false,
+      });
+    }
+
+    final groups = grouped.entries.map((e) {
+      return {
+        'dateLabel': e.key,
+        'items': e.value,
+      };
+    }).toList();
+
+    return {'groups': groups};
   }
 }

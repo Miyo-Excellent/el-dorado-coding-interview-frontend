@@ -20,6 +20,7 @@ import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/h
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/wallet/wallet_cubit.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/activity/activity_cubit.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/theme/theme_cubit.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/traders/traders_cubit.dart';
 
 import 'package:el_dorado_coding_interview_frontend/infrastructure/network/datasources/currency_remote_datasource.dart';
 import 'package:el_dorado_coding_interview_frontend/domain/repositories/currency_repository.dart';
@@ -81,6 +82,7 @@ void configureDependencies() {
 
   sl.registerFactory(() => WalletCubit(getWalletData: sl()));
   sl.registerFactory(() => ActivityCubit(getActivityData: sl()));
+  sl.registerFactory(() => TradersCubit());
 
   // ThemeCubit is a singleton — shared across the entire app.
   sl.registerLazySingleton(() => ThemeCubit());

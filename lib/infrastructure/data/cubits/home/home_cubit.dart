@@ -8,6 +8,7 @@ import 'package:el_dorado_coding_interview_frontend/domain/models/offer_model.da
 import 'package:el_dorado_coding_interview_frontend/domain/usecases/calculate_conversion.dart';
 import 'package:el_dorado_coding_interview_frontend/domain/usecases/validate_offer_limits.dart';
 import 'package:el_dorado_coding_interview_frontend/domain/models/currency_model.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/storage/hive_storage.dart';
 import 'home_state.dart';
 
 /// Cubit that manages the home screen UI state.
@@ -192,4 +193,29 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(convertedAmount: converted));
   }
 
+  /// Simulates completing the exchange order.
+  /// Saves the active exchange details locally in Hive.
+  Future<bool> completeExchange() async {
+    if (state.activeOffer == null || state.convertedAmount <= Decimal.zero) return false;
+
+    final tx = {
+      'id': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': DateTime.now().toIso8601String(),
+      'type': state.type == 0 ? 'SELL_CRYPTO' : 'BUY_CRYPTO',
+      'amount': state.amount,
+      'convertedAmount': state.convertedAmount.toString(),
+      'fiatSymbol': state.fiatCurrency.symbol,
+      'cryptoSymbol': state.cryptoCurrency.symbol,
+      'makerId': state.activeOffer!.userId,
+      'makerUsername': state.activeOffer!.username,
+      'rate': state.activeOffer!.fiatToCryptoExchangeRateRaw,
+    };
+
+    try {
+      await HiveStorage.transactions.add(tx);
+      return true; // Success
+    } catch (e) {
+      return false; // Error
+    }
+  }
 }

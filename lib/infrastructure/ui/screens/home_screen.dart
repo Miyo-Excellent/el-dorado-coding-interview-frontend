@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_theme.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/widgets.dart';
@@ -254,9 +255,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         // ── ATOM: Primary CTA ───────────────────────────
                         PrimaryButton(
-                          label: 'Cambiar a ${state.fiatCurrency.symbol}',
-                          onPressed: state.status == HomeStatus.loaded
-                              ? () {}
+                          label: 'Cambiar a ${state.type == 0 ? state.fiatCurrency.symbol : state.cryptoCurrency.symbol}',
+                          onPressed: state.status == HomeStatus.loaded && state.activeOffer != null
+                              ? () {
+                                  context.push('/p2p/offers', extra: <String, dynamic>{
+                                    'amount': state.amount,
+                                    'fiatSymbol': state.fiatCurrency.symbol,
+                                    'cryptoSymbol': state.cryptoCurrency.symbol,
+                                    'baseRate': state.activeOffer!.fiatToCryptoExchangeRateRaw,
+                                    'type': state.type,
+                                    'paymentMethods': state.activeOffer!.paymentMethods,
+                                  });
+                                }
                               : null,
                         ),
                         const SizedBox(height: AppSpacing.lg),

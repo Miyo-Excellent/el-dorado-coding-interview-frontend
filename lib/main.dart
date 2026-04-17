@@ -11,6 +11,7 @@ import 'infrastructure/data/cubits/home/home_cubit.dart';
 import 'infrastructure/data/cubits/wallet/wallet_cubit.dart';
 import 'infrastructure/data/cubits/activity/activity_cubit.dart';
 import 'infrastructure/data/cubits/currency/currency_cubit.dart';
+import 'infrastructure/data/cubits/traders/traders_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,6 +65,7 @@ class ElDoradoApp extends StatelessWidget {
         BlocProvider<HomeCubit>(create: (_) => sl<HomeCubit>()),
         BlocProvider<WalletCubit>(create: (_) => sl<WalletCubit>()),
         BlocProvider<ActivityCubit>(create: (_) => sl<ActivityCubit>()),
+        BlocProvider<TradersCubit>(create: (_) => sl<TradersCubit>()),
       ],
       child: BlocBuilder<ThemeCubit, AppThemeVariant>(
         builder: (context, variant) {

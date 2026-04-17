@@ -8,6 +8,7 @@ class HiveStorage {
 
   static const String _settingsBox = 'settings';
   static const String _cacheBox = 'cache';
+  static const String _transactionsBox = 'transactions';
 
   // Keys
   static const String themeKey = 'theme_mode'; // 'dark' | 'light'
@@ -26,6 +27,7 @@ class HiveStorage {
     await Future.wait([
       Hive.openBox(_settingsBox),
       Hive.openBox(_cacheBox),
+      Hive.openBox(_transactionsBox),
     ]);
 
     _initialized = true;
@@ -36,6 +38,9 @@ class HiveStorage {
 
   /// The cache box – stores last API response for offline display.
   static Box get cache => Hive.box(_cacheBox);
+
+  /// Simulated transactions box.
+  static Box get transactions => Hive.box(_transactionsBox);
 
   // ── Convenience getters / setters ──────────────────────────────────────────
 
