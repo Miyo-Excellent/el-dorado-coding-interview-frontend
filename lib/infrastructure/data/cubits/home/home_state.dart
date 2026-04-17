@@ -33,7 +33,7 @@ class HomeState extends Equatable {
     this.status = HomeStatus.initial,
     this.type = 0,
     this.fiatCurrencyId = 'COP',
-    this.amount = '50',
+    this.amount = '',
     this.selectedOfferTab = 0,
     this.byPrice,
     this.byReputation,
@@ -54,6 +54,7 @@ class HomeState extends Equatable {
 
   /// Formatted converted amount for display.
   String get formattedConvertedAmount {
+    if (convertedAmount == 0 && amount.isEmpty) return '';
     if (convertedAmount >= 1000) {
       final parts = convertedAmount.toStringAsFixed(2).split('.');
       final intPart = parts[0].replaceAllMapped(

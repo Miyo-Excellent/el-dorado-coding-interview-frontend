@@ -13,7 +13,7 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
   // Cache the last requested query parameters to use on each tick
   int _lastType = 0;
   String _lastFiatCurrencyId = 'COP';
-  String _lastAmount = '50';
+  String _lastAmount = '';
 
   ExchangeBloc({required this.getRecommendations})
     : super(const ExchangeState()) {

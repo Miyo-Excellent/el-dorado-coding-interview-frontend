@@ -105,9 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
                         ExchangeCard(
-                          fromAmount: state.type == 0
-                              ? state.amount
-                              : state.formattedConvertedAmount,
+                          fromAmount: state.amount,
                           fromCurrency: state.type == 0
                               ? 'USDT'
                               : state.fiatCurrencyId,
@@ -118,9 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           fromSymbol: state.type == 0
                               ? '₮'
                               : (_currencySymbols[state.fiatCurrencyId] ?? '\$'),
-                          toAmount: state.type == 0
-                              ? state.formattedConvertedAmount
-                              : state.amount,
+                          toAmount: state.formattedConvertedAmount,
                           toCurrency: state.type == 0
                               ? state.fiatCurrencyId
                               : 'USDT',

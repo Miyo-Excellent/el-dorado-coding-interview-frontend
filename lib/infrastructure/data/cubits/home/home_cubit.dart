@@ -131,7 +131,13 @@ class HomeCubit extends Cubit<HomeState> {
 
   /// Updates the input amount.
   void changeAmount(String amount) {
-    emit(state.copyWith(amount: amount));
+    final activeRate = _getActiveRate(state.byPrice, state.byReputation);
+    final converted = calculateConversion(
+      amount: amount,
+      rate: activeRate,
+      type: state.type,
+    );
+    emit(state.copyWith(amount: amount, convertedAmount: converted));
     fetchRecommendations();
   }
 
@@ -157,9 +163,7 @@ class HomeCubit extends Cubit<HomeState> {
     
     emit(state.copyWith(
       amount: newAmountStr,
-      // We purposefully don't override convertedAmount directly in state 
-      // because `convertedAmount` mathematically comes from `amount * rate`.
-      // The listener handles text field typing.
+      convertedAmount: val,
     ));
     fetchRecommendations();
   }
