@@ -9,6 +9,8 @@ class HiveStorage {
   static const String _settingsBox = 'settings';
   static const String _cacheBox = 'cache';
   static const String _transactionsBox = 'transactions';
+  static const String _profileBox = 'profile';
+  static const String _banksBox = 'banks';
 
   // Keys
   static const String themeKey = 'theme_mode'; // 'dark' | 'light'
@@ -28,6 +30,8 @@ class HiveStorage {
       Hive.openBox(_settingsBox),
       Hive.openBox(_cacheBox),
       Hive.openBox(_transactionsBox),
+      Hive.openBox(_profileBox),
+      Hive.openBox(_banksBox),
     ]);
 
     _initialized = true;
@@ -41,6 +45,12 @@ class HiveStorage {
 
   /// Simulated transactions box.
   static Box get transactions => Hive.box(_transactionsBox);
+
+  /// Profile data box 
+  static Box get profile => Hive.box(_profileBox);
+
+  /// Bank accounts box
+  static Box get banks => Hive.box(_banksBox);
 
   // ── Convenience getters / setters ──────────────────────────────────────────
 

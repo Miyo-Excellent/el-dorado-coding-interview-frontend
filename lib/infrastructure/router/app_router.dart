@@ -6,6 +6,8 @@ import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/screens/ac
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/screens/settings_screen.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/screens/p2p/p2p_offer_list_screen.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/screens/p2p/p2p_transaction_screen.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/screens/settings/personal_info_screen.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/screens/settings/bank_accounts_screen.dart';
 import 'package:el_dorado_coding_interview_frontend/domain/models/offer_model.dart';
 import 'app_shell.dart';
 
@@ -15,6 +17,8 @@ abstract final class AppRoutes {
   static const String wallet = '/wallet';
   static const String activity = '/activity';
   static const String settings = '/settings';
+  static const String personalInfo = '/settings/personal-info';
+  static const String bankAccounts = '/settings/bank-accounts';
   static const String p2pOffers = '/p2p/offers';
   static const String p2pTransaction = '/p2p/transaction';
 }
@@ -90,6 +94,18 @@ final GoRouter appRouter = GoRouter(
           offer: extras['offer'] as OfferModel,
         );
       },
+    ),
+    GoRoute(
+      path: AppRoutes.personalInfo,
+      name: 'personalInfo',
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: PersonalInfoScreen()),
+    ),
+    GoRoute(
+      path: AppRoutes.bankAccounts,
+      name: 'bankAccounts',
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: BankAccountsScreen()),
     ),
   ],
 );

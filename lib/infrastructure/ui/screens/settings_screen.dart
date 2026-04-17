@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_theme.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/theme/theme_cubit.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/widgets.dart';
+import 'package:go_router/go_router.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/router/app_router.dart';
 
 /// Settings screen.
 ///
@@ -28,7 +30,7 @@ class SettingsScreen extends StatelessWidget {
               SettingItem(
                 icon: Icons.person_outline,
                 label: 'Personal Information',
-                onTap: () {},
+                onTap: () => context.push(AppRoutes.personalInfo),
               ),
               SettingItem(
                 icon: Icons.security,
@@ -53,7 +55,7 @@ class SettingsScreen extends StatelessWidget {
               SettingItem(
                 icon: Icons.account_balance_outlined,
                 label: 'Bank Accounts',
-                onTap: () {},
+                onTap: () => context.push(AppRoutes.bankAccounts),
               ),
             ],
           ),
