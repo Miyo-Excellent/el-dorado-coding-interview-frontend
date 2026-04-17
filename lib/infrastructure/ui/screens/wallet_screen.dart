@@ -5,6 +5,10 @@ import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/widgets.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/wallet/wallet_cubit.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/wallet/wallet_state.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/activity/activity_cubit.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/activity/activity_state.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/screens/wallet/wallet_deposit_sheet.dart';
+import 'package:go_router/go_router.dart';
 
 /// Wallet screen.
 ///
@@ -14,8 +18,30 @@ import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/w
 /// - **View** → this widget
 ///
 /// Uses [BlocBuilder] for reactive UI and the existing atomic widget library.
-class WalletScreen extends StatelessWidget {
-  const WalletScreen({super.key});
+class WalletScreen extends StatefulWidget {
+  final bool openDeposit;
+
+  const WalletScreen({super.key, this.openDeposit = false});
+
+  @override
+  State<WalletScreen> createState() => _WalletScreenState();
+}
+
+class _WalletScreenState extends State<WalletScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.openDeposit) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => const WalletDepositSheet(),
+        );
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +55,10 @@ class WalletScreen extends StatelessWidget {
               const AmbientGlowBackground(),
 
               RefreshIndicator(
-                onRefresh: () => context.read<WalletCubit>().refresh(),
+                onRefresh: () async {
+                  context.read<WalletCubit>().refresh();
+                  context.read<ActivityCubit>().refresh();
+                },
                 color: Theme.of(context).colorScheme.primary,
                 backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 child: CustomScrollView(
@@ -61,17 +90,28 @@ class WalletScreen extends StatelessWidget {
                             QuickAction(
                               icon: Icons.add,
                               label: 'Recargar',
-                              onTap: () {},
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (context) => const WalletDepositSheet(),
+                                );
+                              },
                             ),
                             QuickAction(
                               icon: Icons.arrow_upward,
                               label: 'Retirar',
-                              onTap: () {},
+                              onTap: () {
+                                context.go('/');
+                              },
                             ),
                             QuickAction(
                               icon: Icons.swap_horiz,
                               label: 'Cambiar',
-                              onTap: () {},
+                              onTap: () {
+                                context.go('/');
+                              },
                             ),
                           ],
                         ),
@@ -84,10 +124,11 @@ class WalletScreen extends StatelessWidget {
                                 (a) => AssetEntry(
                                   icon: Icons.currency_bitcoin,
                                   iconColor: Color(a.iconColor),
+                                  iconUrl: a.iconUrl,
                                   name: a.name,
                                   subtitle: a.subtitle,
                                   amount: a.amount,
-                                  usdValue: a.usdValue,
+                                  usdValue: 'US\$${a.usdValue}',
                                 ),
                               )
                               .toList(),
@@ -96,37 +137,42 @@ class WalletScreen extends StatelessWidget {
                         const SizedBox(height: AppSpacing.xxxl + 8),
 
                         // ── ORGANISM: Recent Activity List ──────────────
-                        RecentActivityList(
-                          onSeeAll: () {},
-                          transactions: [
-                            RecentTransaction(
-                              icon: Icons.swap_horiz,
-                              title: 'Cambio USDT a COP',
-                              subtitle: 'Today, 14:30',
-                              amount: '-\$50.00',
-                              amountColor: Theme.of(
-                                context,
-                              ).colorScheme.onSurface,
-                              onTap: () {},
-                            ),
-                            RecentTransaction(
-                              icon: Icons.download,
-                              iconBgColor: Theme.of(context)
-                                  .colorScheme
-                                  .secondary
-                                  .withValues(alpha: 0.10),
-                              iconColor: Theme.of(
-                                context,
-                              ).colorScheme.secondary,
-                              title: 'Recarga Nequi',
-                              subtitle: 'Yesterday, 09:15',
-                              amount: '+\$100.00',
-                              amountColor: Theme.of(
-                                context,
-                              ).colorScheme.secondary,
-                              onTap: () {},
-                            ),
-                          ],
+                        BlocBuilder<ActivityCubit, ActivityState>(
+                          builder: (context, activityState) {
+                            if (activityState.groups.isEmpty) {
+                              return const SizedBox.shrink();
+                            }
+
+                            // Aplanar la lista de grupos para tomar los primeros 3 items
+                            final recentItems = activityState.groups
+                                .expand((g) => g.items)
+                                .take(3)
+                                .toList();
+
+                            return RecentActivityList(
+                              onSeeAll: () {
+                                context.go('/activity'); // Navegar a la pestaña Activity
+                              },
+                              transactions: recentItems.map((item) {
+                                return RecentTransaction(
+                                  icon: item.amountColor == 1 ? Icons.download : Icons.upload,
+                                  iconBgColor: item.amountColor == 1
+                                      ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.10)
+                                      : Theme.of(context).colorScheme.error.withValues(alpha: 0.10),
+                                  iconColor: item.amountColor == 1
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context).colorScheme.error,
+                                  title: item.title,
+                                  subtitle: item.time,
+                                  amount: item.amount,
+                                  amountColor: item.amountColor == 1
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context).colorScheme.onSurface,
+                                  onTap: () {},
+                                );
+                              }).toList(),
+                            );
+                          },
                         ),
                         const SizedBox(height: AppSpacing.lg),
                       ]), // SliverChildListDelegate

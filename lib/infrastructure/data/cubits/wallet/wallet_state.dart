@@ -48,6 +48,7 @@ class WalletAsset extends Equatable {
   final String amount;
   final String usdValue;
   final int iconColor;
+  final String? iconUrl;
 
   const WalletAsset({
     required this.name,
@@ -55,8 +56,9 @@ class WalletAsset extends Equatable {
     required this.amount,
     required this.usdValue,
     required this.iconColor,
+    this.iconUrl,
   });
 
   @override
-  List<Object?> get props => [name, amount, usdValue];
+  List<Object?> get props => [name, amount, usdValue, iconUrl];
 }

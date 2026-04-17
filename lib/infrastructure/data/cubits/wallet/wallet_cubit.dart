@@ -23,6 +23,7 @@ class WalletCubit extends Cubit<WalletState> {
         amount: e['amount'] as String,
         usdValue: e['usdValue'] as String,
         iconColor: e['iconColor'] as int,
+        iconUrl: e['iconUrl'] as String?,
       )).toList();
 
       emit(state.copyWith(

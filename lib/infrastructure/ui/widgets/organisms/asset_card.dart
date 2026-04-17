@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_theme.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/atoms/circle_icon_container.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/widgets/atoms/title_subtitle_column.dart';
@@ -30,6 +30,7 @@ class AssetCard extends StatelessWidget {
     required this.subtitle,
     required this.amount,
     required this.usdValue,
+    this.iconUrl,
     this.onTap,
   });
 
@@ -39,6 +40,7 @@ class AssetCard extends StatelessWidget {
   final String subtitle;
   final String amount;
   final String usdValue;
+  final String? iconUrl;
   final VoidCallback? onTap;
 
   @override
@@ -53,14 +55,21 @@ class AssetCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // ATOM: tinted icon circle
-            CircleIconContainer(
-              icon: icon,
-              size: 48,
-              iconSize: 22,
-              bgColor: iconColor.withValues(alpha: 0.15),
-              iconColor: iconColor,
-            ),
+            // ATOM: tinted icon circle or network image
+            if (iconUrl != null && iconUrl!.isNotEmpty)
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: iconColor.withValues(alpha: 0.15),
+                backgroundImage: NetworkImage(iconUrl!),
+              )
+            else
+              CircleIconContainer(
+                icon: icon,
+                size: 48,
+                iconSize: 22,
+                bgColor: iconColor.withValues(alpha: 0.15),
+                iconColor: iconColor,
+              ),
             const SizedBox(width: AppSpacing.lg),
             // ATOM: name + subtitle
             Expanded(

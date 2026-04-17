@@ -41,25 +41,31 @@ class ActivityMockRemoteDataSource {
 
       final String title = type == 'SELL_CRYPTO' 
           ? 'Venta de $cryptoSymbol por $fiatSymbol' 
-          : 'Compra de $cryptoSymbol con $fiatSymbol';
+          : type == 'BUY_CRYPTO'
+            ? 'Compra de $cryptoSymbol con $fiatSymbol'
+            : 'Recarga de ${tx['currency']}';
 
       final String mainAmount = type == 'SELL_CRYPTO'
           ? '-$amountStr $cryptoSymbol'
-          : '+$convertedStr $cryptoSymbol';
+          : type == 'BUY_CRYPTO'
+            ? '+$convertedStr $cryptoSymbol'
+            : '+$amountStr ${tx['currency']}';
 
       final String secondaryAmount = type == 'SELL_CRYPTO'
           ? '+$convertedStr $fiatSymbol'
-          : '-$amountStr $fiatSymbol';
+          : type == 'BUY_CRYPTO'
+            ? '-$amountStr $fiatSymbol'
+            : '';
 
       grouped.putIfAbsent(dateLabel, () => []).add({
-        'iconCode': Icons.swap_horiz.codePoint,
+        'iconCode': type == 'DEPOSIT' ? Icons.download.codePoint : Icons.swap_horiz.codePoint,
         'title': title,
         'time': '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}',
         'status': 'Completado',
         'statusColor': 0, // 0 = default mapped to success/neutral
         'amount': mainAmount,
-        'amountColor': type == 'SELL_CRYPTO' ? 0 : 1, // 0 = standard, 1 = primary (green/yellow)
-        'secondaryAmount': secondaryAmount,
+        'amountColor': (type == 'SELL_CRYPTO') ? 0 : 1, // 0 = standard, 1 = primary (green/yellow)
+        'secondaryAmount': secondaryAmount.isNotEmpty ? secondaryAmount : null,
         'strikethrough': false,
       });
     }

@@ -12,6 +12,7 @@ class AssetEntry {
     required this.subtitle,
     required this.amount,
     required this.usdValue,
+    this.iconUrl,
     this.onTap,
   });
 
@@ -21,6 +22,7 @@ class AssetEntry {
   final String subtitle;
   final String amount;
   final String usdValue;
+  final String? iconUrl;
   final VoidCallback? onTap;
 }
 
@@ -89,6 +91,7 @@ class AssetList extends StatelessWidget {
           AssetCard(
             icon: assets[i].icon,
             iconColor: assets[i].iconColor,
+            iconUrl: assets[i].iconUrl,
             name: assets[i].name,
             subtitle: assets[i].subtitle,
             amount: assets[i].amount,

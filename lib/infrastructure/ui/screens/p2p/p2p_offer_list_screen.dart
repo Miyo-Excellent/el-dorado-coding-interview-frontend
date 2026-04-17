@@ -6,6 +6,8 @@ import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/app_
 import 'package:el_dorado_coding_interview_frontend/domain/models/offer_model.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/traders/traders_cubit.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/traders/traders_state.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/wallet/wallet_cubit.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/wallet/wallet_state.dart';
 import 'package:decimal/decimal.dart';
 
 class P2pOfferListScreen extends StatefulWidget {
@@ -181,6 +183,28 @@ class _P2pOfferListScreenState extends State<P2pOfferListScreen> {
 
     return InkWell(
       onTap: () {
+        final walletState = context.read<WalletCubit>().state;
+        // Si compramos crypto (type 1), pagamos FIAT. Si vendemos crypto (type 0), pagamos CRYPTO.
+        final String requiredSymbol = widget.type == 0 ? widget.cryptoSymbol : widget.fiatSymbol;
+        
+        final WalletAsset? currentAsset = walletState.assets.where((a) => a.name == requiredSymbol).firstOrNull;
+        final double currentBalance = currentAsset != null ? (double.tryParse(currentAsset.amount.replaceAll(',', '.')) ?? 0.0) : 0.0;
+        final double requiredAmount = double.tryParse(widget.amount.replaceAll(',', '.')) ?? 0.0;
+
+        if (currentBalance < requiredAmount) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Saldo insuficiente de $requiredSymbol. Recarga tu wallet.'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+          // Redirigir a Wallet con flag para abrir el deposit sheet
+          context.go('/wallet', extra: {'openDeposit': true});
+          return;
+        }
+
         context.push('/p2p/transaction', extra: <String, dynamic>{
           'amount': widget.amount,
           'fiatSymbol': widget.fiatSymbol,

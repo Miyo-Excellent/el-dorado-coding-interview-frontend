@@ -12,6 +12,7 @@ import 'infrastructure/data/cubits/wallet/wallet_cubit.dart';
 import 'infrastructure/data/cubits/activity/activity_cubit.dart';
 import 'infrastructure/data/cubits/currency/currency_cubit.dart';
 import 'infrastructure/data/cubits/traders/traders_cubit.dart';
+import 'infrastructure/data/cubits/payment_method/payment_method_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,6 +60,11 @@ class ElDoradoApp extends StatelessWidget {
         // ── Global Currencies State ───────────────────────────────────────
         BlocProvider<CurrencyCubit>(
           create: (_) => sl<CurrencyCubit>()..fetchCurrencies(),
+        ),
+
+        // ── Global Payment Method State ───────────────────────────────────
+        BlocProvider<PaymentMethodCubit>(
+          create: (_) => sl<PaymentMethodCubit>()..fetchPaymentMethods(),
         ),
 
         // ── Feature BLoCs / Cubits ────────────────────────────────────────

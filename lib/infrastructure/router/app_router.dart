@@ -41,8 +41,12 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: AppRoutes.wallet,
           name: 'wallet',
-          pageBuilder: (context, state) =>
-              const NoTransitionPage(child: WalletScreen()),
+          pageBuilder: (context, state) {
+            final extras = state.extra as Map<String, dynamic>? ?? {};
+            return NoTransitionPage(
+              child: WalletScreen(openDeposit: extras['openDeposit'] as bool? ?? false),
+            );
+          },
         ),
         GoRoute(
           path: AppRoutes.activity,
