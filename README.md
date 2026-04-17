@@ -15,7 +15,7 @@ Implementar una mini calculadora de intercambio de divisas que muestre cuánto r
 <table width="100%">
 <tr>
 <td width="350" valign="top" align="center">
-<video src="./demo.mp4" autoplay loop muted playsinline width="350"></video>
+<img src="./demo.gif" alt="El Dorado App Demo" width="350" />
 </td>
 <td valign="top">
 
