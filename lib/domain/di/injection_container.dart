@@ -24,13 +24,13 @@ import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/t
 
 import 'package:el_dorado_coding_interview_frontend/infrastructure/network/datasources/currency_remote_datasource.dart';
 import 'package:el_dorado_coding_interview_frontend/domain/repositories/currency_repository.dart';
-import 'package:el_dorado_coding_interview_frontend/infrastructure/data/repositories/currency_repository_impl.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/repositories_impl/currency_repository_impl.dart';
 import 'package:el_dorado_coding_interview_frontend/domain/usecases/get_currencies.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/currency/currency_cubit.dart';
 
 import 'package:el_dorado_coding_interview_frontend/infrastructure/network/datasources/payment_method_remote_datasource.dart';
 import 'package:el_dorado_coding_interview_frontend/domain/repositories/payment_method_repository.dart';
-import 'package:el_dorado_coding_interview_frontend/infrastructure/data/repositories/payment_method_repository_impl.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/repositories_impl/payment_method_repository_impl.dart';
 import 'package:el_dorado_coding_interview_frontend/domain/usecases/get_payment_methods.dart';
 import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/payment_method/payment_method_cubit.dart';
 
@@ -61,9 +61,7 @@ void configureDependencies() {
   sl.registerLazySingleton<PaymentMethodRepository>(
     () => PaymentMethodRepositoryImpl(remoteDataSource: sl()),
   );
-  sl.registerLazySingleton<WalletRepository>(
-    () => WalletRepositoryImpl(sl()),
-  );
+  sl.registerLazySingleton<WalletRepository>(() => WalletRepositoryImpl(sl()));
   sl.registerLazySingleton<ActivityRepository>(
     () => ActivityRepositoryImpl(sl()),
   );
@@ -80,19 +78,23 @@ void configureDependencies() {
   // ── BLoCs / Cubits ────────────────────────────────────────────────────────
   // ExchangeBloc is a singleton that constantly queries API every 10s.
   sl.registerLazySingleton(() => ExchangeBloc(getRecommendations: sl()));
-  
+
   // Global Currency Cubit
   sl.registerLazySingleton(() => CurrencyCubit(getCurrenciesUseCase: sl()));
 
   // Global Payment Method Cubit
-  sl.registerLazySingleton(() => PaymentMethodCubit(getPaymentMethodsUseCase: sl()));
+  sl.registerLazySingleton(
+    () => PaymentMethodCubit(getPaymentMethodsUseCase: sl()),
+  );
 
   // HomeCubit acts as the ViewModel consuming ExchangeBloc.
-  sl.registerFactory(() => HomeCubit(
-        exchangeBloc: sl(),
-        calculateConversion: sl(),
-        validateOfferLimits: sl(),
-      ));
+  sl.registerFactory(
+    () => HomeCubit(
+      exchangeBloc: sl(),
+      calculateConversion: sl(),
+      validateOfferLimits: sl(),
+    ),
+  );
 
   sl.registerFactory(() => WalletCubit(getWalletData: sl()));
   sl.registerFactory(() => ActivityCubit(getActivityData: sl()));
