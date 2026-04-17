@@ -77,6 +77,17 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
     _lastCryptoCurrencyId = event.cryptoCurrencyId;
     _lastAmount = event.amount;
 
+    final parsedAmount = double.tryParse(_lastAmount.replaceAll(',', '.')) ?? 0;
+    if (parsedAmount <= 0) {
+      emit(
+        state.copyWith(
+          status: ExchangeStatus.empty,
+          clearOffers: true,
+        ),
+      );
+      return;
+    }
+
     final response = await getRecommendations(
       type: _lastType,
       cryptoCurrencyId: _lastCryptoCurrencyId,

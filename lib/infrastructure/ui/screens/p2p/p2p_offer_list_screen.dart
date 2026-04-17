@@ -300,40 +300,47 @@ class _P2pOfferListScreenState extends State<P2pOfferListScreen> {
             // Información Adicional: Límites y Métodos
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Límites',
-                      style: tt.labelSmall?.copyWith(color: colorScheme.onSurfaceVariant),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${offer.fiatMinLimit} - ${offer.fiatMaxLimit} ${widget.fiatSymbol}',
-                      style: tt.bodySmall?.copyWith(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Límites',
+                        style: tt.labelSmall?.copyWith(color: colorScheme.onSurfaceVariant),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 2),
+                      Text(
+                        '${offer.fiatMinLimit} - ${offer.fiatMaxLimit} ${widget.fiatSymbol}',
+                        style: tt.bodySmall?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Métodos',
-                      style: tt.labelSmall?.copyWith(color: colorScheme.onSurfaceVariant),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      offer.paymentMethods.join(', '),
-                      style: tt.bodySmall?.copyWith(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Métodos',
+                        style: tt.labelSmall?.copyWith(color: colorScheme.onSurfaceVariant),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 2),
+                      Text(
+                        offer.paymentMethods.join(', '),
+                        style: tt.bodySmall?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.end,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

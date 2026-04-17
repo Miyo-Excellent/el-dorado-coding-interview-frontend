@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'domain/di/injection_container.dart';
-import 'infrastructure/router/app_router.dart';
-import 'infrastructure/storage/hive_storage.dart';
-import 'infrastructure/ui/theme/registry.dart';
-import 'infrastructure/data/cubits/theme/theme_cubit.dart';
-import 'infrastructure/data/cubits/home/home_cubit.dart';
-import 'infrastructure/data/cubits/wallet/wallet_cubit.dart';
-import 'infrastructure/data/cubits/activity/activity_cubit.dart';
-import 'infrastructure/data/cubits/currency/currency_cubit.dart';
-import 'infrastructure/data/cubits/traders/traders_cubit.dart';
-import 'infrastructure/data/cubits/payment_method/payment_method_cubit.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/di/injection_container.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/router/app_router.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/storage/hive_storage.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/ui/theme/registry.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/theme/theme_cubit.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/home/home_cubit.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/wallet/wallet_cubit.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/activity/activity_cubit.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/currency/currency_cubit.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/traders/traders_cubit.dart';
+import 'package:el_dorado_coding_interview_frontend/infrastructure/data/cubits/payment_method/payment_method_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -75,9 +75,9 @@ class ElDoradoApp extends StatelessWidget {
       ],
       child: BlocBuilder<ThemeCubit, AppThemeVariant>(
         builder: (context, variant) {
-          // variant.pair() → AppThemeVariantX extension (registry.dart)
-          // Resolves the correct light + dark ThemeData for this design system family.
-          final (ThemeData light, ThemeData dark) = variant.pair();
+          // AppThemeRegistry.pair(variant) → resolves light + dark ThemeData
+          // for the design system family (registry.dart).
+          final (ThemeData light, ThemeData dark) = AppThemeRegistry.pair(variant);
 
           return MaterialApp.router(
             title: 'El Dorado',

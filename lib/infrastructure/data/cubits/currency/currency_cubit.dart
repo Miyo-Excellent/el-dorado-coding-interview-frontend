@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../../../../domain/models/currency_model.dart';
-import '../../../../../domain/usecases/get_currencies.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/models/currency_model.dart';
+import 'package:el_dorado_coding_interview_frontend/domain/usecases/get_currencies.dart';
 
 part 'currency_state.dart';
 

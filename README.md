@@ -12,29 +12,146 @@ Implementar una mini calculadora de intercambio de divisas que muestre cuánto r
 
 ## Lo que se entregó
 
-Se diseñó y construyó una **SuperApp P2P de intercambio de criptomonedas** completa, con cuatro pantallas principales, flujos de navegación real y persistencia local — todo bajo los principios de arquitectura escalable y un sistema de diseño editorial propio.
+<table width="100%">
+<tr>
+<td width="350" valign="top" align="center">
+<video src="./demo.mp4" autoplay loop muted playsinline width="350"></video>
+</td>
+<td valign="top">
 
-### Pantallas principales
+<p>Se diseñó y construyó una <strong>SuperApp P2P de intercambio de criptomonedas</strong> completa, con cuatro pantallas principales, flujos de navegación real y persistencia local — todo bajo los principios de arquitectura escalable y un sistema de diseño editorial propio.</p>
 
-| Ruta                      | Pantalla                 | Descripción                                                         |
-| ------------------------- | ------------------------ | ------------------------------------------------------------------- |
-| `/`                       | **Home**                 | Calculadora de intercambio en vivo con tasas dinámicas desde el API |
-| `/wallet`                 | **Wallet**               | Gestión de activos y métodos de pago del usuario                    |
-| `/activity`               | **Activity**             | Historial de transacciones agrupado por fecha                       |
-| `/settings`               | **Settings**             | Perfil, temas y gestión de cuentas bancarias                        |
-| `/p2p/offers`             | **P2P — Ofertas**        | Listado de traders para completar un cambio                         |
-| `/p2p/transaction`        | **P2P — Transacción**    | Confirmación y ejecución de una operación P2P                       |
-| `/settings/personal-info` | **Información Personal** | Edición y persistencia del perfil del usuario                       |
-| `/settings/bank-accounts` | **Cuentas Bancarias**    | CRUD completo con soporte para cuenta predeterminada                |
+<h3>Pantallas principales</h3>
 
----
+<table>
+<thead>
+<tr>
+<th>Ruta</th>
+<th>Pantalla</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/</code></td>
+<td><strong>Home</strong></td>
+<td>Calculadora de intercambio en vivo con tasas dinámicas desde el API</td>
+</tr>
+<tr>
+<td><code>/wallet</code></td>
+<td><strong>Wallet</strong></td>
+<td>Gestión de activos y métodos de pago del usuario</td>
+</tr>
+<tr>
+<td><code>/activity</code></td>
+<td><strong>Activity</strong></td>
+<td>Historial de transacciones agrupado por fecha</td>
+</tr>
+<tr>
+<td><code>/settings</code></td>
+<td><strong>Settings</strong></td>
+<td>Perfil, temas y gestión de cuentas bancarias</td>
+</tr>
+<tr>
+<td><code>/p2p/offers</code></td>
+<td><strong>P2P — Ofertas</strong></td>
+<td>Listado de traders para completar un cambio</td>
+</tr>
+<tr>
+<td><code>/p2p/transaction</code></td>
+<td><strong>P2P — Transacción</strong></td>
+<td>Confirmación y ejecución de una operación P2P</td>
+</tr>
+<tr>
+<td><code>/settings/personal-info</code></td>
+<td><strong>Información Personal</strong></td>
+<td>Edición y persistencia del perfil del usuario</td>
+</tr>
+<tr>
+<td><code>/settings/bank-accounts</code></td>
+<td><strong>Cuentas Bancarias</strong></td>
+<td>CRUD completo con soporte para cuenta predeterminada</td>
+</tr>
+</tbody>
+</table>
 
-## Arquitectura
+<hr />
 
-El proyecto implementa **Clean Architecture** en dos capas estrictas (`domain` e `infrastructure`), con separación completa de responsabilidades entre reglas de negocio, estado de UI e implementaciones concretas.
+<h4>Gestión de estado</h4>
 
-```
-lib/
+<p>El proyecto combina <strong>BLoC</strong> (para flujos con eventos explícitos) y <strong>Cubit</strong> (para estado más simple), todos registrados globalmente vía <code>get_it</code>:</p>
+
+<table>
+<thead>
+<tr>
+<th>Clase</th>
+<th>Tipo</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ExchangeBloc</code></td>
+<td>BLoC</td>
+<td>Flujo de intercambio con eventos (<code>AmountChanged</code>, <code>CurrencySwapped</code>…)</td>
+</tr>
+<tr>
+<td><code>ThemeCubit</code></td>
+<td>Cubit</td>
+<td>Variante activa del design system (4 opciones: Golden/Alchemist × Light/Dark)</td>
+</tr>
+<tr>
+<td><code>CurrencyCubit</code></td>
+<td>Cubit</td>
+<td>Carga y caché de pares FIAT/CRYPTO desde el API</td>
+</tr>
+<tr>
+<td><code>PaymentMethodCubit</code></td>
+<td>Cubit</td>
+<td>Métodos de pago disponibles globalmente</td>
+</tr>
+<tr>
+<td><code>HomeCubit</code></td>
+<td>Cubit</td>
+<td>Estado de la pantalla principal</td>
+</tr>
+<tr>
+<td><code>WalletCubit</code></td>
+<td>Cubit</td>
+<td>Activos y saldo del usuario</td>
+</tr>
+<tr>
+<td><code>ActivityCubit</code></td>
+<td>Cubit</td>
+<td>Historial de transacciones agrupado</td>
+</tr>
+<tr>
+<td><code>TradersCubit</code></td>
+<td>Cubit</td>
+<td>Listado de traders P2P</td>
+</tr>
+<tr>
+<td><code>BankAccountCubit</code></td>
+<td>Cubit</td>
+<td>CRUD de cuentas bancarias + cuenta predeterminada (Hive CE)</td>
+</tr>
+<tr>
+<td><code>ProfileCubit</code></td>
+<td>Cubit</td>
+<td>Lectura y escritura del perfil del usuario (Hive CE)</td>
+</tr>
+</tbody>
+</table>
+
+</td>
+</tr>
+</table>
+
+<h3>Arquitectura</h3>
+
+<p>El proyecto implementa <strong>Clean Architecture</strong> en dos capas estrictas (<code>domain</code> e <code>infrastructure</code>), con separación completa de responsabilidades entre reglas de negocio, estado de UI e implementaciones concretas.</p>
+
+<pre><code>lib/
 │   main.dart                                  ← Entry point: DI + Hive + MultiBlocProvider
 │
 ├── domain/                                    🏛️  CAPA DE DOMINIO (sin dependencias de Flutter)
@@ -88,25 +205,7 @@ lib/
             ├── molecules/                     ← Composiciones de 2+ átomos (20 widgets)
             └── organisms/                     ← Secciones complejas y auto-suficientes (17 widgets)
                     exchange_card.dart          ← Calculadora principal de intercambio
-                    wealth_card.dart            ← Tarjeta de saldo glassmórfica
-```
-
-### Gestión de estado
-
-El proyecto combina **BLoC** (para flujos con eventos explícitos) y **Cubit** (para estado más simple), todos registrados globalmente vía `get_it`:
-
-| Clase                | Tipo  | Responsabilidad                                                               |
-| -------------------- | ----- | ----------------------------------------------------------------------------- |
-| `ExchangeBloc`       | BLoC  | Flujo de intercambio con eventos (`AmountChanged`, `CurrencySwapped`…)        |
-| `ThemeCubit`         | Cubit | Variante activa del design system (4 opciones: Golden/Alchemist × Light/Dark) |
-| `CurrencyCubit`      | Cubit | Carga y caché de pares FIAT/CRYPTO desde el API                               |
-| `PaymentMethodCubit` | Cubit | Métodos de pago disponibles globalmente                                       |
-| `HomeCubit`          | Cubit | Estado de la pantalla principal                                               |
-| `WalletCubit`        | Cubit | Activos y saldo del usuario                                                   |
-| `ActivityCubit`      | Cubit | Historial de transacciones agrupado                                           |
-| `TradersCubit`       | Cubit | Listado de traders P2P                                                        |
-| `BankAccountCubit`   | Cubit | CRUD de cuentas bancarias + cuenta predeterminada (Hive CE)                   |
-| `ProfileCubit`       | Cubit | Lectura y escritura del perfil del usuario (Hive CE)                          |
+                    wealth_card.dart            ← Tarjeta de saldo glassmórfica</code></pre>
 
 ---
 
