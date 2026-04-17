@@ -31,47 +31,223 @@ Se diseñó y construyó una **SuperApp P2P de intercambio de criptomonedas** co
 
 ## Arquitectura
 
-El proyecto sigue una **Clean Architecture** dividida en dos capas principales:
+El proyecto implementa **Clean Architecture** en dos capas estrictas (`domain` e `infrastructure`), con separación completa de responsabilidades entre reglas de negocio, estado de UI e implementaciones concretas.
 
 ```
 lib/
-├── domain/                    # Reglas de negocio puras
-│   ├── models/                # Entidades (OfferModel, CurrencyModel, BankAccountModel…)
-│   ├── repositories/          # Contratos / interfaces
-│   ├── usecases/              # Casos de uso (uno por acción de negocio)
-│   └── di/                    # Contenedor de inyección de dependencias (get_it)
+│   main.dart                                  ← Entry point: DI + Hive + MultiBlocProvider
 │
-└── infrastructure/            # Implementaciones concretas
+├── domain/                                    🏛️  CAPA DE DOMINIO (sin dependencias de Flutter)
+│   ├── di/
+│   │       injection_container.dart           ← Registro global de dependencias (get_it)
+│   │
+│   ├── models/                                ← Entidades puras del negocio
+│   │       bank_account_model.dart
+│   │       currency_model.dart
+│   │       offer_maker_stats_model.dart
+│   │       offer_model.dart
+│   │       payment_method_model.dart
+│   │       personal_information_model.dart
+│   │       recommendation_response.dart       ← DTO del API de recomendaciones
+│   │       score_model.dart
+│   │
+│   ├── repositories/                          ← Contratos (interfaces abstractas)
+│   │       activity_repository.dart
+│   │       bank_account_repository.dart
+│   │       currency_repository.dart
+│   │       payment_method_repository.dart
+│   │       profile_repository.dart
+│   │       recommendation_repository.dart
+│   │       wallet_repository.dart
+│   │
+│   └── usecases/                              ← Un caso de uso por acción de negocio
+│           add_bank_account.dart
+│           calculate_conversion.dart          ← Aritmética con Decimal (sin IEEE 754)
+│           delete_bank_account.dart
+│           get_activity_data.dart
+│           get_bank_accounts.dart
+│           get_currencies.dart
+│           get_payment_methods.dart
+│           get_profile.dart
+│           get_recommendations.dart           ← Consulta al API público de El Dorado
+│           get_wallet_data.dart
+│           save_profile.dart
+│           set_default_bank_account.dart
+│           validate_offer_limits.dart
+│
+└── infrastructure/                            ⚙️  CAPA DE INFRAESTRUCTURA
+    │
     ├── data/
-    │   └── cubits/            # Estado de la UI (ThemeCubit, CurrencyCubit, WalletCubit…)
+    │   ├── blocs/
+    │   │   └── exchange/                      ← BLoC completo (events + states) para el intercambio
+    │   │           exchange_bloc.dart
+    │   │           exchange_event.dart
+    │   │           exchange_state.dart
+    │   │
+    │   └── cubits/                            ← Estado de UI por dominio funcional
+    │       ├── activity/
+    │       │       activity_cubit.dart
+    │       │       activity_state.dart
+    │       ├── bank_account/
+    │       │       bank_account_cubit.dart    ← CRUD + estado predeterminado (Hive CE)
+    │       ├── currency/
+    │       │       currency_cubit.dart
+    │       │       currency_state.dart
+    │       ├── home/
+    │       │       home_cubit.dart
+    │       │       home_state.dart
+    │       ├── payment_method/
+    │       │       payment_method_cubit.dart
+    │       │       payment_method_state.dart
+    │       ├── profile/
+    │       │       profile_cubit.dart
+    │       ├── theme/
+    │       │       theme_cubit.dart           ← Selector de design system (4 variantes)
+    │       ├── traders/
+    │       │       traders_cubit.dart
+    │       │       traders_state.dart
+    │       └── wallet/
+    │               wallet_cubit.dart
+    │               wallet_state.dart
+    │
     ├── network/
-    │   └── datasources/       # Clientes HTTP (Dio) y datasources locales (Hive)
-    ├── repositories_impl/     # Implementaciones de los contratos del dominio
-    ├── storage/               # Inicialización y helpers de Hive CE
-    ├── router/                # go_router: rutas, ShellRoute y AppShell
+    │   │   dio_client.dart                    ← Cliente HTTP base (Dio + interceptores)
+    │   └── datasources/
+    │           activity_mock_remote_datasource.dart
+    │           bank_account_local_datasource.dart
+    │           currency_remote_datasource.dart
+    │           payment_method_remote_datasource.dart
+    │           profile_local_datasource.dart
+    │           profile_local_datasource_impl.dart
+    │           recommendation_remote_datasource.dart
+    │           wallet_mock_remote_datasource.dart
+    │
+    ├── repositories_impl/                     ← Implementaciones de los contratos del dominio
+    │       activity_repository_impl.dart
+    │       bank_account_repository_impl.dart
+    │       currency_repository_impl.dart
+    │       payment_method_repository_impl.dart
+    │       profile_repository_impl.dart
+    │       recommendation_repository_impl.dart
+    │       wallet_repository_impl.dart
+    │
+    ├── router/
+    │       app_router.dart                    ← GoRouter: rutas, parámetros y ShellRoute
+    │       app_shell.dart                     ← Shell persistente con NavigationBar
+    │
+    ├── storage/
+    │       hive_storage.dart                  ← Init de Hive CE + registro de adaptadores
+    │
     └── ui/
-        ├── theme/             # Dos sistemas de diseño compilados como ThemeData
-        ├── screens/           # Páginas completas (Home, Wallet, Activity, Settings, P2P)
-        └── widgets/
-            ├── atoms/         # Primitivos visuales (botones, badges, avatars…)
-            ├── molecules/     # Composiciones simples (SectionHeader, CurrencyRow…)
-            └── organisms/     # Bloques complejos (ExchangeCard, WealthCard, OfferCard…)
+        ├── screens/                           ← Páginas completas (una por ruta)
+        │   │   activity_screen.dart
+        │   │   home_screen.dart
+        │   │   settings_screen.dart
+        │   │   wallet_screen.dart
+        │   ├── p2p/
+        │   │       p2p_offer_list_screen.dart
+        │   │       p2p_transaction_screen.dart
+        │   ├── settings/
+        │   │       bank_accounts_screen.dart
+        │   │       personal_info_screen.dart
+        │   └── wallet/
+        │           wallet_deposit_sheet.dart
+        │
+        ├── theme/                             ← Sistema de theming doble (4 ThemeData)
+        │       app_theme.dart
+        │       electric_alchemist_dark.dart
+        │       electric_alchemist_factory.dart
+        │       electric_alchemist_light.dart
+        │       golden_standard_dark.dart
+        │       golden_standard_factory.dart
+        │       golden_standard_light.dart
+        │       registry.dart                  ← Extensión AppThemeVariantX → pair()
+        │       theme_factory.dart
+        │       tokens.dart                    ← Design tokens semánticos compartidos
+        │
+        └── widgets/                           ← Atomic Design: 3 niveles de composición
+            │   widgets.dart                   ← Barrel export único
+            ├── atoms/                         ← Primitivos visuales indivisibles (23 widgets)
+            │       ambient_glow_background.dart
+            │       amount_column.dart
+            │       app_label.dart
+            │       balance_display.dart
+            │       circle_icon_container.dart
+            │       currency_avatar.dart
+            │       currency_pill.dart
+            │       ghost_border_container.dart
+            │       golden_icon_button.dart
+            │       keypad_button.dart
+            │       online_avatar.dart
+            │       payment_method_chip.dart
+            │       primary_button.dart
+            │       rating_row.dart
+            │       setting_item_trailing.dart
+            │       status_dot.dart
+            │       time_status_row.dart
+            │       title_subtitle_column.dart
+            │       trend_badge.dart
+            │       underline_tab.dart
+            │       user_avatar_button.dart
+            │       verified_avatar.dart
+            │       verified_username.dart
+            ├── molecules/                     ← Composiciones de 2+ átomos (20 widgets)
+            │       activity_title_meta.dart
+            │       app_bar_actions.dart
+            │       app_bar_logo.dart
+            │       asset_amount_column.dart
+            │       currency_row.dart
+            │       empty_state_card.dart
+            │       error_state_card.dart
+            │       filter_pill.dart
+            │       filter_pills_bar.dart
+            │       metric_item.dart
+            │       notification_icon_button.dart
+            │       offer_tab_bar.dart
+            │       profile_name_column.dart
+            │       quick_action_button.dart
+            │       section_header.dart
+            │       section_title_row.dart
+            │       seller_info.dart
+            │       setting_item.dart
+            │       swap_divider.dart
+            │       transaction_row.dart
+            └── organisms/                     ← Secciones complejas y auto-suficientes (17 widgets)
+                    activity_feed.dart
+                    activity_group.dart
+                    asset_card.dart
+                    asset_list.dart
+                    currency_picker_bottom_sheet.dart
+                    el_dorado_nav_bar.dart
+                    el_dorado_sliver_app_bar.dart
+                    exchange_card.dart          ← Calculadora principal de intercambio
+                    numeric_keypad.dart
+                    offer_card.dart
+                    quick_actions_bar.dart
+                    recent_activity_list.dart
+                    settings_body.dart
+                    settings_group.dart
+                    theme_picker_bottom_sheet.dart
+                    user_profile_section.dart
+                    wealth_card.dart            ← Tarjeta de saldo glassmórfica
 ```
 
 ### Gestión de estado
 
-Cada dominio funcional tiene su propio **Cubit** registrado globalmente a través de `get_it`:
+El proyecto combina **BLoC** (para flujos con eventos explícitos) y **Cubit** (para estado más simple), todos registrados globalmente vía `get_it`:
 
-| Cubit | Responsabilidad |
-|---|---|
-| `ThemeCubit` | Variante activa del design system (4 opciones) |
-| `CurrencyCubit` | Carga y caché de pares FIAT/CRYPTO desde el API |
-| `PaymentMethodCubit` | Métodos de pago disponibles |
-| `HomeCubit` | Estado de la calculadora de intercambio |
-| `WalletCubit` | Activos y saldo del usuario |
-| `ActivityCubit` | Historial de transacciones |
-| `TradersCubit` | Listado de traders P2P |
-| `BankAccountCubit` | CRUD de cuentas bancarias con persistencia Hive |
+| Clase | Tipo | Responsabilidad |
+|---|---|---|
+| `ExchangeBloc` | BLoC | Flujo de intercambio con eventos (`AmountChanged`, `CurrencySwapped`…) |
+| `ThemeCubit` | Cubit | Variante activa del design system (4 opciones: Golden/Alchemist × Light/Dark) |
+| `CurrencyCubit` | Cubit | Carga y caché de pares FIAT/CRYPTO desde el API |
+| `PaymentMethodCubit` | Cubit | Métodos de pago disponibles globalmente |
+| `HomeCubit` | Cubit | Estado de la pantalla principal |
+| `WalletCubit` | Cubit | Activos y saldo del usuario |
+| `ActivityCubit` | Cubit | Historial de transacciones agrupado |
+| `TradersCubit` | Cubit | Listado de traders P2P |
+| `BankAccountCubit` | Cubit | CRUD de cuentas bancarias + cuenta predeterminada (Hive CE) |
+| `ProfileCubit` | Cubit | Lectura y escritura del perfil del usuario (Hive CE) |
 
 ---
 
